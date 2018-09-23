@@ -1,0 +1,27 @@
+Package: ggwordcloud
+Type: Package
+Title: A wordcloud geom for ggplot2
+Version: 0.1.0
+Authors@R: c(
+    person("Erwan", "Le Pennec", email = "lepennec@gmail.com", role = c("aut", "cre")),
+    person("Kamil", "Slowikowski", email = "kslowikowski@gmail.com", role = "aut")
+    )
+Maintainer: Erwan Le Pennec <lepennec@gmail.com>
+Description: Provides a wordcloud text geom for ggplot2. Texts are placed so that they do not overlap as in ggrepel.
+    The algorithm used is a variation around the one of wordcloud2.js.
+License: GPL-3
+Encoding: UTF-8
+LazyData: true
+LinkingTo: 
+    Rcpp
+Imports: 
+    Rcpp,
+    scales,
+    grid,
+    Cairo
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 6.1.0
+Suggests: 
+    testthat
+Depends: 
+    ggplot2
