@@ -1,4 +1,8 @@
 #' ggwordcloud
+#'
+#' A wordcloud package for ggplot2
+#' @keywords internal
+#' @rdname ggwordcloud
 #' @name ggwordcloud
 #' @docType package
 #' @useDynLib ggwordcloud, .registration = TRUE

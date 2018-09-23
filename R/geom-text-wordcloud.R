@@ -1,30 +1,72 @@
-#' Wordcloud text geom.
+#' Wordcloud text geom
 #'
-#' \code{geom_text_wordcloud} adds text to the plot using a variation of the wordcloud2.js algorithm.
+#' \code{geom_text_wordcloud} adds text to the plot using a variation of the
+#' wordcloud2.js algorithm. The texts are layerd around a spiral centered on the
+#' original position.
 #'
 #' This geom is based on \code{\link[ggrepel]{geom_text_repel}} which in turn is
 #' based on \code{\link[ggplot2]{geom_text}}. See the documentation for those
 #' functions for more details.
-#' @format NULL
-#' @usage NULL
+#' @param mapping Set of aesthetic mappings created by
+#'   \code{\link[ggplot2]{aes}} or \code{\link[ggplot2]{aes_}}. If specified and
+#'   \code{inherit.aes = TRUE} (the default), is combined with the default
+#'   mapping at the top level of the plot. You only need to supply
+#'   \code{mapping} if there isn't a mapping defined for the plot.
+#' @param data A data frame. If specified, overrides the default data frame
+#'   defined at the top level of the plot.
+#' @param stat The statistical transformation to use on the data for this layer,
+#'   as a string.
+#' @param position Position adjustment, either as a string, or the result of a
+#'   call to a position adjustment function.
+#' @param parse If \code{TRUE}, the labels will be parsed into expressions and
+#'   displayed as described in ?plotmath
+#' @param ... other arguments passed on to \code{\link[ggplot2]{layer}}. There
+#'   are three types of arguments you can use here:
+#'   \itemize{ \item Aesthetics: to set an aesthetic to a fixed value, like
+#'   \code{colour = "red"} or \code{size = 3}. \item Other arguments to the
+#'   layer, for example you override the default \code{stat} associated with the
+#'   layer. \item Other arguments passed on to the stat. }
+#' @param nudge_x,nudge_y Horizontal and vertical adjustments to nudge the
+#'   starting position of each text label.
+#' @param xlim,ylim Limits for the x and y axes. Text labels will be constrained
+#'   to these limits. By default, text labels are constrained to the entire plot
+#'   area.
+#' @param eccentricity eccentricity of the spiral. Default to .65
+#' @param rstep relative wordclould spiral radius increment after one full
+#'   rotation. Default to .01.
+#' @param tstep wordclould spiral angle increment at each step. Default to .01.
+#' @param grid_size grid size used when creating the text bounding boxes. Default to 4
+#' @param seed Random seed passed to \code{set.seed}. Defaults to
+#'   \code{NA}, which means that \code{set.seed} will not be called.
+#' @examples
+#' set.seed(42)
+#' dat <- mtcars
+#' dat$name <- row.names(mtcars)
+#' dat$size <- dat$mpg
+#' dat$size[1] <- 300
+#' ggplot(data = dat, aes(x = 0, y = 0, size = size, label = name)) +
+#'  geom_text_wordcloud()
+#' dat$angle <- (-90+180*runif(nrow(dat)))*(runif(nrow(dat)>.6))
+#' ggplot(data = dat, aes(x = 0, y = 0, size = size,
+#'        label = name, angle = angle)) +
+#'  geom_text_wordcloud()
 #' @export
 geom_text_wordcloud <- function(mapping = NULL, data = NULL,
-                      stat = "identity", position = "identity",
-                      ...,
-                      parse = FALSE,
-                      nudge_x = 0,
-                      nudge_y = 0,
-                      eccentricity = 0.65,
-                      rstep = .05,
-                      tstep = .05,
-                      grid_size = 8,
-                      xlim = c(NA, NA),
-                      ylim = c(NA, NA),
-                      seed = NA,
-                      na.rm = FALSE,
-                      show.legend = NA,
-                      inherit.aes = TRUE)
-{
+                                stat = "identity", position = "identity",
+                                ...,
+                                parse = FALSE,
+                                nudge_x = 0,
+                                nudge_y = 0,
+                                eccentricity = 0.65,
+                                rstep = .01,
+                                tstep = .01,
+                                grid_size = 4,
+                                xlim = c(NA, NA),
+                                ylim = c(NA, NA),
+                                seed = NA,
+                                na.rm = FALSE,
+                                show.legend = NA,
+                                inherit.aes = TRUE) {
   if (!missing(nudge_x) || !missing(nudge_y)) {
     if (!missing(position)) {
       stop("You must specify either `position` or `nudge_x`/`nudge_y`.", call. = FALSE)
@@ -55,67 +97,63 @@ geom_text_wordcloud <- function(mapping = NULL, data = NULL,
   )
 }
 
-#' @export
+
 GeomTextWordcloud <- ggproto("GeomTextWordcloud", Geom,
-                             required_aes = c("x", "y", "label"),
+  required_aes = c("x", "y", "label"),
 
-                             default_aes = aes(
-                               colour = "black", size = 3.88, angle = 0, hjust = 0.5,
-                               vjust = 0.5, alpha = NA, family = "", fontface = 1, lineheight = 1.2
-                             ),
+  default_aes = aes(
+    colour = "black", size = 3.88, angle = 0, hjust = 0.5,
+    vjust = 0.5, alpha = NA, family = "", fontface = 1, lineheight = 1.2
+  ),
 
-                             draw_panel = function(data, panel_params, coord,
-                                                   parse = FALSE,
-                                                   eccentricity = 0.65,
-                                                   rstep = .05,
-                                                   tstep = .1,
-                                                   grid_size = 4,
-                                                   xlim = c(NA, NA),
-                                                   ylim = c(NA, NA),
-                                                   seed = NA
-                             ) {
-                               lab <- data$label
-                               if (parse) {
-                                 lab <- parse_safe(as.character(lab))
-                               }
+  draw_panel = function(data, panel_params, coord,
+                          parse = FALSE,
+                          eccentricity = 0.65,
+                          rstep = .05,
+                          tstep = .1,
+                          grid_size = 4,
+                          xlim = c(NA, NA),
+                          ylim = c(NA, NA),
+                          seed = NA) {
+    lab <- data$label
+    if (parse) {
+      lab <- parse_safe(as.character(lab))
+    }
 
-                               data <- coord$transform(data, panel_params)
-                               if (is.character(data$vjust)) {
-                                 data$vjust <- compute_just(data$vjust, data$y)
-                               }
-                               if (is.character(data$hjust)) {
-                                 data$hjust <- compute_just(data$hjust, data$x)
-                               }
+    data <- coord$transform(data, panel_params)
+    if (is.character(data$vjust)) {
+      data$vjust <- compute_just(data$vjust, data$y)
+    }
+    if (is.character(data$hjust)) {
+      data$hjust <- compute_just(data$hjust, data$x)
+    }
 
-                               # Transform limits to panel scales.
-                               limits <- data.frame(x = xlim, y = ylim)
-                               limits <- coord$transform(limits, panel_params)
+    # Transform limits to panel scales.
+    limits <- data.frame(x = xlim, y = ylim)
+    limits <- coord$transform(limits, panel_params)
 
-                               # Fill NAs with defaults.
-                               limits$x[is.na(limits$x)] <- c(0, 1)[is.na(limits$x)]
-                               limits$y[is.na(limits$y)] <- c(0, 1)[is.na(limits$y)]
+    # Fill NAs with defaults.
+    limits$x[is.na(limits$x)] <- c(0, 1)[is.na(limits$x)]
+    limits$y[is.na(limits$y)] <- c(0, 1)[is.na(limits$y)]
 
-                               gTree(
-                                 limits = limits,
-                                 data = data,
-                                 lab = lab,
-                                 eccentricity = eccentricity,
-                                 rstep = rstep,
-                                 tstep = tstep,
-                                 grid_size = grid_size,
-                                 seed = seed,
-                                 cl = "textwordcloudtree",
-                                 name = "geom_text_wordcloud"
-                               )
-                             },
+    gTree(
+      limits = limits,
+      data = data,
+      lab = lab,
+      eccentricity = eccentricity,
+      rstep = rstep,
+      tstep = tstep,
+      grid_size = grid_size,
+      seed = seed,
+      cl = "textwordcloudtree",
+      name = "geom_text_wordcloud"
+    )
+  },
 
-                             draw_key = draw_key_text
+  draw_key = draw_key_text
 )
 
-#' grid::makeContent function for the grobTree of textRepelGrob objects
-#' @param x A grid grobTree.
 #' @export
-#' @noRd
 makeContent.textwordcloudtree <- function(x) {
   # Do not create text labels for empty strings.
   valid_strings <- which(not_empty(x$lab))
@@ -124,13 +162,13 @@ makeContent.textwordcloudtree <- function(x) {
   # Compute the native/pixel ratio
   dev_inch <- dev.size("in")
   dev_pix <- dev.size("px")
-  dev_dpi <- dev_pix[1]/dev_inch[1]
-  gw_ratio <- as.numeric(convertWidth(unit(1/dev_dpi, "inch"), "native"))
-  gh_ratio <- as.numeric(convertHeight(unit(1/dev_dpi, "inch"), "native"))
+  dev_dpi <- dev_pix[1] / dev_inch[1]
+  gw_ratio <- as.numeric(convertWidth(unit(1 / dev_dpi, "inch"), "native"))
+  gh_ratio <- as.numeric(convertHeight(unit(1 / dev_dpi, "inch"), "native"))
 
-  grid_size <- max(floor(x$grid_size),1)
-  max_grid_w <- floor(dev_pix[1]/grid_size)*grid_size
-  max_grid_h <- floor(dev_pix[2]/grid_size)*grid_size
+  grid_size <- max(floor(x$grid_size), 1)
+  max_grid_w <- floor(dev_pix[1] / grid_size) * grid_size
+  max_grid_h <- floor(dev_pix[2] / grid_size) * grid_size
   seq_grid_w <- seq.int(1, max_grid_w, grid_size)
   seq_grid_h <- seq.int(1, max_grid_h, grid_size)
 
@@ -141,9 +179,10 @@ makeContent.textwordcloudtree <- function(x) {
 
     tg_inch <- textGrob(
       x$lab[i],
-      dev_inch[1]/2, dev_inch[2]/2, default.units = "inch",
+      dev_inch[1] / 2, dev_inch[2] / 2,
+      default.units = "inch",
       rot = row$angle,
-      just = c(hj,vj),
+      just = c(hj, vj),
       gp = gpar(
         fontsize = row$size * .pt,
         fontfamily = row$family,
@@ -154,37 +193,39 @@ makeContent.textwordcloudtree <- function(x) {
 
     # Compute the text mask
     prev_dev_id <- dev.cur()
-    dev_id <- Cairo(width=dev_pix[1], height = dev_pix[2], dpi = dev_dpi, units = "px", type = "raster")
-    pushViewport(grid::viewport(width=1, height=1))
+    dev_id <- Cairo(width = dev_pix[1], height = dev_pix[2], dpi = dev_dpi, units = "px", type = "raster")
+    pushViewport(grid::viewport(width = 1, height = 1))
     grid.draw(tg_inch)
     popViewport()
     img <- grid.cap()
     dev.off()
     dev.set(prev_dev_id)
-    mask <- img!="transparent"
-    mask <- t(mask[dim(mask)[1]:1,])
+    mask <- img != "transparent"
+    mask <- t(mask[dim(mask)[1]:1, ])
 
 
-    mask_s <- mask[seq_grid_w,seq_grid_h]
-    for (i in 0:(grid_size-1)) {
-      for (j in 0:(grid_size-1)) {
-        mask_s <- mask_s | mask[i + seq_grid_w,
-                                j + seq_grid_h]
+    mask_s <- mask[seq_grid_w, seq_grid_h]
+    for (i in 0:(grid_size - 1)) {
+      for (j in 0:(grid_size - 1)) {
+        mask_s <- mask_s | mask[
+          i + seq_grid_w,
+          j + seq_grid_h
+        ]
       }
     }
 
     mask_ind <- which(mask_s, arr.ind = TRUE)
     mask_list <- array(0, dim = c(nrow(mask_ind), 4))
-    mask_list[,2] = ((mask_ind[,2]-1)*grid_size - dev_pix[2]/2 ) * gh_ratio
-    mask_list[,1] = ((mask_ind[,1]-1)*grid_size - dev_pix[1]/2) * gw_ratio
-    mask_list[,3] = mask_list[,1] + grid_size * gw_ratio
-    mask_list[,4] = mask_list[,2] + grid_size * gh_ratio
+    mask_list[, 2] <- ((mask_ind[, 2] - 1) * grid_size - dev_pix[2] / 2) * gh_ratio
+    mask_list[, 1] <- ((mask_ind[, 1] - 1) * grid_size - dev_pix[1] / 2) * gw_ratio
+    mask_list[, 3] <- mask_list[, 1] + grid_size * gw_ratio
+    mask_list[, 4] <- mask_list[, 2] + grid_size * gh_ratio
     mask_list
   })
   boxes_nb <- sapply(boxes, nrow)
   boxes_start <- cumsum(boxes_nb)
   text_boxes <- cbind(c(0, boxes_start[-length(boxes_start)]), boxes_start)
-  boxes_text <- rep(0:(length(boxes_nb)-1), boxes_nb)
+  boxes_text <- rep(0:(length(boxes_nb) - 1), boxes_nb)
   boxes <- do.call(rbind, boxes)
 
   # Make the repulsion reproducible if desired.
@@ -192,10 +233,16 @@ makeContent.textwordcloudtree <- function(x) {
     set.seed(x$seed)
   }
 
-  points_valid_first <- cbind(c(x$data$x[valid_strings],
-                                x$data$x[invalid_strings]),
-                              c(x$data$y[valid_strings],
-                                x$data$y[invalid_strings]))
+  points_valid_first <- cbind(
+    c(
+      x$data$x[valid_strings],
+      x$data$x[invalid_strings]
+    ),
+    c(
+      x$data$y[valid_strings],
+      x$data$y[invalid_strings]
+    )
+  )
 
   wordcloud <- wordcloud_boxes(
     data_points = points_valid_first,
@@ -242,8 +289,10 @@ compute_just <- function(just, x) {
   outward <- just == "outward"
   just[outward] <- c("right", "middle", "left")[just_dir(x[outward])]
 
-  unname(c(left = 0, center = 0.5, right = 1,
-           bottom = 0, middle = 0.5, top = 1)[just])
+  unname(c(
+    left = 0, center = 0.5, right = 1,
+    bottom = 0, middle = 0.5, top = 1
+  )[just])
 }
 
 # Copied from ggplot2
