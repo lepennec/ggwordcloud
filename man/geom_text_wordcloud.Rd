@@ -8,14 +8,16 @@ geom_text_wordcloud(mapping = NULL, data = NULL, stat = "identity",
   position = "identity", ..., parse = FALSE, nudge_x = 0,
   nudge_y = 0, eccentricity = 0.65, rstep = 0.01, tstep = 0.01,
   grid_size = 4, xlim = c(NA, NA), ylim = c(NA, NA), seed = NA,
-  na.rm = FALSE, show.legend = NA, inherit.aes = TRUE)
+  na.rm = FALSE, show.legend = FALSE, inherit.aes = TRUE)
 }
 \arguments{
 \item{mapping}{Set of aesthetic mappings created by
 \code{\link[ggplot2]{aes}} or \code{\link[ggplot2]{aes_}}. If specified and
 \code{inherit.aes = TRUE} (the default), is combined with the default
 mapping at the top level of the plot. You only need to supply
-\code{mapping} if there isn't a mapping defined for the plot.}
+\code{mapping} if there isn't a mapping defined for the plot. Note that if
+not specified both x and y are set to 0.5, i.e. the middle of the default
+panel.}
 
 \item{data}{A data frame. If specified, overrides the default data frame
 defined at the top level of the plot.}
@@ -27,11 +29,11 @@ as a string.}
 call to a position adjustment function.}
 
 \item{...}{other arguments passed on to \code{\link[ggplot2]{layer}}. There
-are three types of arguments you can use here:
-\itemize{ \item Aesthetics: to set an aesthetic to a fixed value, like
-\code{colour = "red"} or \code{size = 3}. \item Other arguments to the
-layer, for example you override the default \code{stat} associated with the
-layer. \item Other arguments passed on to the stat. }}
+are three types of arguments you can use here: \itemize{ \item Aesthetics:
+to set an aesthetic to a fixed value, like \code{colour = "red"} or
+\code{size = 3}. \item Other arguments to the layer, for example you
+override the default \code{stat} associated with the layer. \item Other
+arguments passed on to the stat. }}
 
 \item{parse}{If \code{TRUE}, the labels will be parsed into expressions and
 displayed as described in ?plotmath}
@@ -46,14 +48,17 @@ rotation. Default to .01.}
 
 \item{tstep}{wordclould spiral angle increment at each step. Default to .01.}
 
-\item{grid_size}{grid size used when creating the text bounding boxes. Default to 4}
+\item{grid_size}{grid size used when creating the text bounding boxes.
+Default to 4}
 
 \item{xlim, ylim}{Limits for the x and y axes. Text labels will be constrained
 to these limits. By default, text labels are constrained to the entire plot
 area.}
 
-\item{seed}{Random seed passed to \code{set.seed}. Defaults to
-\code{NA}, which means that \code{set.seed} will not be called.}
+\item{seed}{Random seed passed to \code{set.seed}. Defaults to \code{NA},
+which means that \code{set.seed} will not be called.}
+
+\item{show.legend}{is set by default to \code{FALSE}}
 }
 \description{
 \code{geom_text_wordcloud} adds text to the plot using a variation of the
@@ -71,10 +76,9 @@ dat <- mtcars
 dat$name <- row.names(mtcars)
 dat$size <- dat$mpg
 dat$size[1] <- 300
-ggplot(data = dat, aes(x = 0, y = 0, size = size, label = name)) +
- geom_text_wordcloud()
+ggplot(data = dat, aes(size = size, label = name)) + geom_text_wordcloud() +
+  theme_minimal()
 dat$angle <- (-90+180*runif(nrow(dat)))*(runif(nrow(dat)>.6))
-ggplot(data = dat, aes(x = 0, y = 0, size = size,
-       label = name, angle = angle)) +
- geom_text_wordcloud()
+ggplot(data = dat, aes(size = size, label = name, angle = angle)) +
+ geom_text_wordcloud() + theme_minimal()
 }

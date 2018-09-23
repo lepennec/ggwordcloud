@@ -11,7 +11,9 @@
 #'   \code{\link[ggplot2]{aes}} or \code{\link[ggplot2]{aes_}}. If specified and
 #'   \code{inherit.aes = TRUE} (the default), is combined with the default
 #'   mapping at the top level of the plot. You only need to supply
-#'   \code{mapping} if there isn't a mapping defined for the plot.
+#'   \code{mapping} if there isn't a mapping defined for the plot. Note that if
+#'   not specified both x and y are set to 0.5, i.e. the middle of the default
+#'   panel.
 #' @param data A data frame. If specified, overrides the default data frame
 #'   defined at the top level of the plot.
 #' @param stat The statistical transformation to use on the data for this layer,
@@ -21,11 +23,12 @@
 #' @param parse If \code{TRUE}, the labels will be parsed into expressions and
 #'   displayed as described in ?plotmath
 #' @param ... other arguments passed on to \code{\link[ggplot2]{layer}}. There
-#'   are three types of arguments you can use here:
-#'   \itemize{ \item Aesthetics: to set an aesthetic to a fixed value, like
-#'   \code{colour = "red"} or \code{size = 3}. \item Other arguments to the
-#'   layer, for example you override the default \code{stat} associated with the
-#'   layer. \item Other arguments passed on to the stat. }
+#'   are three types of arguments you can use here: \itemize{ \item Aesthetics:
+#'   to set an aesthetic to a fixed value, like \code{colour = "red"} or
+#'   \code{size = 3}. \item Other arguments to the layer, for example you
+#'   override the default \code{stat} associated with the layer. \item Other
+#'   arguments passed on to the stat. }
+#' @param show.legend is set by default to \code{FALSE}
 #' @param nudge_x,nudge_y Horizontal and vertical adjustments to nudge the
 #'   starting position of each text label.
 #' @param xlim,ylim Limits for the x and y axes. Text labels will be constrained
@@ -35,21 +38,21 @@
 #' @param rstep relative wordclould spiral radius increment after one full
 #'   rotation. Default to .01.
 #' @param tstep wordclould spiral angle increment at each step. Default to .01.
-#' @param grid_size grid size used when creating the text bounding boxes. Default to 4
-#' @param seed Random seed passed to \code{set.seed}. Defaults to
-#'   \code{NA}, which means that \code{set.seed} will not be called.
+#' @param grid_size grid size used when creating the text bounding boxes.
+#'   Default to 4
+#' @param seed Random seed passed to \code{set.seed}. Defaults to \code{NA},
+#'   which means that \code{set.seed} will not be called.
 #' @examples
 #' set.seed(42)
 #' dat <- mtcars
 #' dat$name <- row.names(mtcars)
 #' dat$size <- dat$mpg
 #' dat$size[1] <- 300
-#' ggplot(data = dat, aes(x = 0, y = 0, size = size, label = name)) +
-#'  geom_text_wordcloud()
+#' ggplot(data = dat, aes(size = size, label = name)) + geom_text_wordcloud() +
+#'   theme_minimal()
 #' dat$angle <- (-90+180*runif(nrow(dat)))*(runif(nrow(dat)>.6))
-#' ggplot(data = dat, aes(x = 0, y = 0, size = size,
-#'        label = name, angle = angle)) +
-#'  geom_text_wordcloud()
+#' ggplot(data = dat, aes(size = size, label = name, angle = angle)) +
+#'  geom_text_wordcloud() + theme_minimal()
 #' @export
 geom_text_wordcloud <- function(mapping = NULL, data = NULL,
                                 stat = "identity", position = "identity",
@@ -65,7 +68,7 @@ geom_text_wordcloud <- function(mapping = NULL, data = NULL,
                                 ylim = c(NA, NA),
                                 seed = NA,
                                 na.rm = FALSE,
-                                show.legend = NA,
+                                show.legend = FALSE,
                                 inherit.aes = TRUE) {
   if (!missing(nudge_x) || !missing(nudge_y)) {
     if (!missing(position)) {
@@ -99,9 +102,10 @@ geom_text_wordcloud <- function(mapping = NULL, data = NULL,
 
 
 GeomTextWordcloud <- ggproto("GeomTextWordcloud", Geom,
-  required_aes = c("x", "y", "label"),
+  required_aes = c("label"),
 
   default_aes = aes(
+    x = 0.5, y = 0.5,
     colour = "black", size = 3.88, angle = 0, hjust = 0.5,
     vjust = 0.5, alpha = NA, family = "", fontface = 1, lineheight = 1.2
   ),
