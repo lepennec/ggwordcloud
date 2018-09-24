@@ -14,6 +14,8 @@
 #'   \code{mapping} if there isn't a mapping defined for the plot. Note that if
 #'   not specified both x and y are set to 0.5, i.e. the middle of the default
 #'   panel.
+#' @param inherit.aes Inherits aesthetics if TRUE
+#' @param na.rm Remove missing values if TRUE
 #' @param data A data frame. If specified, overrides the default data frame
 #'   defined at the top level of the plot.
 #' @param stat The statistical transformation to use on the data for this layer,

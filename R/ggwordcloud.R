@@ -11,4 +11,9 @@
 #' @importFrom scales alpha
 #' @import grid
 #' @importFrom Cairo Cairo
+#' @importFrom grDevices
+#'   dev.cur
+#'   dev.off
+#'   dev.set
+#'   dev.size
 NULL

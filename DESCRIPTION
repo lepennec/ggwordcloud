@@ -1,6 +1,6 @@
 Type: Package
 Package: ggwordcloud
-Title: A wordcloud geom for ggplot2
+Title: A Wordcloud Geom for ggplot2
 Version: 0.1.0
 Authors@R: 
     c(person(given = "Erwan",
@@ -26,7 +26,8 @@ Imports:
 Suggests: 
     testthat (>= 2.0.0),
     knitr,
-    rmarkdown
+    rmarkdown,
+    ggrepel
 LinkingTo: 
     Rcpp (>= 0.12.18)
 Encoding: UTF-8

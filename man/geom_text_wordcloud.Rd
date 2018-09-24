@@ -58,7 +58,11 @@ area.}
 \item{seed}{Random seed passed to \code{set.seed}. Defaults to \code{NA},
 which means that \code{set.seed} will not be called.}
 
+\item{na.rm}{Remove missing values if TRUE}
+
 \item{show.legend}{is set by default to \code{FALSE}}
+
+\item{inherit.aes}{Inherits aesthetics if TRUE}
 }
 \description{
 \code{geom_text_wordcloud} adds text to the plot using a variation of the
