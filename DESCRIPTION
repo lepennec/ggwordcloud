@@ -34,3 +34,5 @@ LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 6.1.0
 VignetteBuilder: knitr
+URL: https://github.com/lepennec/ggwordcloud
+BugReports: https://github.com/lepennec/ggwordcloud/issues
