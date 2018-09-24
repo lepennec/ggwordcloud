@@ -24,10 +24,13 @@ Imports:
     Rcpp (>= 0.12.18),
     scales (>= 1.0.0)
 Suggests: 
-    testthat (>= 2.0.0)
+    testthat (>= 2.0.0),
+    knitr,
+    rmarkdown
 LinkingTo: 
     Rcpp (>= 0.12.18)
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 6.1.0
+VignetteBuilder: knitr
