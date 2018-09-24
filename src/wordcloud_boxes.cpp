@@ -1,6 +1,4 @@
 #include <Rcpp.h>
-#include <deque>
-#include "AABB.h"
 using namespace Rcpp;
 
 // Main code for text label placement -----------------------------------------
@@ -43,6 +41,14 @@ Box operator +(const Box& b, const Point& p) {
   return c;
 }
 
+bool overlaps(Box a, Box b) {
+  return
+  b.x1 <= a.x2 &&
+    b.y1 <= a.y2 &&
+    b.x2 >= a.x1 &&
+    b.y2 >= a.y1;
+}
+
 // [[Rcpp::export]]
 DataFrame wordcloud_boxes(
     NumericMatrix data_points,
@@ -82,20 +88,6 @@ DataFrame wordcloud_boxes(
 
   std::vector<Box> TextBoxes(n_boxes);
 
-  aabb::Tree tree;
-  std::vector<unsigned int> indices;
-  std::vector<double> position(2);
-  std::vector<double> lowerBound(2);
-  std::vector<double> upperBound(2);
-
-  lowerBound[0] = xlim[1]+2*(xlim[1]-xlim[0]);
-  lowerBound[1] = ylim[1]+2*(ylim[1]-ylim[0]);
-  upperBound[0] = lowerBound[0]+1;
-  upperBound[1] = lowerBound[1]+1;
-
-  // Make a AABB trees for the data points and text labels.
-  tree = aabb::Tree(2, 0, n_boxes);
-
   Point d;
   double r;
   double rscale = sqrt((xlim[1]-xlim[0])*(xlim[1]-xlim[0])+
@@ -103,6 +95,7 @@ DataFrame wordcloud_boxes(
   double theta;
 
   for (int i = 0; i < n_texts; i++) {
+    Rcpp::checkUserInterrupt();
     i_overlaps = true;
     iter       = 0;
     r          = 0;
@@ -147,15 +140,9 @@ DataFrame wordcloud_boxes(
       CurPos = CurPos + corr;
 
 
-      for (int ii = text_boxes(i,0); (!i_overlaps) && ii < text_boxes(i,1); ii++){
-        lowerBound[0] = TextBoxes[ii].x1;
-        lowerBound[1] = TextBoxes[ii].y1;
-        upperBound[0] = TextBoxes[ii].x2;
-        upperBound[1] = TextBoxes[ii].y2;
-        aabb::AABB box;
-        box = aabb::AABB(lowerBound, upperBound);
-        indices = tree.query(box);
-        if (indices.size()>0) {
+      for (int ii = text_boxes(i,0); (!i_overlaps) && (ii < text_boxes(i,1)); ii++){
+        for (int jj = 0 ; (!i_overlaps) && (jj < text_boxes(i,0)); jj++)
+        if (overlaps(TextBoxes[ii], TextBoxes[jj])) {
           i_overlaps = true;
         }
       }
@@ -167,13 +154,6 @@ DataFrame wordcloud_boxes(
         d.y    = r * sin(theta)*eccentricity;
       } else {
         current_centroids[i] = CurPos;
-        for (int ii = text_boxes(i,0); ii < text_boxes(i,1); ii++) {
-          lowerBound[0] = TextBoxes[ii].x1;
-          lowerBound[1] = TextBoxes[ii].y1;
-          upperBound[0] = TextBoxes[ii].x2;
-          upperBound[1] = TextBoxes[ii].y2;
-          tree.insertParticle(ii, lowerBound, upperBound);
-        }
       }
     } // loop over already positioned boxes
 

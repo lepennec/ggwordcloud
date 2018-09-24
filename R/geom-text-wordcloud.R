@@ -41,7 +41,7 @@
 #'   rotation. Default to .01.
 #' @param tstep wordclould spiral angle increment at each step. Default to .01.
 #' @param grid_size grid size used when creating the text bounding boxes.
-#'   Default to 4
+#'   Default to 8
 #' @param seed Random seed passed to \code{set.seed}. Defaults to \code{NA},
 #'   which means that \code{set.seed} will not be called.
 #' @examples
@@ -65,7 +65,7 @@ geom_text_wordcloud <- function(mapping = NULL, data = NULL,
                                 eccentricity = 0.65,
                                 rstep = .01,
                                 tstep = .01,
-                                grid_size = 4,
+                                grid_size = 8,
                                 xlim = c(NA, NA),
                                 ylim = c(NA, NA),
                                 seed = NA,

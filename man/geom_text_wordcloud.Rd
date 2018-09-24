@@ -7,7 +7,7 @@
 geom_text_wordcloud(mapping = NULL, data = NULL, stat = "identity",
   position = "identity", ..., parse = FALSE, nudge_x = 0,
   nudge_y = 0, eccentricity = 0.65, rstep = 0.01, tstep = 0.01,
-  grid_size = 4, xlim = c(NA, NA), ylim = c(NA, NA), seed = NA,
+  grid_size = 8, xlim = c(NA, NA), ylim = c(NA, NA), seed = NA,
   na.rm = FALSE, show.legend = FALSE, inherit.aes = TRUE)
 }
 \arguments{
@@ -49,7 +49,7 @@ rotation. Default to .01.}
 \item{tstep}{wordclould spiral angle increment at each step. Default to .01.}
 
 \item{grid_size}{grid size used when creating the text bounding boxes.
-Default to 4}
+Default to 8}
 
 \item{xlim, ylim}{Limits for the x and y axes. Text labels will be constrained
 to these limits. By default, text labels are constrained to the entire plot
