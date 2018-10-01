@@ -1,7 +1,7 @@
 Type: Package
 Package: ggwordcloud
 Title: A Wordcloud Geom for 'ggplot2'
-Version: 0.1.0
+Version: 0.1.0.9000
 Authors@R: 
     c(person(given = "Erwan",
              family = "Le Pennec",
