@@ -78,13 +78,25 @@ ggplot(data = dat, aes(label = name, size = size)) + geom_text_wordcloud() +
   theme_minimal() 
 ```
 
-Note that words that cannot be placed due to a lack of space are displayed at their original position:
+Note that words that cannot be placed due to a lack of space are by default displayed at their original position:
 ```{r, fig.width=7.5, fig.height=4}
+set.seed(42)
 ggplot(data = dat, aes(label = name, size = size)) + geom_text_wordcloud() +
   scale_size(range = c(4,20)) +
   theme_minimal() 
 ```
-It is up to the user to avoid this behavior by either removing some words or changing the size scale.
+It is up to the user to avoid this issue by either removing some words or changing the size scale.
+
+One can also chose to remove those words using the `rm_outside` option:
+```{r, fig.width=7.5, fig.height=4}
+set.seed(42)
+ggplot(data = dat, aes(label = name, size = size)) +
+  geom_text_wordcloud(rm_outside = TRUE) +
+  scale_size(range = c(4,20)) +
+  theme_minimal() 
+```
+
+
 
 # Wordcloud and rotation
 

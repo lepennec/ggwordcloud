@@ -57,7 +57,8 @@ DataFrame wordcloud_boxes(
     IntegerMatrix text_boxes,
     NumericVector xlim, NumericVector ylim,
     double eccentricity = 0.65,
-    double rstep = 0.1, double tstep = 0.05) {
+    double rstep = 0.1, double tstep = 0.05,
+    bool rm_outside = false) {
 
   if (NumericVector::is_na(rstep)) {
     rstep = 0.1;
@@ -68,6 +69,8 @@ DataFrame wordcloud_boxes(
 
   int n_texts = text_boxes.nrow();
   int n_boxes = boxes.nrow();
+
+  std::vector<bool> text_inside(n_texts);
 
   int iter = 0;
   bool i_overlaps = true;
@@ -105,6 +108,7 @@ DataFrame wordcloud_boxes(
     Point PosOri = current_centroids[i];
     Point CurPos;
     Point corr;
+    text_inside[i] = false;
 
     // Try to position the current text box
     while (i_overlaps && r < rscale) {
@@ -154,6 +158,7 @@ DataFrame wordcloud_boxes(
         d.y    = r * sin(theta)*eccentricity;
       } else {
         current_centroids[i] = CurPos;
+        text_inside[i] = true;
       }
     } // loop over already positioned boxes
 
@@ -162,10 +167,34 @@ DataFrame wordcloud_boxes(
   NumericVector xs(n_texts);
   NumericVector ys(n_texts);
 
+  int nb_bad = 0;
   for (int i = 0; i < n_texts; i++) {
-    xs[i] = current_centroids[i].x;
-    ys[i] = current_centroids[i].y;
+    if (!text_inside[i]) { nb_bad++; }
+    if (text_inside[i]||!rm_outside) {
+      xs[i] = current_centroids[i].x;
+      ys[i] = current_centroids[i].y;
+    } else {
+      xs[i] = NA_REAL;
+      ys[i] = NA_REAL;
+    }
   }
+
+  if (nb_bad > 0) {
+    if (nb_bad == 1) {
+      if (rm_outside) {
+        Rcpp::warning("One word could not fit on page. It has been removed.");
+      } else {
+        Rcpp::warning("One word could not fit on page. It has been placed at its original position.");
+      }
+    } else {
+      if (rm_outside) {
+        Rcpp::warning("Some words could not fit on page. They have been removed.");
+      } else {
+        Rcpp::warning("Some words could not fit on page. They have been placed at their original positions.");
+      }
+    }
+  }
+
 
   return Rcpp::DataFrame::create(
     Rcpp::Named("x") = xs,

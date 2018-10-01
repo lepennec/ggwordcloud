@@ -41,9 +41,10 @@
 #'   rotation. Default to .01.
 #' @param tstep wordclould spiral angle increment at each step. Default to .01.
 #' @param grid_size grid size used when creating the text bounding boxes.
-#'   Default to 8
+#'   Default to 4
 #' @param seed Random seed passed to \code{set.seed}. Defaults to \code{NA},
 #'   which means that \code{set.seed} will not be called.
+#' @param rm_outside Remove the texts that could not be fitted. Default to \code{FALSE}
 #' @examples
 #' set.seed(42)
 #' dat <- mtcars
@@ -65,10 +66,11 @@ geom_text_wordcloud <- function(mapping = NULL, data = NULL,
                                 eccentricity = 0.65,
                                 rstep = .01,
                                 tstep = .01,
-                                grid_size = 8,
+                                grid_size = 4,
                                 xlim = c(NA, NA),
                                 ylim = c(NA, NA),
                                 seed = NA,
+                                rm_outside = FALSE,
                                 na.rm = FALSE,
                                 show.legend = FALSE,
                                 inherit.aes = TRUE) {
@@ -97,6 +99,7 @@ geom_text_wordcloud <- function(mapping = NULL, data = NULL,
       xlim = xlim,
       ylim = ylim,
       seed = seed,
+      rm_outside = rm_outside,
       ...
     )
   )
@@ -113,14 +116,15 @@ GeomTextWordcloud <- ggproto("GeomTextWordcloud", Geom,
   ),
 
   draw_panel = function(data, panel_params, coord,
-                          parse = FALSE,
-                          eccentricity = 0.65,
-                          rstep = .05,
-                          tstep = .1,
-                          grid_size = 4,
-                          xlim = c(NA, NA),
-                          ylim = c(NA, NA),
-                          seed = NA) {
+                        parse = FALSE,
+                        eccentricity = 0.65,
+                        rstep = .05,
+                        tstep = .1,
+                        grid_size = 4,
+                        xlim = c(NA, NA),
+                        ylim = c(NA, NA),
+                        seed = NA,
+                        rm_outside = FALSE) {
     lab <- data$label
     if (parse) {
       lab <- parse_safe(as.character(lab))
@@ -151,6 +155,7 @@ GeomTextWordcloud <- ggproto("GeomTextWordcloud", Geom,
       tstep = tstep,
       grid_size = grid_size,
       seed = seed,
+      rm_outside = rm_outside,
       cl = "textwordcloudtree",
       name = "geom_text_wordcloud"
     )
@@ -173,10 +178,6 @@ makeContent.textwordcloudtree <- function(x) {
   gh_ratio <- as.numeric(convertHeight(unit(1 / dev_dpi, "inch"), "native"))
 
   grid_size <- max(floor(x$grid_size), 1)
-  max_grid_w <- floor(dev_pix[1] / grid_size) * grid_size
-  max_grid_h <- floor(dev_pix[2] / grid_size) * grid_size
-  seq_grid_w <- seq.int(1, max_grid_w, grid_size)
-  seq_grid_h <- seq.int(1, max_grid_h, grid_size)
 
   boxes <- lapply(valid_strings, function(i) {
     row <- x$data[i, , drop = FALSE]
@@ -185,7 +186,27 @@ makeContent.textwordcloudtree <- function(x) {
 
     tg_inch <- textGrob(
       x$lab[i],
-      dev_inch[1] / 2, dev_inch[2] / 2,
+      0, 0,
+      default.units = "inch",
+      rot = row$angle,
+      just = c(hj, vj),
+      gp = gpar(
+        fontsize = row$size * .pt,
+        fontfamily = row$family,
+        fontface = row$fontface,
+        lineheight = row$lineheight
+      )
+    )
+
+    gw_inch <- convertWidth(grobWidth(tg_inch), "inch", TRUE) * 1.2
+    gh_inch <- convertHeight(grobHeight(tg_inch), "inch", TRUE) * 1.2
+
+    gw_pix <- ceiling(gw_inch*dev_dpi/grid_size)*grid_size
+    gh_pix <- ceiling(gh_inch*dev_dpi/grid_size)*grid_size
+
+    tg_inch <- textGrob(
+      x$lab[i],
+      gw_inch/2, gh_inch/2,
       default.units = "inch",
       rot = row$angle,
       just = c(hj, vj),
@@ -199,7 +220,7 @@ makeContent.textwordcloudtree <- function(x) {
 
     # Compute the text mask
     prev_dev_id <- dev.cur()
-    dev_id <- Cairo(width = dev_pix[1], height = dev_pix[2], dpi = dev_dpi, units = "px", type = "raster")
+    dev_id <- Cairo(width = gw_pix, height = gh_pix, dpi = dev_dpi, units = "px", type = "raster")
     pushViewport(grid::viewport(width = 1, height = 1))
     grid.draw(tg_inch)
     popViewport()
@@ -209,21 +230,25 @@ makeContent.textwordcloudtree <- function(x) {
     mask <- img != "transparent"
     mask <- t(mask[dim(mask)[1]:1, ])
 
+    max_grid_w <- floor(gw_pix / grid_size) * grid_size
+    max_grid_h <- floor(gh_pix / grid_size) * grid_size
+    seq_grid_w <- seq.int(1, max_grid_w, grid_size)
+    seq_grid_h <- seq.int(1, max_grid_h, grid_size)
 
-    mask_s <- mask[seq_grid_w, seq_grid_h]
+    mask_s <- mask[seq_grid_w, seq_grid_h, drop = FALSE]
     for (i in 0:(grid_size - 1)) {
       for (j in 0:(grid_size - 1)) {
         mask_s <- mask_s | mask[
           i + seq_grid_w,
-          j + seq_grid_h
+          j + seq_grid_h, drop = FALSE
         ]
       }
     }
 
     mask_ind <- which(mask_s, arr.ind = TRUE)
     mask_list <- array(0, dim = c(nrow(mask_ind), 4))
-    mask_list[, 2] <- ((mask_ind[, 2] - 1) * grid_size - dev_pix[2] / 2) * gh_ratio
-    mask_list[, 1] <- ((mask_ind[, 1] - 1) * grid_size - dev_pix[1] / 2) * gw_ratio
+    mask_list[, 2] <- ((mask_ind[, 2] - 1) * grid_size - gh_pix / 2) * gh_ratio
+    mask_list[, 1] <- ((mask_ind[, 1] - 1) * grid_size - gw_pix / 2) * gw_ratio
     mask_list[, 3] <- mask_list[, 1] + grid_size * gw_ratio
     mask_list[, 4] <- mask_list[, 2] + grid_size * gh_ratio
     mask_list
@@ -259,7 +284,8 @@ makeContent.textwordcloudtree <- function(x) {
     ylim = range(x$limits$y),
     eccentricity = x$eccentricity,
     rstep = x$rstep,
-    tstep = x$tstep
+    tstep = x$tstep,
+    rm_outside = x$rm_outside
   )
 
   grobs <- lapply(seq_along(valid_strings), function(i) {

@@ -7,8 +7,9 @@
 geom_text_wordcloud(mapping = NULL, data = NULL, stat = "identity",
   position = "identity", ..., parse = FALSE, nudge_x = 0,
   nudge_y = 0, eccentricity = 0.65, rstep = 0.01, tstep = 0.01,
-  grid_size = 8, xlim = c(NA, NA), ylim = c(NA, NA), seed = NA,
-  na.rm = FALSE, show.legend = FALSE, inherit.aes = TRUE)
+  grid_size = 4, xlim = c(NA, NA), ylim = c(NA, NA), seed = NA,
+  rm_outside = FALSE, na.rm = FALSE, show.legend = FALSE,
+  inherit.aes = TRUE)
 }
 \arguments{
 \item{mapping}{Set of aesthetic mappings created by
@@ -49,7 +50,7 @@ rotation. Default to .01.}
 \item{tstep}{wordclould spiral angle increment at each step. Default to .01.}
 
 \item{grid_size}{grid size used when creating the text bounding boxes.
-Default to 8}
+Default to 4}
 
 \item{xlim, ylim}{Limits for the x and y axes. Text labels will be constrained
 to these limits. By default, text labels are constrained to the entire plot
@@ -57,6 +58,8 @@ area.}
 
 \item{seed}{Random seed passed to \code{set.seed}. Defaults to \code{NA},
 which means that \code{set.seed} will not be called.}
+
+\item{rm_outside}{Remove the texts that could not be fitted. Default to \code{FALSE}}
 
 \item{na.rm}{Remove missing values if TRUE}
 
