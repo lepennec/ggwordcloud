@@ -228,30 +228,92 @@ makeContent.textwordcloudtree <- function(x) {
     dev.off()
     dev.set(prev_dev_id)
     mask <- img != "transparent"
-    mask <- t(mask[dim(mask)[1]:1, ])
 
-    max_grid_w <- floor(gw_pix / grid_size) * grid_size
-    max_grid_h <- floor(gh_pix / grid_size) * grid_size
+    max_grid_w <- ceiling(gw_pix / grid_size) * grid_size
+    max_grid_h <- ceiling(gh_pix / grid_size) * grid_size
     seq_grid_w <- seq.int(1, max_grid_w, grid_size)
-    seq_grid_h <- seq.int(1, max_grid_h, grid_size)
+    seq_grid_h <- max_grid_h - seq.int(1, max_grid_h, grid_size) + 1
 
-    mask_s <- mask[seq_grid_w, seq_grid_h, drop = FALSE]
-    for (i in 0:(grid_size - 1)) {
-      for (j in 0:(grid_size - 1)) {
+    mask_lists <- array(0, c(0,4))
+
+    mask_s <- mask[seq_grid_h, seq_grid_w, drop = FALSE]
+    marg <- 1
+    for (j in (-marg):(grid_size + marg - 1)) {
+      for (i in (-marg):(grid_size + marg - 1)) {
         mask_s <- mask_s | mask[
-          i + seq_grid_w,
-          j + seq_grid_h, drop = FALSE
+          pmin(pmax(1,-j + seq_grid_h), gh_pix),
+          pmin(pmax(1,i + seq_grid_w), gw_pix),
+          drop = FALSE
         ]
       }
     }
 
+    mask_s2 <- mask_s[seq(1,nrow(mask_s),2),seq(1,ncol(mask_s),2), drop = FALSE]
+    for (j in 0:1) {
+      for (i in 0:1) {
+        mask_s2 <- mask_s2 &
+          mask_s[pmin(pmax(1,i+seq(1,nrow(mask_s),2)),nrow(mask_s)),
+                     pmin(pmax(1,j+seq(1,ncol(mask_s),2)),ncol(mask_s)), drop = FALSE]
+      }
+    }
+
+    mask_ind2 <- which(mask_s2, arr.ind = TRUE)
+    if (length(mask_ind2)>0) {
+      for (ind in 1:nrow(mask_ind2)) {
+        mask_s[pmin(pmax(1, 2*(mask_ind2[ind,1]-1)+(1:2)),nrow(mask_s)),
+             pmin(pmax(1, 2*(mask_ind2[ind,2]-1)+(1:2)),ncol(mask_s))] = FALSE
+      }
+    }
+
     mask_ind <- which(mask_s, arr.ind = TRUE)
-    mask_list <- array(0, dim = c(nrow(mask_ind), 4))
-    mask_list[, 2] <- ((mask_ind[, 2] - 1) * grid_size - gh_pix / 2) * gh_ratio
-    mask_list[, 1] <- ((mask_ind[, 1] - 1) * grid_size - gw_pix / 2) * gw_ratio
-    mask_list[, 3] <- mask_list[, 1] + grid_size * gw_ratio
-    mask_list[, 4] <- mask_list[, 2] + grid_size * gh_ratio
-    mask_list
+    if (length(mask_ind)>0) {
+      mask_list <- array(0, dim = c(nrow(mask_ind), 4))
+      mask_list[, 2] <- ((mask_ind[, 1] - 1) * grid_size - gh_pix / 2) * gh_ratio
+      mask_list[, 1] <- ((mask_ind[, 2] - 1) * grid_size - gw_pix / 2) * gw_ratio
+      mask_list[, 3] <- pmin(mask_list[, 1] + grid_size * gw_ratio, (gw_pix+1)/2 * gw_ratio)
+      mask_list[, 4] <- pmin(mask_list[, 2] + grid_size * gh_ratio, (gh_pix+1)/2 * gh_ratio)
+      mask_lists <- rbind(mask_lists, mask_list)
+    }
+
+    mask_s3 <- mask_s2[seq(1,nrow(mask_s2),2),seq(1,ncol(mask_s2),2), drop = FALSE]
+    for (j in 0:1) {
+      for (i in 0:1) {
+        mask_s3 <- mask_s3 &
+          mask_s2[pmin(pmax(1,i+seq(1,nrow(mask_s2),2)),nrow(mask_s2)),
+                 pmin(pmax(1,j+seq(1,ncol(mask_s2),2)),ncol(mask_s2)), drop = FALSE]
+      }
+    }
+
+    mask_ind3 <- which(mask_s3, arr.ind = TRUE)
+    if (length(mask_ind3)>0) {
+      for (ind in 1:nrow(mask_ind3)) {
+        mask_s2[pmin(pmax(1, 2*(mask_ind3[ind,1]-1)+(1:2)),nrow(mask_s2)),
+              pmin(pmax(1, 2*(mask_ind3[ind,2]-1)+(1:2)),ncol(mask_s2))] = FALSE
+      }
+    }
+
+    mask_ind2 <- which(mask_s2, arr.ind = TRUE)
+    if (length(mask_ind2)>0) {
+      mask_list2 <- array(0, dim = c(nrow(mask_ind2), 4))
+      mask_list2[, 2] <- (2 * (mask_ind2[, 1] - 1) * grid_size - gh_pix / 2) * gh_ratio
+      mask_list2[, 1] <- (2 * (mask_ind2[, 2] - 1) * grid_size - gw_pix / 2) * gw_ratio
+      mask_list2[, 3] <- pmin(mask_list2[, 1] + 2 * grid_size * gw_ratio, (gw_pix+1)/2 * gw_ratio)
+      mask_list2[, 4] <- pmin(mask_list2[, 2] + 2 * grid_size * gh_ratio, (gh_pix+1)/2 * gh_ratio)
+      mask_lists <- rbind(mask_lists, mask_list2)
+    }
+
+    mask_ind3 <- which(mask_s3, arr.ind = TRUE)
+    if (length(mask_ind3)>0) {
+      mask_list3 <- array(0, dim = c(nrow(mask_ind3), 4))
+      mask_list3[, 2] <- (4 * (mask_ind3[, 1] - 1) * grid_size - gh_pix / 2) * gh_ratio
+      mask_list3[, 1] <- (4 * (mask_ind3[, 2] - 1) * grid_size - gw_pix / 2) * gw_ratio
+      mask_list3[, 3] <- pmin(mask_list3[, 1] + 4 * grid_size * gw_ratio, (gw_pix+1)/2 * gw_ratio)
+      mask_list3[, 4] <- pmin(mask_list3[, 2] + 4 * grid_size * gh_ratio, (gh_pix+1)/2 * gh_ratio)
+      mask_lists <- rbind(mask_lists, mask_list3)
+    }
+
+    mask_lists
+
   })
   boxes_nb <- sapply(boxes, nrow)
   boxes_start <- cumsum(boxes_nb)
