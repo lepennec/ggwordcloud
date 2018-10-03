@@ -127,7 +127,7 @@ ggplot(data = dat, aes(label = name, size = size, angle = rot)) +
 # Wordcloud and eccentricity
 
 The `ggwordcloud` algorithm moves the text around a spiral until it finds a free place for it.
-This spiral has by default a vertical eccentricuty of .65,
+This spiral has by default a vertical eccentricity of .65,
 so that the spiral is 1/.65 wider than taller.
 
 ```{r, fig.width=7.5, fig.height=4}
