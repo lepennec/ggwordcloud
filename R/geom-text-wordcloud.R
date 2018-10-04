@@ -39,12 +39,15 @@
 #' @param eccentricity eccentricity of the spiral. Default to .65
 #' @param rstep relative wordclould spiral radius increment after one full
 #'   rotation. Default to .01.
-#' @param tstep wordclould spiral angle increment at each step. Default to .01.
+#' @param tstep wordclould spiral angle increment at each step. Default to .02.
 #' @param grid_size grid size used when creating the text bounding boxes.
 #'   Default to 4
+#' @param max_grid_size maximum size of the bounding boxes. Default to 128
+#' @param grid_margin safety margin around the texts. Default to 1.
 #' @param seed Random seed passed to \code{set.seed}. Defaults to \code{NA},
 #'   which means that \code{set.seed} will not be called.
 #' @param rm_outside Remove the texts that could not be fitted. Default to \code{FALSE}
+#' @return a ggplot
 #' @examples
 #' set.seed(42)
 #' dat <- mtcars
@@ -65,8 +68,9 @@ geom_text_wordcloud <- function(mapping = NULL, data = NULL,
                                 nudge_y = 0,
                                 eccentricity = 0.65,
                                 rstep = .01,
-                                tstep = .01,
+                                tstep = .02,
                                 grid_size = 4,
+                                max_grid_size = 128,
                                 grid_margin = 1,
                                 xlim = c(NA, NA),
                                 ylim = c(NA, NA),
@@ -97,6 +101,7 @@ geom_text_wordcloud <- function(mapping = NULL, data = NULL,
       rstep = rstep,
       tstep = tstep,
       grid_size = grid_size,
+      max_grid_size = max_grid_size,
       grid_margin = grid_margin,
       xlim = xlim,
       ylim = ylim,
@@ -120,9 +125,10 @@ GeomTextWordcloud <- ggproto("GeomTextWordcloud", Geom,
   draw_panel = function(data, panel_params, coord,
                         parse = FALSE,
                         eccentricity = 0.65,
-                        rstep = .05,
-                        tstep = .1,
+                        rstep = .01,
+                        tstep = .02,
                         grid_size = 4,
+                        max_grid_size = 128,
                         grid_margin = 1,
                         xlim = c(NA, NA),
                         ylim = c(NA, NA),
@@ -157,6 +163,7 @@ GeomTextWordcloud <- ggproto("GeomTextWordcloud", Geom,
       rstep = rstep,
       tstep = tstep,
       grid_size = grid_size,
+      max_grid_size = max_grid_size,
       grid_margin = grid_margin,
       seed = seed,
       rm_outside = rm_outside,
@@ -182,6 +189,7 @@ makeContent.textwordcloudtree <- function(x) {
   gh_ratio <- as.numeric(convertHeight(unit(1 / dev_dpi, "inch"), "native"))
 
   grid_size <- max(floor(x$grid_size), 1)
+  max_grid_size <- max(floor(x$max_grid_size), grid_size)
   grid_margin <- max(floor(x$grid_margin), 0)
 
   boxes <- lapply(valid_strings, function(i) {
@@ -253,7 +261,8 @@ makeContent.textwordcloudtree <- function(x) {
       }
     }
     cur_mask <- mask_s
-    step <- 2^c(0:2)
+
+    step <- 2^c(0:max(0, floor(log2(max_grid_size/grid_size))))
 
     for (st in step) {
       if (st != max(step)) {

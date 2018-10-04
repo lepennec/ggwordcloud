@@ -2,8 +2,8 @@
 #'
 #' A wordcloud package for ggplot2
 #' @keywords internal
-#' @rdname ggwordcloud
-#' @name ggwordcloud
+#' @rdname ggwordcloud-package
+#' @name ggwordcloud-package
 #' @docType package
 #' @useDynLib ggwordcloud, .registration = TRUE
 #' @importFrom Rcpp sourceCpp

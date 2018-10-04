@@ -3,6 +3,7 @@
 S3method(makeContent,textwordcloudtree)
 export(geom_text_wordcloud)
 export(ggwordcloud)
+export(ggwordcloud2)
 import(ggplot2)
 import(grid)
 importFrom(Cairo,Cairo)

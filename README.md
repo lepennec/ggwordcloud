@@ -8,9 +8,8 @@ placement algorithm implemented in C++ is close to the one used in
 `wordcloud2.js` and thus aims to be a replacement of `wordcloud2` that
 produces `ggplot2` type plot instead of an html widget. Note that the
 current version does not provide the shape and mask possibility of
-`wordcloud2`. Even if the algorithm of `wordcloud` is similar,
-`ggwordcloud` is much faster and allows arbitrary rotations of the
-words.
+`wordcloud2`. The algorithm of `wordcloud` is similar but `ggwordcloud`
+allows arbitrary rotations of the words.
 
 ## Installation
 

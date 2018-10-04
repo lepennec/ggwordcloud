@@ -147,7 +147,7 @@ ggplot(data = dat, aes(label = name, size = size, angle = rot)) +
 
 ```{r, fig.width=7.5, fig.height=4}
 ggplot(data = dat, aes(label = name, size = size, angle = rot)) +
-  geom_text_wordcloud(eccentricity = .3)  +
+  geom_text_wordcloud(eccentricity = .35)  +
   scale_size(range = c(2,12)) +
   theme_minimal() 
 ```

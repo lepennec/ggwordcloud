@@ -6,10 +6,10 @@
 \usage{
 geom_text_wordcloud(mapping = NULL, data = NULL, stat = "identity",
   position = "identity", ..., parse = FALSE, nudge_x = 0,
-  nudge_y = 0, eccentricity = 0.65, rstep = 0.01, tstep = 0.01,
-  grid_size = 4, xlim = c(NA, NA), ylim = c(NA, NA), seed = NA,
-  rm_outside = FALSE, na.rm = FALSE, show.legend = FALSE,
-  inherit.aes = TRUE)
+  nudge_y = 0, eccentricity = 0.65, rstep = 0.01, tstep = 0.02,
+  grid_size = 4, max_grid_size = 128, grid_margin = 1, xlim = c(NA,
+  NA), ylim = c(NA, NA), seed = NA, rm_outside = FALSE,
+  na.rm = FALSE, show.legend = FALSE, inherit.aes = TRUE)
 }
 \arguments{
 \item{mapping}{Set of aesthetic mappings created by
@@ -47,10 +47,14 @@ starting position of each text label.}
 \item{rstep}{relative wordclould spiral radius increment after one full
 rotation. Default to .01.}
 
-\item{tstep}{wordclould spiral angle increment at each step. Default to .01.}
+\item{tstep}{wordclould spiral angle increment at each step. Default to .02.}
 
 \item{grid_size}{grid size used when creating the text bounding boxes.
 Default to 4}
+
+\item{max_grid_size}{maximum size of the bounding boxes. Default to 128}
+
+\item{grid_margin}{safety margin around the texts. Default to 1.}
 
 \item{xlim, ylim}{Limits for the x and y axes. Text labels will be constrained
 to these limits. By default, text labels are constrained to the entire plot
@@ -66,6 +70,9 @@ which means that \code{set.seed} will not be called.}
 \item{show.legend}{is set by default to \code{FALSE}}
 
 \item{inherit.aes}{Inherits aesthetics if TRUE}
+}
+\value{
+a ggplot
 }
 \description{
 \code{geom_text_wordcloud} adds text to the plot using a variation of the
