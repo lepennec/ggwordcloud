@@ -2,7 +2,7 @@
 % Please edit documentation in R/ggwordcloud-wrapper.R
 \name{ggwordcloud}
 \alias{ggwordcloud}
-\title{Wordcloud pseudo wrapper}
+\title{wordcloud approximate replacement}
 \usage{
 ggwordcloud(words, freq, scale = c(4, 0.5), min.freq = 3,
   max.words = Inf, random.order = TRUE, random.color = FALSE,
@@ -13,15 +13,19 @@ ggwordcloud(words, freq, scale = c(4, 0.5), min.freq = 3,
 
 \item{freq}{their frequencies}
 
-\item{scale}{A vector of length 2 indicating the range of the size of the words.}
+\item{scale}{A vector of length 2 indicating the range of the size of the
+words.}
 
 \item{min.freq}{words with frequency below min.freq will not be plotted}
 
-\item{max.words}{Maximum number of words to be plotted. least frequent terms dropped}
+\item{max.words}{Maximum number of words to be plotted. least frequent terms
+dropped}
 
-\item{random.order}{plot words in random order. If false, they will be plotted in decreasing frequency}
+\item{random.order}{plot words in random order. If false, they will be
+plotted in decreasing frequency}
 
-\item{random.color}{choose colors randomly from the colors. If false, the color is chosen based on the frequency}
+\item{random.color}{choose colors randomly from the colors. If false, the
+color is chosen based on the frequency}
 
 \item{rot.per}{proportion words with 90 degree rotation}
 
@@ -35,5 +39,9 @@ ggwordcloud(words, freq, scale = c(4, 0.5), min.freq = 3,
 a ggplot
 }
 \description{
-\code{ggwordcloud} is an approximate replacement for \code{\link[wordcloud]{wordcloud}}. It has almost the same syntax but allows only the words/texts input.
+\code{ggwordcloud} is meant as an approximate replacement for
+\code{\link[wordcloud]{wordcloud}}. It has almost the same syntax but allows
+only the words/freqs input. As the underlying algorithms are not strictly
+equal, the resulting wordcloud is only similar to the ones one can obtain
+with \code{\link[wordcloud]{wordcloud}}.
 }

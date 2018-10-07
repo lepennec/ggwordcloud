@@ -2,13 +2,20 @@
 % Please edit documentation in R/ggwordcloud-wrapper.R
 \name{ggwordcloud2}
 \alias{ggwordcloud2}
-\title{\code{ggwordcloud2} is an approximate replacement for \code{\link[wordcloud2]{wordcloud2}}. It has almost the same syntax but fewer options. In particular, there is no background image (so far...).}
+\title{wordcloud2 approximate replacement}
 \usage{
-ggwordcloud2(data, minRotation = -pi/4, maxRotation = pi/4,
-  shuffle = TRUE, rotateRatio = 0.4, ellipticity = 0.65, ...)
+ggwordcloud2(data, size = 1, color = "random-dark",
+  minRotation = -pi/4, maxRotation = pi/4, shuffle = TRUE,
+  rotateRatio = 0.4, ellipticity = 0.65, ...)
 }
 \arguments{
-\item{data}{a dataframe whose two first columns are the names and the freqs or a table}
+\item{data}{a dataframe whose two first columns are the names and the freqs
+or a table}
+
+\item{size}{scaling factor. Default to 1}
+
+\item{color}{color scheme either "random-dark", "random-light" or a list of
+color of the size of the dataframe. Default to "random-dark"}
 
 \item{minRotation}{the minimal rotation angle}
 
@@ -26,5 +33,9 @@ ggwordcloud2(data, minRotation = -pi/4, maxRotation = pi/4,
 a ggplot
 }
 \description{
-\code{ggwordcloud2} is an approximate replacement for \code{\link[wordcloud2]{wordcloud2}}. It has almost the same syntax but fewer options. In particular, there is no background image (so far...).
+\code{ggwordcloud2} is meant as an approximate replacement for
+\code{\link[wordcloud2]{wordcloud2}}. It has almost the same syntax but fewer
+options. In particular, there is no background image (so far...). As the
+underlying algorithms are not strictly equal, the resulting wordcloud is only
+similar to the ones one can obtain with \code{\link[wordcloud2]{wordcloud2}}.
 }

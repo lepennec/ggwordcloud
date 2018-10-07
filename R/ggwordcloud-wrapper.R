@@ -1,14 +1,22 @@
-#' Wordcloud pseudo wrapper
+#' wordcloud approximate replacement
 #'
-#' \code{ggwordcloud} is an approximate replacement for \code{\link[wordcloud]{wordcloud}}. It has almost the same syntax but allows only the words/texts input.
+#' \code{ggwordcloud} is meant as an approximate replacement for
+#' \code{\link[wordcloud]{wordcloud}}. It has almost the same syntax but allows
+#' only the words/freqs input. As the underlying algorithms are not strictly
+#' equal, the resulting wordcloud is only similar to the ones one can obtain
+#' with \code{\link[wordcloud]{wordcloud}}.
 #'
 #' @param words the words
 #' @param freq their frequencies
-#' @param scale A vector of length 2 indicating the range of the size of the words.
+#' @param scale A vector of length 2 indicating the range of the size of the
+#'   words.
 #' @param min.freq words with frequency below min.freq will not be plotted
-#' @param max.words Maximum number of words to be plotted. least frequent terms dropped
-#' @param random.order plot words in random order. If false, they will be plotted in decreasing frequency
-#' @param random.color choose colors randomly from the colors. If false, the color is chosen based on the frequency
+#' @param max.words Maximum number of words to be plotted. least frequent terms
+#'   dropped
+#' @param random.order plot words in random order. If false, they will be
+#'   plotted in decreasing frequency
+#' @param random.color choose colors randomly from the colors. If false, the
+#'   color is chosen based on the frequency
 #' @param rot.per proportion words with 90 degree rotation
 #' @param colors color words from least to most frequent
 #' @param ordered.colors if true, then colors are assigned to words in order
@@ -53,9 +61,20 @@ ggwordcloud <- function (words, freq, scale = c(4, 0.5), min.freq = 3, max.words
     scale_color_identity() +
     theme_minimal()
 }
-#' \code{ggwordcloud2} is an approximate replacement for \code{\link[wordcloud2]{wordcloud2}}. It has almost the same syntax but fewer options. In particular, there is no background image (so far...).
+
+#' wordcloud2 approximate replacement
 #'
-#' @param data a dataframe whose two first columns are the names and the freqs or a table
+#' \code{ggwordcloud2} is meant as an approximate replacement for
+#' \code{\link[wordcloud2]{wordcloud2}}. It has almost the same syntax but fewer
+#' options. In particular, there is no background image (so far...). As the
+#' underlying algorithms are not strictly equal, the resulting wordcloud is only
+#' similar to the ones one can obtain with \code{\link[wordcloud2]{wordcloud2}}.
+#'
+#' @param data a dataframe whose two first columns are the names and the freqs
+#'   or a table
+#' @param size scaling factor. Default to 1
+#' @param color color scheme either "random-dark", "random-light" or a list of
+#'   color of the size of the dataframe. Default to "random-dark"
 #' @param minRotation the minimal rotation angle
 #' @param maxRotation the maximal rotation angle
 #' @param rotateRation the proportion of rotated words
@@ -65,8 +84,11 @@ ggwordcloud <- function (words, freq, scale = c(4, 0.5), min.freq = 3, max.words
 #' @return a ggplot
 #' @export
 ggwordcloud2 <- function (data,
-                          #size = 1, minSize = 0, gridSize = 0, fontFamily = "Segoe UI",
-                          #fontWeight = "bold", color = "random-dark", backgroundColor = "white",
+                          size = 1,
+                          #minSize = 0, gridSize = 0, fontFamily = "Segoe UI",
+                          #fontWeight = "bold",
+                          color = "random-dark",
+                          #backgroundColor = "white",
                           minRotation = -pi/4, maxRotation = pi/4, shuffle = TRUE,
                           rotateRatio = 0.4,
                           #shape = "circle",
@@ -82,14 +104,42 @@ ggwordcloud2 <- function (data,
     names(dataOut) = c("name", "freq")
   }
 
-  dataOut$rot <- (minRotation + (maxRotation-minRotation) * runif(nrow(dataOut))) * (runif(dataOut) < rotateRatio)
+  dataOut$rot <- (minRotation + (maxRotation-minRotation) * runif(nrow(dataOut))) * (runif(dataOut) < rotateRatio) * 45/pi
 
   if (shuffle) {
     ord <- sample.int(nrow(dataOut))
     dataOut <- dataOut[ord,]
   }
 
-  ggplot(data = dataOut, aes(label = name, size = freq, angle = rot)) +
-    geom_text_wordcloud(eccentricity = ellipticity, ...) +
+  if (color == "random_dark") {
+    dataOut$color <- random_dark(nrow(dataOut))
+  } else {
+    if (color == "random_light") {
+      dataOut$color <- random_dark(nrow(dataOut))
+    } else
+    {
+      dataOut$color <- color
+    }
+  }
+
+  ggplot(data = dataOut, aes(label = name, size = freq, angle = rot,
+                             color = color)) +
+    geom_text_wordcloud(eccentricity = ellipticity, rm_outside = TRUE, ...) +
+    scale_color_identity() +
+    scale_size(limits  = c(0,NA), range = c(0,18*size)) +
     theme_minimal()
+}
+
+random_hsl_color <- function (min, max, n = 1) {
+  hex(HLS(360*runif(n),
+          (min + (max - min) * runif(n))/100,
+          (70 + 30 * runif(n))/100))
+}
+
+random_dark <- function(n = 1){
+  random_hsl_color(10, 50, n)
+}
+
+random_light <- function(n = 1){
+  random_hsl_color(50, 90, n)
 }

@@ -122,16 +122,16 @@ DataFrame wordcloud_boxes(
       i_overlaps = false;
 
       CurPos = PosOri + d;
-      bool one_inside = false;
+      bool all_inside = true;
       for (int ii = text_boxes(i,0); ii < text_boxes(i,1); ii++) {
         TextBoxes[ii].x1 = CurPos.x + boxes(ii, 0);
         TextBoxes[ii].x2 = CurPos.x + boxes(ii, 2);
         TextBoxes[ii].y1 = CurPos.y + boxes(ii, 1);
         TextBoxes[ii].y2 = CurPos.y + boxes(ii, 3);
-        one_inside = one_inside || overlaps(TextBoxes[ii], inside);
+        all_inside = all_inside && overlaps(TextBoxes[ii], inside);
       }
 
-      if (one_inside) {
+      if (all_inside) {
         corr.x = 0;
         corr.y = 0;
         for (int ii = text_boxes(i,0); ii < text_boxes(i,1); ii++){

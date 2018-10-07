@@ -16,4 +16,7 @@
 #'   dev.off
 #'   dev.set
 #'   dev.size
+#' @importFrom colorspace
+#'   hex
+#'   HLS
 NULL

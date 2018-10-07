@@ -2,7 +2,7 @@
 % Please edit documentation in R/geom-text-wordcloud.R
 \name{geom_text_wordcloud}
 \alias{geom_text_wordcloud}
-\title{Wordcloud text geom}
+\title{wordcloud text geom}
 \usage{
 geom_text_wordcloud(mapping = NULL, data = NULL, stat = "identity",
   position = "identity", ..., parse = FALSE, nudge_x = 0,
@@ -63,7 +63,8 @@ area.}
 \item{seed}{Random seed passed to \code{set.seed}. Defaults to \code{NA},
 which means that \code{set.seed} will not be called.}
 
-\item{rm_outside}{Remove the texts that could not be fitted. Default to \code{FALSE}}
+\item{rm_outside}{Remove the texts that could not be fitted. Default to
+\code{FALSE}}
 
 \item{na.rm}{Remove missing values if TRUE}
 

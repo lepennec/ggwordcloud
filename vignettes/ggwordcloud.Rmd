@@ -46,14 +46,14 @@ set.seed(42)
 ```
 
 A basic wordcloud can be obtained by:
-```{r, fig.width=7.5, fig.height=4}
+```{r, fig.width=7.5, fig.height=5}
 ggplot(data = dat, aes(label = name)) + geom_text_wordcloud() + theme_minimal()
 ```
 We have used a minimal theme to display only the words.
 
 
 Because there is some randomness in the algorithm, the same command can yield a different result:
-```{r, fig.width=7.5, fig.height=4}
+```{r, fig.width=7.5, fig.height=5}
 ggplot(data = dat, aes(label = name)) + geom_text_wordcloud() + theme_minimal()
 ```
 
@@ -66,13 +66,13 @@ dat$size[c(1,4)] <- dat$size[c(1,4)] + 100
 ```
 
 We can now add this new variable to the aesthetic:
-```{r, fig.width=7.5, fig.height=4}
+```{r, fig.width=7.5, fig.height=5}
 ggplot(data = dat, aes(label = name, size = size)) + geom_text_wordcloud() +
   theme_minimal()
 ```
 
 In order to obtain a better picture, one can play with the size scale:
-```{r, fig.width=7.5, fig.height=4}
+```{r, fig.width=7.5, fig.height=5}
 ggplot(data = dat, aes(label = name, size = size)) + geom_text_wordcloud() +
   scale_size(range = c(2,12)) +
   theme_minimal() 
@@ -105,7 +105,7 @@ Let's start by creating a rotation angle of 90 for 40 \% of the words:
 dat$rot <- 90*(runif(nrow(dat))>.6)
 ```
 We can use this variable in the aesthetic:
-```{r, fig.width=7.5, fig.height=4}
+```{r, fig.width=7.5, fig.height=5}
 ggplot(data = dat, aes(label = name, size = size, angle = rot)) +
   geom_text_wordcloud() +
   scale_size(range = c(2,12)) +
@@ -117,7 +117,7 @@ ggplot(data = dat, aes(label = name, size = size, angle = rot)) +
 dat$rot <- (-90+180*runif(nrow(dat)))*(runif(nrow(dat))>.2)
 ```
 
-```{r, fig.width=7.5, fig.height=4}
+```{r, fig.width=7.5, fig.height=5}
 ggplot(data = dat, aes(label = name, size = size, angle = rot)) +
   geom_text_wordcloud()  +
   scale_size(range = c(2,12)) +
@@ -130,7 +130,7 @@ The `ggwordcloud` algorithm moves the text around a spiral until it finds a free
 This spiral has by default a vertical eccentricity of .65,
 so that the spiral is 1/.65 wider than taller.
 
-```{r, fig.width=7.5, fig.height=4}
+```{r, fig.width=7.5, fig.height=5}
 ggplot(data = dat, aes(label = name, size = size, angle = rot)) +
   geom_text_wordcloud()  +
   scale_size(range = c(2,12)) +
@@ -138,14 +138,14 @@ ggplot(data = dat, aes(label = name, size = size, angle = rot)) +
 ```
 
 This can be changed using the `eccentricity` parameter:
-```{r, fig.width=7.5, fig.height=4}
+```{r, fig.width=7.5, fig.height=5}
 ggplot(data = dat, aes(label = name, size = size, angle = rot)) +
   geom_text_wordcloud(eccentricity = 1)  +
   scale_size(range = c(2,12)) +
   theme_minimal() 
 ```
 
-```{r, fig.width=7.5, fig.height=4}
+```{r, fig.width=7.5, fig.height=5}
 ggplot(data = dat, aes(label = name, size = size, angle = rot)) +
   geom_text_wordcloud(eccentricity = .35)  +
   scale_size(range = c(2,12)) +
@@ -155,7 +155,7 @@ ggplot(data = dat, aes(label = name, size = size, angle = rot)) +
 # Advanced wordcloud
 
 `geom_text_wordcloud` is compatible with the facet system of `ggplot2`:
-```{r, fig.width=7.5, fig.height=4}
+```{r, fig.width=7.5, fig.height=5}
 ggplot(data = dat, aes(label = name, size = size, angle = rot)) +
   geom_text_wordcloud()  +
   scale_size(range = c(2,12)) +
@@ -165,7 +165,7 @@ ggplot(data = dat, aes(label = name, size = size, angle = rot)) +
 
 
 One can also specify an original position for each label that what will be used as the starting point of the spiral algorithm for this label:
-```{r, fig.width=7.5, fig.height=4}
+```{r, fig.width=7.5, fig.height=5}
 ggplot(data = dat, aes(x = factor(am), label = name, size = size, angle = rot,
                        color = factor(am))) +
   geom_text_wordcloud()  +

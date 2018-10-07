@@ -1,4 +1,4 @@
-#' Wordcloud text geom
+#' wordcloud text geom
 #'
 #' \code{geom_text_wordcloud} adds text to the plot using a variation of the
 #' wordcloud2.js algorithm. The texts are layerd around a spiral centered on the
@@ -46,7 +46,8 @@
 #' @param grid_margin safety margin around the texts. Default to 1.
 #' @param seed Random seed passed to \code{set.seed}. Defaults to \code{NA},
 #'   which means that \code{set.seed} will not be called.
-#' @param rm_outside Remove the texts that could not be fitted. Default to \code{FALSE}
+#' @param rm_outside Remove the texts that could not be fitted. Default to
+#'   \code{FALSE}
 #' @return a ggplot
 #' @examples
 #' set.seed(42)
