@@ -45,3 +45,12 @@ only the words/freqs input. As the underlying algorithms are not strictly
 equal, the resulting wordcloud is only similar to the ones one can obtain
 with \code{\link[wordcloud]{wordcloud}}.
 }
+\examples{
+set.seed(42)
+dat <- mtcars
+dat$name <- row.names(mtcars)
+dat$size <- dat$mpg
+dat$size[1] <- 300
+
+ggwordcloud(dat$name, dat$size)
+}

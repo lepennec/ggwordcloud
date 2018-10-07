@@ -77,13 +77,11 @@ a ggplot
 }
 \description{
 \code{geom_text_wordcloud} adds text to the plot using a variation of the
-wordcloud2.js algorithm. The texts are layerd around a spiral centered on the
-original position.
-}
-\details{
-This geom is based on \code{\link[ggrepel]{geom_text_repel}} which in turn is
-based on \code{\link[ggplot2]{geom_text}}. See the documentation for those
-functions for more details.
+wordcloud2.js algorithm. The texts are layered around a spiral centered on
+the original position. This geom is based on
+\code{\link[ggrepel]{geom_text_repel}} which in turn is based on
+\code{\link[ggplot2]{geom_text}}. See the documentation for those functions
+for more details.
 }
 \examples{
 set.seed(42)

@@ -22,12 +22,15 @@ Imports:
     Cairo (>= 1.5.9),
     grid,
     Rcpp,
-    scales (>= 1.0.0)
+    scales (>= 1.0.0),
+    colorspace
 Suggests: 
     testthat (>= 2.0.0),
     knitr,
     rmarkdown,
-    ggrepel
+    ggrepel,
+    wordcloud,
+    wordcloud2
 LinkingTo: 
     Rcpp
 Encoding: UTF-8

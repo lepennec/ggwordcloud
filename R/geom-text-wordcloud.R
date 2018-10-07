@@ -1,12 +1,11 @@
 #' wordcloud text geom
 #'
 #' \code{geom_text_wordcloud} adds text to the plot using a variation of the
-#' wordcloud2.js algorithm. The texts are layerd around a spiral centered on the
-#' original position.
-#'
-#' This geom is based on \code{\link[ggrepel]{geom_text_repel}} which in turn is
-#' based on \code{\link[ggplot2]{geom_text}}. See the documentation for those
-#' functions for more details.
+#' wordcloud2.js algorithm. The texts are layered around a spiral centered on
+#' the original position. This geom is based on
+#' \code{\link[ggrepel]{geom_text_repel}} which in turn is based on
+#' \code{\link[ggplot2]{geom_text}}. See the documentation for those functions
+#' for more details.
 #' @param mapping Set of aesthetic mappings created by
 #'   \code{\link[ggplot2]{aes}} or \code{\link[ggplot2]{aes_}}. If specified and
 #'   \code{inherit.aes = TRUE} (the default), is combined with the default
@@ -48,7 +47,9 @@
 #'   which means that \code{set.seed} will not be called.
 #' @param rm_outside Remove the texts that could not be fitted. Default to
 #'   \code{FALSE}
+#'
 #' @return a ggplot
+#'
 #' @examples
 #' set.seed(42)
 #' dat <- mtcars

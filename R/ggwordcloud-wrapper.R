@@ -22,6 +22,14 @@
 #' @param ordered.colors if true, then colors are assigned to words in order
 #' @param ... Additional parameters to be passed to geom_text_wordcloud
 #' @return a ggplot
+#' @examples
+#' set.seed(42)
+#' dat <- mtcars
+#' dat$name <- row.names(mtcars)
+#' dat$size <- dat$mpg
+#' dat$size[1] <- 300
+#'
+#' ggwordcloud(dat$name, dat$size)
 #' @export
 ggwordcloud <- function (words, freq, scale = c(4, 0.5), min.freq = 3, max.words = Inf,
                          random.order = TRUE, random.color = FALSE, rot.per = 0.1,
@@ -53,13 +61,15 @@ ggwordcloud <- function (words, freq, scale = c(4, 0.5), min.freq = 3, max.words
   }
   words_df$angle = 90 * (runif(nrow(words_df)) < rot.per)
 
-  ggplot(data = words_df, aes(label = word, size = freq,
-                              color = color, angle = angle)) +
-    geom_text_wordcloud(rstep = .01, tstep = .02,
-                        rm_outside = TRUE, ...) +
-    scale_size(range = 5 * c(scale[2],scale[1])) +
-    scale_color_identity() +
-    theme_minimal()
+  with(words_df,
+       ggplot(data = words_df, aes(label = word, size = freq,
+                                   color = color, angle = angle)) +
+         geom_text_wordcloud(rstep = .01, tstep = .02,
+                             rm_outside = TRUE, ...) +
+         scale_size(range = 5 * c(scale[2],scale[1])) +
+         scale_color_identity() +
+         theme_minimal()
+  )
 }
 
 #' wordcloud2 approximate replacement
@@ -82,6 +92,14 @@ ggwordcloud <- function (words, freq, scale = c(4, 0.5), min.freq = 3, max.words
 #' @param ellipticity control the eccentricity of the wordcloud
 #' @param ... the remaining parameters are passed to geom_text_wordcloud
 #' @return a ggplot
+#' @examples
+#' set.seed(42)
+#' dat <- mtcars
+#' dat$name <- row.names(mtcars)
+#' dat$size <- dat$mpg
+#' dat$size[1] <- 300
+#'
+#' ggwordcloud2(dat[,c("name", "size")])
 #' @export
 ggwordcloud2 <- function (data,
                           size = 1,
@@ -111,10 +129,10 @@ ggwordcloud2 <- function (data,
     dataOut <- dataOut[ord,]
   }
 
-  if (color == "random_dark") {
+  if (color == "random-dark") {
     dataOut$color <- random_dark(nrow(dataOut))
   } else {
-    if (color == "random_light") {
+    if (color == "random-light") {
       dataOut$color <- random_dark(nrow(dataOut))
     } else
     {
@@ -122,12 +140,14 @@ ggwordcloud2 <- function (data,
     }
   }
 
-  ggplot(data = dataOut, aes(label = name, size = freq, angle = rot,
-                             color = color)) +
-    geom_text_wordcloud(eccentricity = ellipticity, rm_outside = TRUE, ...) +
-    scale_color_identity() +
-    scale_size(limits  = c(0,NA), range = c(0,18*size)) +
-    theme_minimal()
+  with(dataOut,
+       ggplot(data = dataOut, aes(label = name, size = freq, angle = rot,
+                                  color = color)) +
+         geom_text_wordcloud(eccentricity = ellipticity, rm_outside = TRUE, ...) +
+         scale_color_identity() +
+         scale_size(limits  = c(0,NA), range = c(0,18*size)) +
+         theme_minimal()
+  )
 }
 
 random_hsl_color <- function (min, max, n = 1) {

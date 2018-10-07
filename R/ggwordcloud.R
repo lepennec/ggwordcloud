@@ -19,4 +19,5 @@
 #' @importFrom colorspace
 #'   hex
 #'   HLS
+#' @importFrom stats runif
 NULL
