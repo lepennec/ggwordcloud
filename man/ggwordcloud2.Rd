@@ -23,11 +23,11 @@ color of the size of the dataframe. Default to "random-dark"}
 
 \item{shuffle}{if TRUE, the words are shuffled at the beginning}
 
+\item{rotateRatio}{the proportion of rotated words}
+
 \item{ellipticity}{control the eccentricity of the wordcloud}
 
 \item{...}{the remaining parameters are passed to geom_text_wordcloud}
-
-\item{rotateRation}{the proportion of rotated words}
 }
 \value{
 a ggplot
@@ -38,4 +38,13 @@ a ggplot
 options. In particular, there is no background image (so far...). As the
 underlying algorithms are not strictly equal, the resulting wordcloud is only
 similar to the ones one can obtain with \code{\link[wordcloud2]{wordcloud2}}.
+}
+\examples{
+set.seed(42)
+dat <- mtcars
+dat$name <- row.names(mtcars)
+dat$size <- dat$mpg
+dat$size[1] <- 300
+
+ggwordcloud2(dat[,c("name", "size")])
 }

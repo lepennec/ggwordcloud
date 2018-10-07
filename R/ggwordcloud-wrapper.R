@@ -87,7 +87,7 @@ ggwordcloud <- function (words, freq, scale = c(4, 0.5), min.freq = 3, max.words
 #'   color of the size of the dataframe. Default to "random-dark"
 #' @param minRotation the minimal rotation angle
 #' @param maxRotation the maximal rotation angle
-#' @param rotateRation the proportion of rotated words
+#' @param rotateRatio the proportion of rotated words
 #' @param shuffle if TRUE, the words are shuffled at the beginning
 #' @param ellipticity control the eccentricity of the wordcloud
 #' @param ... the remaining parameters are passed to geom_text_wordcloud
