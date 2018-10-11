@@ -1,6 +1,6 @@
 ## Test environments
-* local Fedora 27, R 3.5.1
-* rhub: windows-x86_64-release, 
+* local Fedora 27, R 3.5.1, gcc
+* rhub: windows-x86_64-release, fedora-clang-devel
 
 ## R CMD check results
 
