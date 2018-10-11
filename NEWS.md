@@ -1,3 +1,5 @@
+# ggwordcloud 0.2.0.9000
+
 # ggwordcloud 0.2.0
 * add the rm_outside option
 * wordcloud layout acceleration thanks to better word boxing
