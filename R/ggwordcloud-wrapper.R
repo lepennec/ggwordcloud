@@ -122,7 +122,7 @@ ggwordcloud2 <- function (data,
     names(dataOut) = c("name", "freq")
   }
 
-  dataOut$rot <- (minRotation + (maxRotation-minRotation) * runif(nrow(dataOut))) * (runif(dataOut) < rotateRatio) * 45/pi
+  dataOut$rot <- (minRotation + (maxRotation-minRotation) * runif(nrow(dataOut))) * (runif(nrow(dataOut)) < rotateRatio) * 45/pi
 
   if (shuffle) {
     ord <- sample.int(nrow(dataOut))
@@ -145,7 +145,7 @@ ggwordcloud2 <- function (data,
                                   color = color)) +
          geom_text_wordcloud(eccentricity = ellipticity, rm_outside = TRUE, ...) +
          scale_color_identity() +
-         scale_size(limits  = c(0,NA), range = c(0,18*size)) +
+         scale_radius(limits  = c(0,NA), range = c(0,18*size)) +
          theme_minimal()
   )
 }
