@@ -66,7 +66,7 @@ ggwordcloud <- function (words, freq, scale = c(4, 0.5), min.freq = 3, max.words
                                    color = color, angle = angle)) +
          geom_text_wordcloud(rstep = .01, tstep = .02,
                              rm_outside = TRUE, ...) +
-         scale_size(range = 5 * c(scale[2],scale[1])) +
+         scale_radius(range = 5 * c(scale[2],scale[1])) +
          scale_color_identity() +
          theme_minimal()
   )
