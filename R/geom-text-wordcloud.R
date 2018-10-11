@@ -216,8 +216,8 @@ makeContent.textwordcloudtree <- function(x) {
     gw_inch <- convertWidth(grobWidth(tg_inch), "inch", TRUE) * 1.2
     gh_inch <- convertHeight(grobHeight(tg_inch), "inch", TRUE) * 1.2
 
-    gw_pix <- ceiling(gw_inch*dev_dpi/grid_size)*grid_size
-    gh_pix <- ceiling(gh_inch*dev_dpi/grid_size)*grid_size
+    gw_pix <- max(1,ceiling(gw_inch*dev_dpi/grid_size))*grid_size
+    gh_pix <- max(1,ceiling(gh_inch*dev_dpi/grid_size))*grid_size
 
     tg_inch <- textGrob(
       x$lab[i],
