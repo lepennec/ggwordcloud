@@ -142,21 +142,21 @@ GeomTextWordcloud <- ggproto("GeomTextWordcloud", Geom,
   ),
 
   draw_panel = function(data, panel_params, coord,
-                        parse = FALSE,
-                        eccentricity = 0.65,
-                        rstep = .01,
-                        tstep = .02,
-                        perc_step = .1,
-                        max_steps = 10,
-                        grid_size = 4,
-                        max_grid_size = 128,
-                        grid_margin = 1,
-                        xlim = c(NA, NA),
-                        ylim = c(NA, NA),
-                        seed = NA,
-                        rm_outside = FALSE,
-                        area_corr = FALSE,
-                        area_corr_power = 1) {
+                          parse = FALSE,
+                          eccentricity = 0.65,
+                          rstep = .01,
+                          tstep = .02,
+                          perc_step = .1,
+                          max_steps = 10,
+                          grid_size = 4,
+                          max_grid_size = 128,
+                          grid_margin = 1,
+                          xlim = c(NA, NA),
+                          ylim = c(NA, NA),
+                          seed = NA,
+                          rm_outside = FALSE,
+                          area_corr = FALSE,
+                          area_corr_power = 1) {
     lab <- data$label
     if (parse) {
       lab <- parse_safe(as.character(lab))
@@ -243,12 +243,12 @@ makeContent.textwordcloudtree <- function(x) {
       gw_inch <- convertWidth(grobWidth(tg_inch), "inch", TRUE) * 1.2
       gh_inch <- convertHeight(grobHeight(tg_inch), "inch", TRUE) * 1.2 + 2 * convertHeight(grobDescent(tg_inch), "inch", TRUE)
 
-      gw_pix <- max(1,ceiling(gw_inch*dev_dpi/grid_size))*grid_size
-      gh_pix <- max(1,ceiling(gh_inch*dev_dpi/grid_size))*grid_size
+      gw_pix <- max(1, ceiling(gw_inch * dev_dpi / grid_size)) * grid_size
+      gh_pix <- max(1, ceiling(gh_inch * dev_dpi / grid_size)) * grid_size
 
       tg_inch <- textGrob(
         x$lab[i],
-        gw_inch/2, gh_inch/2,
+        gw_inch / 2, gh_inch / 2,
         default.units = "inch",
         rot = row$angle,
         just = c(hj, vj),
@@ -273,10 +273,12 @@ makeContent.textwordcloudtree <- function(x) {
       area <- sum(mask)
       if (area > 0) {
         row$size^(x$area_corr_power) / sqrt(area)
-      } else { NA_real_}
+      } else {
+        NA_real_
+      }
     })
     corsurf <- unlist(corsurf)
-    corsurf <- corsurf/max(corsurf, na.rm = TRUE)
+    corsurf <- corsurf / max(corsurf, na.rm = TRUE)
     corsurf[is.na(corsurf)] <- 1
   } else {
     corsurf <- array(1, dim = length(valid_strings))
@@ -304,12 +306,12 @@ makeContent.textwordcloudtree <- function(x) {
     gw_inch <- convertWidth(grobWidth(tg_inch), "inch", TRUE) * 1.2
     gh_inch <- convertHeight(grobHeight(tg_inch), "inch", TRUE) * 1.2 + 2 * convertHeight(grobDescent(tg_inch), "inch", TRUE)
 
-    gw_pix <- max(1,ceiling(gw_inch*dev_dpi/grid_size))*grid_size
-    gh_pix <- max(1,ceiling(gh_inch*dev_dpi/grid_size))*grid_size
+    gw_pix <- max(1, ceiling(gw_inch * dev_dpi / grid_size)) * grid_size
+    gh_pix <- max(1, ceiling(gh_inch * dev_dpi / grid_size)) * grid_size
 
     tg_inch <- textGrob(
       x$lab[i],
-      gw_inch/2, gh_inch/2,
+      gw_inch / 2, gh_inch / 2,
       default.units = "inch",
       rot = row$angle,
       just = c(hj, vj),
@@ -337,50 +339,54 @@ makeContent.textwordcloudtree <- function(x) {
     seq_grid_w <- seq.int(1, max_grid_w, grid_size)
     seq_grid_h <- max_grid_h - seq.int(1, max_grid_h, grid_size) + 1
 
-    mask_lists <- array(0, c(0,4))
+    mask_lists <- array(0, c(0, 4))
 
     mask_s <- mask[seq_grid_h, seq_grid_w, drop = FALSE]
 
     for (j in (-grid_margin):(grid_size + grid_margin - 1)) {
       for (i in (-grid_margin):(grid_size + grid_margin - 1)) {
         mask_s <- mask_s | mask[
-          pmin(pmax(1,-j + seq_grid_h), gh_pix),
-          pmin(pmax(1,i + seq_grid_w), gw_pix),
+          pmin(pmax(1, -j + seq_grid_h), gh_pix),
+          pmin(pmax(1, i + seq_grid_w), gw_pix),
           drop = FALSE
         ]
       }
     }
     cur_mask <- mask_s
 
-    step <- 2^c(0:max(0, floor(log2(max_grid_size/grid_size))))
+    step <- 2^c(0:max(0, floor(log2(max_grid_size / grid_size))))
 
     for (st in step) {
       if (st != max(step)) {
-        next_mask <- cur_mask[seq(1,nrow(cur_mask),2),seq(1,ncol(cur_mask),2), drop = FALSE]
+        next_mask <- cur_mask[seq(1, nrow(cur_mask), 2), seq(1, ncol(cur_mask), 2), drop = FALSE]
         for (j in 0:1) {
           for (i in 0:1) {
             next_mask <- next_mask &
-              cur_mask[pmin(pmax(1,i+seq(1,nrow(cur_mask),2)),nrow(cur_mask)),
-                     pmin(pmax(1,j+seq(1,ncol(cur_mask),2)),ncol(cur_mask)), drop = FALSE]
+              cur_mask[pmin(pmax(1, i + seq(1, nrow(cur_mask), 2)), nrow(cur_mask)),
+                pmin(pmax(1, j + seq(1, ncol(cur_mask), 2)), ncol(cur_mask)),
+                drop = FALSE
+              ]
           }
         }
 
         mask_ind <- which(next_mask, arr.ind = TRUE)
-        if (length(mask_ind)>0) {
+        if (length(mask_ind) > 0) {
           for (ind in 1:nrow(mask_ind)) {
-            cur_mask[pmin(pmax(1, 2*(mask_ind[ind,1]-1)+(1:2)),nrow(cur_mask)),
-                     pmin(pmax(1, 2*(mask_ind[ind,2]-1)+(1:2)),ncol(cur_mask))]= FALSE
+            cur_mask[
+              pmin(pmax(1, 2 * (mask_ind[ind, 1] - 1) + (1:2)), nrow(cur_mask)),
+              pmin(pmax(1, 2 * (mask_ind[ind, 2] - 1) + (1:2)), ncol(cur_mask))
+            ] <- FALSE
           }
         }
       }
 
       mask_ind <- which(cur_mask, arr.ind = TRUE)
-      if (length(mask_ind)>0) {
+      if (length(mask_ind) > 0) {
         mask_list <- array(0, dim = c(nrow(mask_ind), 4))
         mask_list[, 2] <- (st * (mask_ind[, 1] - 1) * grid_size - gh_pix / 2) * gh_ratio
         mask_list[, 1] <- (st * (mask_ind[, 2] - 1) * grid_size - gw_pix / 2) * gw_ratio
-        mask_list[, 3] <- pmin(mask_list[, 1] + st * grid_size * gw_ratio, (gw_pix+1)/2 * gw_ratio)
-        mask_list[, 4] <- pmin(mask_list[, 2] + st * grid_size * gh_ratio, (gh_pix+1)/2 * gh_ratio)
+        mask_list[, 3] <- pmin(mask_list[, 1] + st * grid_size * gw_ratio, (gw_pix + 1) / 2 * gw_ratio)
+        mask_list[, 4] <- pmin(mask_list[, 2] + st * grid_size * gh_ratio, (gh_pix + 1) / 2 * gh_ratio)
         mask_lists <- rbind(mask_lists, mask_list)
       }
 
@@ -429,7 +435,7 @@ makeContent.textwordcloudtree <- function(x) {
   grobs <- lapply(seq_along(valid_strings), function(i) {
     xi <- valid_strings[i]
     row <- x$data[xi, , drop = FALSE]
-    #browser()
+    # browser()
     textGrob(
       x$lab[xi],
       # Position of text bounding boxes.
