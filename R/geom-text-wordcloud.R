@@ -47,6 +47,10 @@
 #'   which means that \code{set.seed} will not be called.
 #' @param rm_outside Remove the texts that could not be fitted. Default to
 #'   \code{FALSE}
+#' @param area_correction Set the font size so that the area is
+#'   proportional to size when the default scale_size is used. As this is not
+#'   the classical choice, the default is \code{FALSE} so that, by default, the
+#'   length of the text is not taken into account.
 #'
 #' @return a ggplot
 #'
@@ -80,6 +84,7 @@ geom_text_wordcloud <- function(mapping = NULL, data = NULL,
                                 ylim = c(NA, NA),
                                 seed = NA,
                                 rm_outside = FALSE,
+                                area_correction = FALSE,
                                 na.rm = FALSE,
                                 show.legend = FALSE,
                                 inherit.aes = TRUE) {
@@ -113,6 +118,7 @@ geom_text_wordcloud <- function(mapping = NULL, data = NULL,
       ylim = ylim,
       seed = seed,
       rm_outside = rm_outside,
+      area_correction = area_correction,
       ...
     )
   )
@@ -141,7 +147,8 @@ GeomTextWordcloud <- ggproto("GeomTextWordcloud", Geom,
                         xlim = c(NA, NA),
                         ylim = c(NA, NA),
                         seed = NA,
-                        rm_outside = FALSE) {
+                        rm_outside = FALSE,
+                        area_correction = FALSE) {
     lab <- data$label
     if (parse) {
       lab <- parse_safe(as.character(lab))
@@ -177,6 +184,7 @@ GeomTextWordcloud <- ggproto("GeomTextWordcloud", Geom,
       grid_margin = grid_margin,
       seed = seed,
       rm_outside = rm_outside,
+      area_correction = area_correction,
       cl = "textwordcloudtree",
       name = "geom_text_wordcloud"
     )
@@ -202,6 +210,69 @@ makeContent.textwordcloudtree <- function(x) {
   max_grid_size <- max(floor(x$max_grid_size), grid_size)
   grid_margin <- max(floor(x$grid_margin), 0)
 
+
+  if (x$area_correction) {
+    corsurf <- lapply(valid_strings, function(i) {
+      row <- x$data[i, , drop = FALSE]
+      hj <- x$data$hjust[i]
+      vj <- x$data$vjust[i]
+
+      tg_inch <- textGrob(
+        x$lab[i],
+        0, 0,
+        default.units = "inch",
+        rot = row$angle,
+        just = c(hj, vj),
+        gp = gpar(
+          fontsize = row$size * .pt,
+          fontfamily = row$family,
+          fontface = row$fontface,
+          lineheight = row$lineheight
+        )
+      )
+
+      gw_inch <- convertWidth(grobWidth(tg_inch), "inch", TRUE) * 1.2
+      gh_inch <- convertHeight(grobHeight(tg_inch), "inch", TRUE) * 1.2 + 2 * convertHeight(grobDescent(tg_inch), "inch", TRUE)
+
+      gw_pix <- max(1,ceiling(gw_inch*dev_dpi/grid_size))*grid_size
+      gh_pix <- max(1,ceiling(gh_inch*dev_dpi/grid_size))*grid_size
+
+      tg_inch <- textGrob(
+        x$lab[i],
+        gw_inch/2, gh_inch/2,
+        default.units = "inch",
+        rot = row$angle,
+        just = c(hj, vj),
+        gp = gpar(
+          fontsize = row$size * .pt,
+          fontfamily = row$family,
+          fontface = row$fontface,
+          lineheight = row$lineheight
+        )
+      )
+
+      # Compute the text mask
+      prev_dev_id <- dev.cur()
+      dev_id <- Cairo(width = gw_pix, height = gh_pix, dpi = dev_dpi, units = "px", type = "raster")
+      pushViewport(grid::viewport(width = 1, height = 1))
+      grid.draw(tg_inch)
+      popViewport()
+      img <- grid.cap()
+      dev.off()
+      dev.set(prev_dev_id)
+      mask <- img != "transparent"
+      area <- sum(mask)
+      if (area > 0) {
+        row$size  / sqrt(area)
+      } else { NA_real_}
+    })
+    corsurf <- unlist(corsurf)
+    corsurf <- corsurf/max(corsurf, na.rm = TRUE)
+    corsurf[is.na(corsurf)] <- 1
+  } else {
+    corsurf <- array(1, dim = length(valid_strings))
+  }
+
   boxes <- lapply(valid_strings, function(i) {
     row <- x$data[i, , drop = FALSE]
     hj <- x$data$hjust[i]
@@ -214,10 +285,10 @@ makeContent.textwordcloudtree <- function(x) {
       rot = row$angle,
       just = c(hj, vj),
       gp = gpar(
-        fontsize = row$size * .pt,
+        fontsize = row$size * .pt * corsurf[i],
         fontfamily = row$family,
         fontface = row$fontface,
-        lineheight = row$lineheight
+        lineheight = row$lineheight * corsurf[i]
       )
     )
 
@@ -234,10 +305,10 @@ makeContent.textwordcloudtree <- function(x) {
       rot = row$angle,
       just = c(hj, vj),
       gp = gpar(
-        fontsize = row$size * .pt,
+        fontsize = row$size * .pt * corsurf[i],
         fontfamily = row$family,
         fontface = row$fontface,
-        lineheight = row$lineheight
+        lineheight = row$lineheight * corsurf[i]
       )
     )
 
@@ -349,7 +420,7 @@ makeContent.textwordcloudtree <- function(x) {
   grobs <- lapply(seq_along(valid_strings), function(i) {
     xi <- valid_strings[i]
     row <- x$data[xi, , drop = FALSE]
-    # browser()
+    #browser()
     textGrob(
       x$lab[xi],
       # Position of text bounding boxes.
@@ -358,10 +429,10 @@ makeContent.textwordcloudtree <- function(x) {
       rot = row$angle,
       gp = gpar(
         col = alpha(row$colour, row$alpha),
-        fontsize = row$size * .pt,
+        fontsize = row$size * .pt * corsurf[i],
         fontfamily = row$family,
         fontface = row$fontface,
-        lineheight = row$lineheight
+        lineheight = row$lineheight * corsurf[i]
       ),
       hjust = x$data$hjust[i],
       vjust = x$data$vjust[i]

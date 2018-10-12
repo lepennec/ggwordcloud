@@ -7,9 +7,11 @@
 geom_text_wordcloud(mapping = NULL, data = NULL, stat = "identity",
   position = "identity", ..., parse = FALSE, nudge_x = 0,
   nudge_y = 0, eccentricity = 0.65, rstep = 0.01, tstep = 0.02,
-  grid_size = 4, max_grid_size = 128, grid_margin = 1, xlim = c(NA,
-  NA), ylim = c(NA, NA), seed = NA, rm_outside = FALSE,
-  na.rm = FALSE, show.legend = FALSE, inherit.aes = TRUE)
+  percstep = 0.1, maxsteps = 10, grid_size = 4,
+  max_grid_size = 128, grid_margin = 1, xlim = c(NA, NA),
+  ylim = c(NA, NA), seed = NA, rm_outside = FALSE,
+  area_correction = FALSE, na.rm = FALSE, show.legend = FALSE,
+  inherit.aes = TRUE)
 }
 \arguments{
 \item{mapping}{Set of aesthetic mappings created by
@@ -65,6 +67,11 @@ which means that \code{set.seed} will not be called.}
 
 \item{rm_outside}{Remove the texts that could not be fitted. Default to
 \code{FALSE}}
+
+\item{area_correction}{Set the font size so that the area is
+proportional to size when the default scale_size is used. As this is not
+the classical choice, the default is \code{FALSE} so that, by default, the
+length of the text is not taken into account.}
 
 \item{na.rm}{Remove missing values if TRUE}
 
