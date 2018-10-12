@@ -56,16 +56,10 @@ DataFrame wordcloud_boxes(
     IntegerVector boxes_text,
     IntegerMatrix text_boxes,
     NumericVector xlim, NumericVector ylim,
-    double eccentricity = 0.65,
-    double rstep = 0.1, double tstep = 0.05,
-    bool rm_outside = false) {
-
-  if (NumericVector::is_na(rstep)) {
-    rstep = 0.1;
-  }
-  if (NumericVector::is_na(tstep)) {
-    tstep = 0.05;
-  }
+    const double eccentricity = 0.65,
+    const double rstep = 0.1, const double tstep = 0.05,
+    const double percstep = 0.1, const int maxsteps = 10,
+    const bool rm_outside = false) {
 
   int n_texts = text_boxes.nrow();
   int n_boxes = boxes.nrow();
@@ -99,9 +93,10 @@ DataFrame wordcloud_boxes(
 
   Point d;
   double r;
-  double rscale = ((xlim[1]-xlim[0])*(xlim[1]-xlim[0])+
+  const double rscale = ((xlim[1]-xlim[0])*(xlim[1]-xlim[0])+
                        (ylim[1]-ylim[0])*(ylim[1]-ylim[0])/(eccentricity * eccentricity));
   double theta;
+  const double rstepratio = rscale * rstep * percstep / tstep * 2 * M_PI;
 
   for (int i = 0; i < n_texts; i++) {
     Rcpp::checkUserInterrupt();
@@ -123,7 +118,7 @@ DataFrame wordcloud_boxes(
 
       CurPos = PosOri + d;
       bool all_inside = true;
-      for (int ii = text_boxes(i,0); ii < text_boxes(i,1); ii++) {
+      for (int ii = text_boxes(i,0); all_inside&&(ii < text_boxes(i,1)); ii++) {
         TextBoxes[ii].x1 = CurPos.x + boxes(ii, 0);
         TextBoxes[ii].x2 = CurPos.x + boxes(ii, 2);
         TextBoxes[ii].y1 = CurPos.y + boxes(ii, 1);
@@ -153,7 +148,6 @@ DataFrame wordcloud_boxes(
         }
         CurPos = CurPos + corr;
 
-
         for (int ii = text_boxes(i,0); (!i_overlaps) && (ii < text_boxes(i,1)); ii++){
           for (int jj = 0 ; (!i_overlaps) && (jj < text_boxes(i,0)); jj++)
             if (overlaps(TextBoxes[ii], TextBoxes[jj])) {
@@ -165,8 +159,10 @@ DataFrame wordcloud_boxes(
       }
 
       if (i_overlaps) {
-        theta += tstep * (2 * M_PI);
-        r     += rscale * rstep * tstep;
+        int nstep = std::floor(rstepratio / r);
+        nstep = std::max(1,std::min(nstep, maxsteps));
+        theta += tstep * (2 * M_PI) * nstep;
+        r     += rscale * rstep * tstep * nstep;
         d.x    = r * cos(theta);
         d.y    = r * sin(theta)*eccentricity;
       } else {
