@@ -40,7 +40,7 @@
 #'   rotation. Default to .01.
 #' @param tstep wordclould spiral angle increment at each step. Default to .02.
 #' @param perc_step parameter used to define the minimal distance between two
-#'   successive candidate positions on the ellipse. Default to .1
+#'   successive candidate positions on the ellipse. Default to .01
 #' @param max_steps maximum number of steps avoided thanks to this minimal
 #'   criterion. Default to 10. Set to 1 to recover the previous behavior
 #' @param grid_size grid size used when creating the text bounding boxes.
@@ -80,7 +80,7 @@ geom_text_wordcloud <- function(mapping = NULL, data = NULL,
                                 eccentricity = 0.65,
                                 rstep = .01,
                                 tstep = .02,
-                                perc_step = .1,
+                                perc_step = .01,
                                 max_steps = 10,
                                 grid_size = 4,
                                 max_grid_size = 128,
@@ -146,7 +146,7 @@ GeomTextWordcloud <- ggproto("GeomTextWordcloud", Geom,
                           eccentricity = 0.65,
                           rstep = .01,
                           tstep = .02,
-                          perc_step = .1,
+                          perc_step = .01,
                           max_steps = 10,
                           grid_size = 4,
                           max_grid_size = 128,

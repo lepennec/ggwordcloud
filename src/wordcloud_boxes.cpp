@@ -58,7 +58,7 @@ DataFrame wordcloud_boxes(
     NumericVector xlim, NumericVector ylim,
     const double eccentricity = 0.65,
     const double rstep = 0.1, const double tstep = 0.05,
-    const double perc_step = 0.1, const int max_steps = 10,
+    const double perc_step = 0.01, const int max_steps = 10,
     const bool rm_outside = false) {
 
   int n_texts = text_boxes.nrow();
