@@ -6,8 +6,8 @@
 using namespace Rcpp;
 
 // wordcloud_boxes
-DataFrame wordcloud_boxes(NumericMatrix data_points, NumericMatrix boxes, IntegerVector boxes_text, IntegerMatrix text_boxes, NumericVector xlim, NumericVector ylim, const double eccentricity, const double rstep, const double tstep, const double percstep, const int maxsteps, const bool rm_outside);
-RcppExport SEXP _ggwordcloud_wordcloud_boxes(SEXP data_pointsSEXP, SEXP boxesSEXP, SEXP boxes_textSEXP, SEXP text_boxesSEXP, SEXP xlimSEXP, SEXP ylimSEXP, SEXP eccentricitySEXP, SEXP rstepSEXP, SEXP tstepSEXP, SEXP percstepSEXP, SEXP maxstepsSEXP, SEXP rm_outsideSEXP) {
+DataFrame wordcloud_boxes(NumericMatrix data_points, NumericMatrix boxes, IntegerVector boxes_text, IntegerMatrix text_boxes, NumericVector xlim, NumericVector ylim, const double eccentricity, const double rstep, const double tstep, const double perc_step, const int max_steps, const bool rm_outside);
+RcppExport SEXP _ggwordcloud_wordcloud_boxes(SEXP data_pointsSEXP, SEXP boxesSEXP, SEXP boxes_textSEXP, SEXP text_boxesSEXP, SEXP xlimSEXP, SEXP ylimSEXP, SEXP eccentricitySEXP, SEXP rstepSEXP, SEXP tstepSEXP, SEXP perc_stepSEXP, SEXP max_stepsSEXP, SEXP rm_outsideSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -20,10 +20,10 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const double >::type eccentricity(eccentricitySEXP);
     Rcpp::traits::input_parameter< const double >::type rstep(rstepSEXP);
     Rcpp::traits::input_parameter< const double >::type tstep(tstepSEXP);
-    Rcpp::traits::input_parameter< const double >::type percstep(percstepSEXP);
-    Rcpp::traits::input_parameter< const int >::type maxsteps(maxstepsSEXP);
+    Rcpp::traits::input_parameter< const double >::type perc_step(perc_stepSEXP);
+    Rcpp::traits::input_parameter< const int >::type max_steps(max_stepsSEXP);
     Rcpp::traits::input_parameter< const bool >::type rm_outside(rm_outsideSEXP);
-    rcpp_result_gen = Rcpp::wrap(wordcloud_boxes(data_points, boxes, boxes_text, text_boxes, xlim, ylim, eccentricity, rstep, tstep, percstep, maxsteps, rm_outside));
+    rcpp_result_gen = Rcpp::wrap(wordcloud_boxes(data_points, boxes, boxes_text, text_boxes, xlim, ylim, eccentricity, rstep, tstep, perc_step, max_steps, rm_outside));
     return rcpp_result_gen;
 END_RCPP
 }

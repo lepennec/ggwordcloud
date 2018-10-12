@@ -58,7 +58,7 @@ DataFrame wordcloud_boxes(
     NumericVector xlim, NumericVector ylim,
     const double eccentricity = 0.65,
     const double rstep = 0.1, const double tstep = 0.05,
-    const double percstep = 0.1, const int maxsteps = 10,
+    const double perc_step = 0.1, const int max_steps = 10,
     const bool rm_outside = false) {
 
   int n_texts = text_boxes.nrow();
@@ -96,7 +96,7 @@ DataFrame wordcloud_boxes(
   const double rscale = ((xlim[1]-xlim[0])*(xlim[1]-xlim[0])+
                        (ylim[1]-ylim[0])*(ylim[1]-ylim[0])/(eccentricity * eccentricity));
   double theta;
-  const double rstepratio = rscale * rstep * percstep / tstep * 2 * M_PI;
+  const double rstepratio = rscale * rstep * perc_step / tstep * 2 * M_PI;
 
   for (int i = 0; i < n_texts; i++) {
     Rcpp::checkUserInterrupt();
@@ -165,7 +165,7 @@ DataFrame wordcloud_boxes(
         } else {
           nstep = 1;
         }
-        nstep = std::max(1,std::min(nstep, maxsteps));
+        nstep = std::max(1,std::min(nstep, max_steps));
         theta += tstep * (2 * M_PI) * nstep;
         r     += rscale * rstep * tstep * nstep;
         d.x    = r * cos(theta);

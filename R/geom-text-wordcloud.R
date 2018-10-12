@@ -39,6 +39,10 @@
 #' @param rstep relative wordclould spiral radius increment after one full
 #'   rotation. Default to .01.
 #' @param tstep wordclould spiral angle increment at each step. Default to .02.
+#' @param perc_step parameter used to define the minimal distance between two
+#'   successive candidate positions on the ellipse. Default to .1
+#' @param max_steps maximum number of steps avoided thanks to this minimal
+#'   criterion. Default to 10. Set to 1 to recover the previous behavior
 #' @param grid_size grid size used when creating the text bounding boxes.
 #'   Default to 4
 #' @param max_grid_size maximum size of the bounding boxes. Default to 128
@@ -76,8 +80,8 @@ geom_text_wordcloud <- function(mapping = NULL, data = NULL,
                                 eccentricity = 0.65,
                                 rstep = .01,
                                 tstep = .02,
-                                percstep = .1,
-                                maxsteps = 10,
+                                perc_step = .1,
+                                max_steps = 10,
                                 grid_size = 4,
                                 max_grid_size = 128,
                                 grid_margin = 1,
@@ -111,8 +115,8 @@ geom_text_wordcloud <- function(mapping = NULL, data = NULL,
       eccentricity = eccentricity,
       rstep = rstep,
       tstep = tstep,
-      percstep = percstep,
-      maxsteps = maxsteps,
+      perc_step = perc_step,
+      max_steps = max_steps,
       grid_size = grid_size,
       max_grid_size = max_grid_size,
       grid_margin = grid_margin,
@@ -142,8 +146,8 @@ GeomTextWordcloud <- ggproto("GeomTextWordcloud", Geom,
                         eccentricity = 0.65,
                         rstep = .01,
                         tstep = .02,
-                        percstep = .1,
-                        maxsteps = 10,
+                        perc_step = .1,
+                        max_steps = 10,
                         grid_size = 4,
                         max_grid_size = 128,
                         grid_margin = 1,
@@ -181,8 +185,8 @@ GeomTextWordcloud <- ggproto("GeomTextWordcloud", Geom,
       eccentricity = eccentricity,
       rstep = rstep,
       tstep = tstep,
-      percstep = percstep,
-      maxsteps = maxsteps,
+      perc_step = perc_step,
+      max_steps = max_steps,
       grid_size = grid_size,
       max_grid_size = max_grid_size,
       grid_margin = grid_margin,
@@ -417,8 +421,8 @@ makeContent.textwordcloudtree <- function(x) {
     eccentricity = x$eccentricity,
     rstep = x$rstep,
     tstep = x$tstep,
-    percstep = x$percstep,
-    maxsteps = x$maxsteps,
+    perc_step = x$perc_step,
+    max_steps = x$max_steps,
     rm_outside = x$rm_outside
   )
 
