@@ -47,10 +47,11 @@
 #'   which means that \code{set.seed} will not be called.
 #' @param rm_outside Remove the texts that could not be fitted. Default to
 #'   \code{FALSE}
-#' @param area_correction Set the font size so that the area is
-#'   proportional to size when the default scale_size is used. As this is not
-#'   the classical choice, the default is \code{FALSE} so that, by default, the
-#'   length of the text is not taken into account.
+#' @param area_corr Set the font size so that the area is proportional to size
+#'   aesthetic raised to a certain power when the scale_size_area is used. As
+#'   this is not the classical choice, the default is \code{FALSE} so that, by
+#'   default, the length of the text is not taken into account.
+#' @param area_corr_power the power used in the area correction. Default to 1.
 #'
 #' @return a ggplot
 #'
@@ -84,7 +85,8 @@ geom_text_wordcloud <- function(mapping = NULL, data = NULL,
                                 ylim = c(NA, NA),
                                 seed = NA,
                                 rm_outside = FALSE,
-                                area_correction = FALSE,
+                                area_corr = FALSE,
+                                area_corr_power = 1,
                                 na.rm = FALSE,
                                 show.legend = FALSE,
                                 inherit.aes = TRUE) {
@@ -118,7 +120,8 @@ geom_text_wordcloud <- function(mapping = NULL, data = NULL,
       ylim = ylim,
       seed = seed,
       rm_outside = rm_outside,
-      area_correction = area_correction,
+      area_corr = area_corr,
+      area_corr_power = area_corr_power,
       ...
     )
   )
@@ -148,7 +151,8 @@ GeomTextWordcloud <- ggproto("GeomTextWordcloud", Geom,
                         ylim = c(NA, NA),
                         seed = NA,
                         rm_outside = FALSE,
-                        area_correction = FALSE) {
+                        area_corr = FALSE,
+                        area_corr_power = 1) {
     lab <- data$label
     if (parse) {
       lab <- parse_safe(as.character(lab))
@@ -184,7 +188,8 @@ GeomTextWordcloud <- ggproto("GeomTextWordcloud", Geom,
       grid_margin = grid_margin,
       seed = seed,
       rm_outside = rm_outside,
-      area_correction = area_correction,
+      area_corr = area_corr,
+      area_corr_power = area_corr_power,
       cl = "textwordcloudtree",
       name = "geom_text_wordcloud"
     )
@@ -211,7 +216,7 @@ makeContent.textwordcloudtree <- function(x) {
   grid_margin <- max(floor(x$grid_margin), 0)
 
 
-  if (x$area_correction) {
+  if (x$area_corr) {
     corsurf <- lapply(valid_strings, function(i) {
       row <- x$data[i, , drop = FALSE]
       hj <- x$data$hjust[i]
@@ -263,7 +268,7 @@ makeContent.textwordcloudtree <- function(x) {
       mask <- img != "transparent"
       area <- sum(mask)
       if (area > 0) {
-        row$size  / sqrt(area)
+        row$size^(x$area_corr_power) / sqrt(area)
       } else { NA_real_}
     })
     corsurf <- unlist(corsurf)
