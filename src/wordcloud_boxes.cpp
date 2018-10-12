@@ -159,7 +159,12 @@ DataFrame wordcloud_boxes(
       }
 
       if (i_overlaps) {
-        int nstep = std::floor(rstepratio / r);
+        int nstep;
+        if (r > 0) {
+          nstep = std::floor(rstepratio / r);
+        } else {
+          nstep = 1;
+        }
         nstep = std::max(1,std::min(nstep, maxsteps));
         theta += tstep * (2 * M_PI) * nstep;
         r     += rscale * rstep * tstep * nstep;
