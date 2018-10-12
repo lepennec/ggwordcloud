@@ -221,62 +221,7 @@ makeContent.textwordcloudtree <- function(x) {
 
 
   if (x$area_corr) {
-    corsurf <- lapply(valid_strings, function(i) {
-      row <- x$data[i, , drop = FALSE]
-      hj <- x$data$hjust[i]
-      vj <- x$data$vjust[i]
-
-      tg_inch <- textGrob(
-        x$lab[i],
-        0, 0,
-        default.units = "inch",
-        rot = row$angle,
-        just = c(hj, vj),
-        gp = gpar(
-          fontsize = row$size * .pt,
-          fontfamily = row$family,
-          fontface = row$fontface,
-          lineheight = row$lineheight
-        )
-      )
-
-      gw_inch <- convertWidth(grobWidth(tg_inch), "inch", TRUE) * 1.2
-      gh_inch <- convertHeight(grobHeight(tg_inch), "inch", TRUE) * 1.2 + 2 * convertHeight(grobDescent(tg_inch), "inch", TRUE)
-
-      gw_pix <- max(1, ceiling(gw_inch * dev_dpi / grid_size)) * grid_size
-      gh_pix <- max(1, ceiling(gh_inch * dev_dpi / grid_size)) * grid_size
-
-      tg_inch <- textGrob(
-        x$lab[i],
-        gw_inch / 2, gh_inch / 2,
-        default.units = "inch",
-        rot = row$angle,
-        just = c(hj, vj),
-        gp = gpar(
-          fontsize = row$size * .pt,
-          fontfamily = row$family,
-          fontface = row$fontface,
-          lineheight = row$lineheight
-        )
-      )
-
-      # Compute the text mask
-      prev_dev_id <- dev.cur()
-      dev_id <- Cairo(width = gw_pix, height = gh_pix, dpi = dev_dpi, units = "px", type = "raster")
-      pushViewport(grid::viewport(width = 1, height = 1))
-      grid.draw(tg_inch)
-      popViewport()
-      img <- grid.cap()
-      dev.off()
-      dev.set(prev_dev_id)
-      mask <- img != "transparent"
-      area <- sum(mask)
-      if (area > 0) {
-        row$size^(x$area_corr_power) / sqrt(area)
-      } else {
-        NA_real_
-      }
-    })
+    corsurf <- lapply(valid_strings, compute_cor, x, dev_dpi, grid_size)
     corsurf <- unlist(corsurf)
     corsurf <- corsurf / max(corsurf, na.rm = TRUE)
     corsurf[is.na(corsurf)] <- 1
@@ -284,117 +229,7 @@ makeContent.textwordcloudtree <- function(x) {
     corsurf <- array(1, dim = length(valid_strings))
   }
 
-  boxes <- lapply(valid_strings, function(i) {
-    row <- x$data[i, , drop = FALSE]
-    hj <- x$data$hjust[i]
-    vj <- x$data$vjust[i]
-
-    tg_inch <- textGrob(
-      x$lab[i],
-      0, 0,
-      default.units = "inch",
-      rot = row$angle,
-      just = c(hj, vj),
-      gp = gpar(
-        fontsize = row$size * .pt * corsurf[i],
-        fontfamily = row$family,
-        fontface = row$fontface,
-        lineheight = row$lineheight * corsurf[i]
-      )
-    )
-
-    gw_inch <- convertWidth(grobWidth(tg_inch), "inch", TRUE) * 1.2
-    gh_inch <- convertHeight(grobHeight(tg_inch), "inch", TRUE) * 1.2 + 2 * convertHeight(grobDescent(tg_inch), "inch", TRUE)
-
-    gw_pix <- max(1, ceiling(gw_inch * dev_dpi / grid_size)) * grid_size
-    gh_pix <- max(1, ceiling(gh_inch * dev_dpi / grid_size)) * grid_size
-
-    tg_inch <- textGrob(
-      x$lab[i],
-      gw_inch / 2, gh_inch / 2,
-      default.units = "inch",
-      rot = row$angle,
-      just = c(hj, vj),
-      gp = gpar(
-        fontsize = row$size * .pt * corsurf[i],
-        fontfamily = row$family,
-        fontface = row$fontface,
-        lineheight = row$lineheight * corsurf[i]
-      )
-    )
-
-    # Compute the text mask
-    prev_dev_id <- dev.cur()
-    dev_id <- Cairo(width = gw_pix, height = gh_pix, dpi = dev_dpi, units = "px", type = "raster")
-    pushViewport(grid::viewport(width = 1, height = 1))
-    grid.draw(tg_inch)
-    popViewport()
-    img <- grid.cap()
-    dev.off()
-    dev.set(prev_dev_id)
-    mask <- img != "transparent"
-
-    max_grid_w <- ceiling(gw_pix / grid_size) * grid_size
-    max_grid_h <- ceiling(gh_pix / grid_size) * grid_size
-    seq_grid_w <- seq.int(1, max_grid_w, grid_size)
-    seq_grid_h <- max_grid_h - seq.int(1, max_grid_h, grid_size) + 1
-
-    mask_lists <- array(0, c(0, 4))
-
-    mask_s <- mask[seq_grid_h, seq_grid_w, drop = FALSE]
-
-    for (j in (-grid_margin):(grid_size + grid_margin - 1)) {
-      for (i in (-grid_margin):(grid_size + grid_margin - 1)) {
-        mask_s <- mask_s | mask[
-          pmin(pmax(1, -j + seq_grid_h), gh_pix),
-          pmin(pmax(1, i + seq_grid_w), gw_pix),
-          drop = FALSE
-        ]
-      }
-    }
-    cur_mask <- mask_s
-
-    step <- 2^c(0:max(0, floor(log2(max_grid_size / grid_size))))
-
-    for (st in step) {
-      if (st != max(step)) {
-        next_mask <- cur_mask[seq(1, nrow(cur_mask), 2), seq(1, ncol(cur_mask), 2), drop = FALSE]
-        for (j in 0:1) {
-          for (i in 0:1) {
-            next_mask <- next_mask &
-              cur_mask[pmin(pmax(1, i + seq(1, nrow(cur_mask), 2)), nrow(cur_mask)),
-                pmin(pmax(1, j + seq(1, ncol(cur_mask), 2)), ncol(cur_mask)),
-                drop = FALSE
-              ]
-          }
-        }
-
-        mask_ind <- which(next_mask, arr.ind = TRUE)
-        if (length(mask_ind) > 0) {
-          for (ind in 1:nrow(mask_ind)) {
-            cur_mask[
-              pmin(pmax(1, 2 * (mask_ind[ind, 1] - 1) + (1:2)), nrow(cur_mask)),
-              pmin(pmax(1, 2 * (mask_ind[ind, 2] - 1) + (1:2)), ncol(cur_mask))
-            ] <- FALSE
-          }
-        }
-      }
-
-      mask_ind <- which(cur_mask, arr.ind = TRUE)
-      if (length(mask_ind) > 0) {
-        mask_list <- array(0, dim = c(nrow(mask_ind), 4))
-        mask_list[, 2] <- (st * (mask_ind[, 1] - 1) * grid_size - gh_pix / 2) * gh_ratio
-        mask_list[, 1] <- (st * (mask_ind[, 2] - 1) * grid_size - gw_pix / 2) * gw_ratio
-        mask_list[, 3] <- pmin(mask_list[, 1] + st * grid_size * gw_ratio, (gw_pix + 1) / 2 * gw_ratio)
-        mask_list[, 4] <- pmin(mask_list[, 2] + st * grid_size * gh_ratio, (gh_pix + 1) / 2 * gh_ratio)
-        mask_lists <- rbind(mask_lists, mask_list)
-      }
-
-      cur_mask <- next_mask
-    }
-
-    mask_lists
-  })
+  boxes <- lapply(valid_strings, compute_boxes, x, dev_dpi, grid_size, max_grid_size, grid_margin, gw_ratio, gh_ratio, corsurf)
   boxes_nb <- sapply(boxes, nrow)
   boxes_start <- cumsum(boxes_nb)
   text_boxes <- cbind(c(0, boxes_start[-length(boxes_start)]), boxes_start)
@@ -432,27 +267,7 @@ makeContent.textwordcloudtree <- function(x) {
     rm_outside = x$rm_outside
   )
 
-  grobs <- lapply(seq_along(valid_strings), function(i) {
-    xi <- valid_strings[i]
-    row <- x$data[xi, , drop = FALSE]
-    # browser()
-    textGrob(
-      x$lab[xi],
-      # Position of text bounding boxes.
-      x = unit(wordcloud$x[i], "native"),
-      y = unit(wordcloud$y[i], "native"),
-      rot = row$angle,
-      gp = gpar(
-        col = alpha(row$colour, row$alpha),
-        fontsize = row$size * .pt * corsurf[i],
-        fontfamily = row$family,
-        fontface = row$fontface,
-        lineheight = row$lineheight * corsurf[i]
-      ),
-      hjust = x$data$hjust[i],
-      vjust = x$data$vjust[i]
-    )
-  })
+  grobs <- lapply(seq_along(valid_strings), make_textgrob, x, valid_strings, wordcloud, corsurf)
   class(grobs) <- "gList"
 
   setChildren(x, grobs)
@@ -477,4 +292,192 @@ just_dir <- function(x, tol = 0.001) {
   out[x < 0.5 - tol] <- 1L
   out[x > 0.5 + tol] <- 3L
   out
+}
+
+compute_mask <- function(tg_inch, gw_pix, gh_pix, dev_dpi) {
+  prev_dev_id <- dev.cur()
+  dev_id <- Cairo(width = gw_pix, height = gh_pix, dpi = dev_dpi, units = "px", type = "raster")
+  pushViewport(grid::viewport(width = 1, height = 1))
+  grid.draw(tg_inch)
+  popViewport()
+  img <- grid.cap()
+  dev.off()
+  dev.set(prev_dev_id)
+  img != "transparent"
+}
+
+compute_cor <- function(i, x, dev_dpi, grid_size) {
+  row <- x$data[i, , drop = FALSE]
+  hj <- x$data$hjust[i]
+  vj <- x$data$vjust[i]
+
+  tg_inch <- textGrob(
+    x$lab[i],
+    0, 0,
+    default.units = "inch",
+    rot = row$angle,
+    just = c(hj, vj),
+    gp = gpar(
+      fontsize = row$size * .pt,
+      fontfamily = row$family,
+      fontface = row$fontface,
+      lineheight = row$lineheight
+    )
+  )
+
+  gw_inch <- convertWidth(grobWidth(tg_inch), "inch", TRUE) * 1.2
+  gh_inch <- convertHeight(grobHeight(tg_inch), "inch", TRUE) * 1.2 + 2 * convertHeight(grobDescent(tg_inch), "inch", TRUE)
+
+  gw_pix <- max(1, ceiling(gw_inch * dev_dpi / grid_size)) * grid_size
+  gh_pix <- max(1, ceiling(gh_inch * dev_dpi / grid_size)) * grid_size
+
+  tg_inch <- textGrob(
+    x$lab[i],
+    gw_inch / 2, gh_inch / 2,
+    default.units = "inch",
+    rot = row$angle,
+    just = c(hj, vj),
+    gp = gpar(
+      fontsize = row$size * .pt,
+      fontfamily = row$family,
+      fontface = row$fontface,
+      lineheight = row$lineheight
+    )
+  )
+
+  # Compute the text mask
+  mask <- compute_mask(tg_inch, gw_pix, gh_pix, dev_dpi)
+  area <- sum(mask)
+  if (area > 0) {
+    row$size^(x$area_corr_power) / sqrt(area)
+  } else {
+    NA_real_
+  }
+}
+
+compute_boxes <- function(i, x, dev_dpi, grid_size, max_grid_size, grid_margin,
+                          gw_ratio, gh_ratio, corsurf) {
+  row <- x$data[i, , drop = FALSE]
+  hj <- x$data$hjust[i]
+  vj <- x$data$vjust[i]
+
+  tg_inch <- textGrob(
+    x$lab[i],
+    0, 0,
+    default.units = "inch",
+    rot = row$angle,
+    just = c(hj, vj),
+    gp = gpar(
+      fontsize = row$size * .pt * corsurf[i],
+      fontfamily = row$family,
+      fontface = row$fontface,
+      lineheight = row$lineheight * corsurf[i]
+    )
+  )
+
+  gw_inch <- convertWidth(grobWidth(tg_inch), "inch", TRUE) * 1.2
+  gh_inch <- convertHeight(grobHeight(tg_inch), "inch", TRUE) * 1.2 + 2 * convertHeight(grobDescent(tg_inch), "inch", TRUE)
+
+  gw_pix <- max(1, ceiling(gw_inch * dev_dpi / grid_size)) * grid_size
+  gh_pix <- max(1, ceiling(gh_inch * dev_dpi / grid_size)) * grid_size
+
+  tg_inch <- textGrob(
+    x$lab[i],
+    gw_inch / 2, gh_inch / 2,
+    default.units = "inch",
+    rot = row$angle,
+    just = c(hj, vj),
+    gp = gpar(
+      fontsize = row$size * .pt * corsurf[i],
+      fontfamily = row$family,
+      fontface = row$fontface,
+      lineheight = row$lineheight * corsurf[i]
+    )
+  )
+
+  # Compute the text mask
+  mask <- compute_mask(tg_inch, gw_pix, gh_pix, dev_dpi)
+
+  max_grid_w <- ceiling(gw_pix / grid_size) * grid_size
+  max_grid_h <- ceiling(gh_pix / grid_size) * grid_size
+  seq_grid_w <- seq.int(1, max_grid_w, grid_size)
+  seq_grid_h <- max_grid_h - seq.int(1, max_grid_h, grid_size) + 1
+
+  mask_lists <- array(0, c(0, 4))
+
+  mask_s <- mask[seq_grid_h, seq_grid_w, drop = FALSE]
+
+  for (j in (-grid_margin):(grid_size + grid_margin - 1)) {
+    for (i in (-grid_margin):(grid_size + grid_margin - 1)) {
+      mask_s <- mask_s | mask[
+        pmin(pmax(1, -j + seq_grid_h), gh_pix),
+        pmin(pmax(1, i + seq_grid_w), gw_pix),
+        drop = FALSE
+        ]
+    }
+  }
+  cur_mask <- mask_s
+
+  step <- 2^c(0:max(0, floor(log2(max_grid_size / grid_size))))
+
+  for (st in step) {
+    if (st != max(step)) {
+      next_mask <- cur_mask[seq(1, nrow(cur_mask), 2), seq(1, ncol(cur_mask), 2), drop = FALSE]
+      for (j in 0:1) {
+        for (i in 0:1) {
+          next_mask <- next_mask &
+            cur_mask[pmin(pmax(1, i + seq(1, nrow(cur_mask), 2)), nrow(cur_mask)),
+                     pmin(pmax(1, j + seq(1, ncol(cur_mask), 2)), ncol(cur_mask)),
+                     drop = FALSE
+                     ]
+        }
+      }
+
+      mask_ind <- which(next_mask, arr.ind = TRUE)
+      if (length(mask_ind) > 0) {
+        for (ind in 1:nrow(mask_ind)) {
+          cur_mask[
+            pmin(pmax(1, 2 * (mask_ind[ind, 1] - 1) + (1:2)), nrow(cur_mask)),
+            pmin(pmax(1, 2 * (mask_ind[ind, 2] - 1) + (1:2)), ncol(cur_mask))
+            ] <- FALSE
+        }
+      }
+    }
+
+    mask_ind <- which(cur_mask, arr.ind = TRUE)
+    if (length(mask_ind) > 0) {
+      mask_list <- array(0, dim = c(nrow(mask_ind), 4))
+      mask_list[, 2] <- (st * (mask_ind[, 1] - 1) * grid_size - gh_pix / 2) * gh_ratio
+      mask_list[, 1] <- (st * (mask_ind[, 2] - 1) * grid_size - gw_pix / 2) * gw_ratio
+      mask_list[, 3] <- pmin(mask_list[, 1] + st * grid_size * gw_ratio, (gw_pix + 1) / 2 * gw_ratio)
+      mask_list[, 4] <- pmin(mask_list[, 2] + st * grid_size * gh_ratio, (gh_pix + 1) / 2 * gh_ratio)
+      mask_lists <- rbind(mask_lists, mask_list)
+    }
+
+    cur_mask <- next_mask
+  }
+
+  mask_lists
+}
+
+make_textgrob <- function(i, x, valid_strings, wordcloud, corsurf) {
+  xi <- valid_strings[i]
+  row <- x$data[xi, , drop = FALSE]
+  # browser()
+  textGrob(
+    x$lab[xi],
+    # Position of text bounding boxes.
+    x = unit(wordcloud$x[i], "native"),
+    y = unit(wordcloud$y[i], "native"),
+    rot = row$angle,
+    gp = gpar(
+      col = alpha(row$colour, row$alpha),
+      fontsize = row$size * .pt * corsurf[i],
+      fontfamily = row$family,
+      fontface = row$fontface,
+      lineheight = row$lineheight * corsurf[i]
+    ),
+    hjust = x$data$hjust[i],
+    vjust = x$data$vjust[i]
+  )
 }
