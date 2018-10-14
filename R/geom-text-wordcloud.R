@@ -55,7 +55,7 @@
 #'   aesthetic raised to a certain power when the scale_size_area is used. As
 #'   this is not the classical choice, the default is \code{FALSE} so that, by
 #'   default, the length of the text is not taken into account.
-#' @param area_corr_power the power used in the area correction. Default to 1.
+#' @param area_corr_power the power used in the area correction. Default to 1/.7 to match human perception.
 #'
 #' @return a ggplot
 #'
@@ -90,7 +90,7 @@ geom_text_wordcloud <- function(mapping = NULL, data = NULL,
                                 seed = NA,
                                 rm_outside = FALSE,
                                 area_corr = FALSE,
-                                area_corr_power = 1,
+                                area_corr_power = 1/.7,
                                 na.rm = FALSE,
                                 show.legend = FALSE,
                                 inherit.aes = TRUE) {
@@ -141,22 +141,35 @@ GeomTextWordcloud <- ggproto("GeomTextWordcloud", Geom,
     vjust = 0.5, alpha = NA, family = "", fontface = 1, lineheight = 1.2
   ),
 
+  setup_data = function(data, params) {
+    if (params$area_corr) {
+      dev_inch <- dev.size("in")
+      dev_pix <- dev.size("px")
+      dev_dpi <- dev_pix[1] / dev_inch[1]
+      newsize <- lapply(seq_along(data$label),
+                        compute_newsize, data, dev_dpi, params$area_corr_power)
+      data$size <- unlist(newsize)
+    }
+    data
+  },
+
   draw_panel = function(data, panel_params, coord,
-                          parse = FALSE,
-                          eccentricity = 0.65,
-                          rstep = .01,
-                          tstep = .02,
-                          perc_step = .01,
-                          max_steps = 10,
-                          grid_size = 4,
-                          max_grid_size = 128,
-                          grid_margin = 1,
-                          xlim = c(NA, NA),
-                          ylim = c(NA, NA),
-                          seed = NA,
-                          rm_outside = FALSE,
-                          area_corr = FALSE,
-                          area_corr_power = 1) {
+                        parse = FALSE,
+                        eccentricity = 0.65,
+                        rstep = .01,
+                        tstep = .02,
+                        perc_step = .01,
+                        max_steps = 10,
+                        grid_size = 4,
+                        max_grid_size = 128,
+                        grid_margin = 1,
+                        xlim = c(NA, NA),
+                        ylim = c(NA, NA),
+                        seed = NA,
+                        rm_outside = FALSE,
+                        area_corr = FALSE,
+                        area_corr_power = 1/.7
+  ) {
     lab <- data$label
     if (parse) {
       lab <- parse_safe(as.character(lab))
@@ -220,16 +233,8 @@ makeContent.textwordcloudtree <- function(x) {
   grid_margin <- max(floor(x$grid_margin), 0)
 
 
-  if (x$area_corr) {
-    corsurf <- lapply(valid_strings, compute_cor, x, dev_dpi, grid_size)
-    corsurf <- unlist(corsurf)
-    corsurf <- corsurf / max(corsurf, na.rm = TRUE)
-    corsurf[is.na(corsurf)] <- 1
-  } else {
-    corsurf <- array(1, dim = length(valid_strings))
-  }
-
-  boxes <- lapply(valid_strings, compute_boxes, x, dev_dpi, grid_size, max_grid_size, grid_margin, gw_ratio, gh_ratio, corsurf)
+  boxes <- lapply(valid_strings, compute_boxes, x, dev_dpi,
+                  grid_size, max_grid_size, grid_margin, gw_ratio, gh_ratio)
   boxes_nb <- sapply(boxes, nrow)
   boxes_start <- cumsum(boxes_nb)
   text_boxes <- cbind(c(0, boxes_start[-length(boxes_start)]), boxes_start)
@@ -267,7 +272,7 @@ makeContent.textwordcloudtree <- function(x) {
     rm_outside = x$rm_outside
   )
 
-  grobs <- lapply(seq_along(valid_strings), make_textgrob, x, valid_strings, wordcloud, corsurf)
+  grobs <- lapply(seq_along(valid_strings), make_textgrob, x, valid_strings, wordcloud)
   class(grobs) <- "gList"
 
   setChildren(x, grobs)
@@ -306,42 +311,37 @@ compute_mask <- function(tg_inch, gw_pix, gh_pix, dev_dpi) {
   img != "transparent"
 }
 
-compute_cor <- function(i, x, dev_dpi, grid_size) {
-  row <- x$data[i, , drop = FALSE]
-  hj <- x$data$hjust[i]
-  vj <- x$data$vjust[i]
+compute_newsize <- function(i, data, dev_dpi, area_corr_power) {
+
+  row <- data[i, , drop = FALSE]
 
   tg_inch <- textGrob(
-    x$lab[i],
+    row$label,
     0, 0,
     default.units = "inch",
-    rot = row$angle,
-    just = c(hj, vj),
     gp = gpar(
-      fontsize = row$size * .pt,
-      fontfamily = row$family,
-      fontface = row$fontface,
-      lineheight = row$lineheight
+      fontsize = 20 * .pt,
+      fontfamily = ifelse(is.null(row$family), "", row$family),
+      fontface = ifelse(is.null(row$fontface), 1, row$fontface),
+      lineheight = ifelse(is.null(row$lineheight), 1.2 , row$lineheight)
     )
   )
 
   gw_inch <- convertWidth(grobWidth(tg_inch), "inch", TRUE) * 1.2
   gh_inch <- convertHeight(grobHeight(tg_inch), "inch", TRUE) * 1.2 + 2 * convertHeight(grobDescent(tg_inch), "inch", TRUE)
 
-  gw_pix <- max(1, ceiling(gw_inch * dev_dpi / grid_size)) * grid_size
-  gh_pix <- max(1, ceiling(gh_inch * dev_dpi / grid_size)) * grid_size
+  gw_pix <- max(1, ceiling(gw_inch * dev_dpi))
+  gh_pix <- max(1, ceiling(gh_inch * dev_dpi))
 
   tg_inch <- textGrob(
-    x$lab[i],
+    row$label,
     gw_inch / 2, gh_inch / 2,
     default.units = "inch",
-    rot = row$angle,
-    just = c(hj, vj),
     gp = gpar(
-      fontsize = row$size * .pt,
-      fontfamily = row$family,
-      fontface = row$fontface,
-      lineheight = row$lineheight
+      fontsize = 20 * .pt,
+      fontfamily = ifelse(is.null(row$family), "", row$family),
+      fontface = ifelse(is.null(row$fontface), 1, row$fontface),
+      lineheight = ifelse(is.null(row$lineheight), 1.2 , row$lineheight)
     )
   )
 
@@ -349,14 +349,14 @@ compute_cor <- function(i, x, dev_dpi, grid_size) {
   mask <- compute_mask(tg_inch, gw_pix, gh_pix, dev_dpi)
   area <- sum(mask)
   if (area > 0) {
-    row$size^(x$area_corr_power) / sqrt(area)
+    row$size^(area_corr_power) / sqrt(area)
   } else {
     NA_real_
   }
 }
 
 compute_boxes <- function(i, x, dev_dpi, grid_size, max_grid_size, grid_margin,
-                          gw_ratio, gh_ratio, corsurf) {
+                          gw_ratio, gh_ratio) {
   row <- x$data[i, , drop = FALSE]
   hj <- x$data$hjust[i]
   vj <- x$data$vjust[i]
@@ -368,10 +368,10 @@ compute_boxes <- function(i, x, dev_dpi, grid_size, max_grid_size, grid_margin,
     rot = row$angle,
     just = c(hj, vj),
     gp = gpar(
-      fontsize = row$size * .pt * corsurf[i],
+      fontsize = row$size * .pt,
       fontfamily = row$family,
       fontface = row$fontface,
-      lineheight = row$lineheight * corsurf[i]
+      lineheight = row$lineheight
     )
   )
 
@@ -388,10 +388,10 @@ compute_boxes <- function(i, x, dev_dpi, grid_size, max_grid_size, grid_margin,
     rot = row$angle,
     just = c(hj, vj),
     gp = gpar(
-      fontsize = row$size * .pt * corsurf[i],
+      fontsize = row$size * .pt,
       fontfamily = row$family,
       fontface = row$fontface,
-      lineheight = row$lineheight * corsurf[i]
+      lineheight = row$lineheight
     )
   )
 
@@ -460,7 +460,7 @@ compute_boxes <- function(i, x, dev_dpi, grid_size, max_grid_size, grid_margin,
   mask_lists
 }
 
-make_textgrob <- function(i, x, valid_strings, wordcloud, corsurf) {
+make_textgrob <- function(i, x, valid_strings, wordcloud) {
   xi <- valid_strings[i]
   row <- x$data[xi, , drop = FALSE]
   # browser()
@@ -472,10 +472,10 @@ make_textgrob <- function(i, x, valid_strings, wordcloud, corsurf) {
     rot = row$angle,
     gp = gpar(
       col = alpha(row$colour, row$alpha),
-      fontsize = row$size * .pt * corsurf[i],
+      fontsize = row$size * .pt,
       fontfamily = row$family,
       fontface = row$fontface,
-      lineheight = row$lineheight * corsurf[i]
+      lineheight = row$lineheight
     ),
     hjust = x$data$hjust[i],
     vjust = x$data$vjust[i]
