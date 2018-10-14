@@ -62,7 +62,7 @@ ggplot(data = dat, aes(label = name)) + geom_text_wordcloud() + theme_minimal()
 We will use the `mpg` variable to define a size and modify two cars so that they are much larger than the other ones:
 ```{r}
 dat$size <- dat$mpg
-dat$size[c(1,4)] <- dat$size[c(1,4)] + 100
+dat$size[c(1, 4)] <- dat$size[c(1, 4)] + 100
 ```
 
 We can now add this new variable to the aesthetic:
@@ -74,16 +74,37 @@ ggplot(data = dat, aes(label = name, size = size)) + geom_text_wordcloud() +
 In order to obtain a better picture, one can play with the size scale:
 ```{r, fig.width=7.5, fig.height=5}
 ggplot(data = dat, aes(label = name, size = size)) + geom_text_wordcloud() +
-  scale_size(range = c(2,12)) +
-  theme_minimal() 
+  scale_size_area(max_size = 12) +
+  theme_minimal()
 ```
+
+# Wordcloud and text area
+
+By default, the size of the font depends linearly from the square root of the size aesthetic rather than the raw size aesthetic. This is a natural choice for a shape as the area of the shape will be proportional to the raw size aesthetic but not necessarily for texts with different lengths. In `ggwordcloud2`, there is an option, `area_corr` to scale the texts so that their area is a function of the raw size aesthetic when used in combination with `scale_size_area`:
+```{r, fig.width=7.5, fig.height=5}
+ggplot(data = dat, aes(label = name, size = size)) +
+  geom_text_wordcloud(area_corr = TRUE) +
+  scale_size_area(max_size = 12) +
+  theme_minimal()
+```
+
+By default, the area is proportional to the raw size aesthetic raised to the power $1/.7$ in order to match the human area perception. To obtain an area proportional to the raw size aesthetic, it suffices to set the `area_corr_power` to $1$:
+```{r, fig.width=7.5, fig.height=5}
+ggplot(data = dat, aes(label = name, size = size)) +
+  geom_text_wordcloud(area_corr = TRUE, area_corr_power = 1) +
+  scale_size_area(max_size = 12) +
+  theme_minimal()
+```
+
+
+# Wordcloud with too many words
 
 Note that words that cannot be placed due to a lack of space are by default displayed at their original position:
 ```{r, fig.width=7.5, fig.height=4}
 set.seed(42)
 ggplot(data = dat, aes(label = name, size = size)) + geom_text_wordcloud() +
-  scale_size(range = c(4,20)) +
-  theme_minimal() 
+  scale_size_area(max_size = 20) +
+  theme_minimal()
 ```
 It is up to the user to avoid this issue by either removing some words or changing the size scale.
 
@@ -92,8 +113,8 @@ One can also chose to remove those words using the `rm_outside` option:
 set.seed(42)
 ggplot(data = dat, aes(label = name, size = size)) +
   geom_text_wordcloud(rm_outside = TRUE) +
-  scale_size(range = c(4,20)) +
-  theme_minimal() 
+  scale_size_area(max_size = 20) +
+  theme_minimal()
 ```
 
 
@@ -102,26 +123,26 @@ ggplot(data = dat, aes(label = name, size = size)) +
 
 Let's start by creating a rotation angle of 90 for 40 \% of the words:
 ```{r}
-dat$rot <- 90*(runif(nrow(dat))>.6)
+dat$rot <- 90 * (runif(nrow(dat)) > .6)
 ```
 We can use this variable in the aesthetic:
 ```{r, fig.width=7.5, fig.height=5}
 ggplot(data = dat, aes(label = name, size = size, angle = rot)) +
   geom_text_wordcloud() +
-  scale_size(range = c(2,12)) +
-  theme_minimal() 
+  scale_size_area(max_size = 12) +
+  theme_minimal()
 ```
 
 `ggwordcloud` allows arbitrary rotations:
 ```{r}
-dat$rot <- (-90+180*runif(nrow(dat)))*(runif(nrow(dat))>.2)
+dat$rot <- (-90 + 180 * runif(nrow(dat))) * (runif(nrow(dat)) > .2)
 ```
 
 ```{r, fig.width=7.5, fig.height=5}
 ggplot(data = dat, aes(label = name, size = size, angle = rot)) +
-  geom_text_wordcloud()  +
-  scale_size(range = c(2,12)) +
-  theme_minimal() 
+  geom_text_wordcloud() +
+  scale_size_area(max_size = 12) +
+  theme_minimal()
 ```
 
 # Wordcloud and eccentricity
@@ -132,24 +153,24 @@ so that the spiral is 1/.65 wider than taller.
 
 ```{r, fig.width=7.5, fig.height=5}
 ggplot(data = dat, aes(label = name, size = size, angle = rot)) +
-  geom_text_wordcloud()  +
-  scale_size(range = c(2,12)) +
-  theme_minimal() 
+  geom_text_wordcloud() +
+  scale_size_area(max_size = 12) +
+  theme_minimal()
 ```
 
 This can be changed using the `eccentricity` parameter:
 ```{r, fig.width=7.5, fig.height=5}
 ggplot(data = dat, aes(label = name, size = size, angle = rot)) +
-  geom_text_wordcloud(eccentricity = 1)  +
-  scale_size(range = c(2,12)) +
-  theme_minimal() 
+  geom_text_wordcloud(eccentricity = 1) +
+  scale_size_area(max_size = 12) +
+  theme_minimal()
 ```
 
 ```{r, fig.width=7.5, fig.height=5}
 ggplot(data = dat, aes(label = name, size = size, angle = rot)) +
-  geom_text_wordcloud(eccentricity = .35)  +
-  scale_size(range = c(2,12)) +
-  theme_minimal() 
+  geom_text_wordcloud(eccentricity = .35) +
+  scale_size_area(max_size = 12) +
+  theme_minimal()
 ```
 
 # Advanced wordcloud
@@ -157,18 +178,34 @@ ggplot(data = dat, aes(label = name, size = size, angle = rot)) +
 `geom_text_wordcloud` is compatible with the facet system of `ggplot2`:
 ```{r, fig.width=7.5, fig.height=5}
 ggplot(data = dat, aes(label = name, size = size, angle = rot)) +
-  geom_text_wordcloud()  +
-  scale_size(range = c(2,12)) +
+  geom_text_wordcloud() +
+  scale_size_area(max_size = 12) +
   facet_wrap(~am) +
-  theme_minimal() 
+  theme_minimal()
 ```
 
 
 One can also specify an original position for each label that what will be used as the starting point of the spiral algorithm for this label:
 ```{r, fig.width=7.5, fig.height=5}
-ggplot(data = dat, aes(x = factor(am), label = name, size = size, angle = rot,
-                       color = factor(am))) +
-  geom_text_wordcloud()  +
-  scale_size(range = c(2,12)) +
-  theme_minimal() 
+ggplot(data = dat, aes(
+  x = factor(am), label = name, size = size, angle = rot,
+  color = factor(am)
+)) +
+  geom_text_wordcloud() +
+  scale_size_area(max_size = 12) +
+  theme_minimal()
 ```
+
+# `ggwordcloud` as an approximate replacement for `wordcloud` and `wordcloud2`
+
+`ggwordcloud` and `ggwordcloud2` are two approximate replacement for respectively `wordcloud` and `wordcloud2`. They provide a similar syntax than the original functions and yields similar wordclouds, but not all the options of the original functions are implemented. Note that both use a font size proportional to the raw size aesthetic. This is implemented in `ggwordcloud` by the use of the `scale_radius` size scale.
+
+```{r, fig.width=7.5, fig.height=5}
+ggwordcloud(dat$name, dat$size)
+```
+
+```{r, fig.width=7.5, fig.height=5}
+ggwordcloud2(dat[, c("name", "size")])
+```
+
+
