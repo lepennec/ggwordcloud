@@ -7,10 +7,10 @@
 geom_text_wordcloud(mapping = NULL, data = NULL, stat = "identity",
   position = "identity", ..., parse = FALSE, nudge_x = 0,
   nudge_y = 0, eccentricity = 0.65, rstep = 0.01, tstep = 0.02,
-  perc_step = 0.1, max_steps = 10, grid_size = 4,
+  perc_step = 0.01, max_steps = 10, grid_size = 4,
   max_grid_size = 128, grid_margin = 1, xlim = c(NA, NA),
   ylim = c(NA, NA), seed = NA, rm_outside = FALSE,
-  area_corr = FALSE, area_corr_power = 1, na.rm = FALSE,
+  area_corr = FALSE, area_corr_power = 1/0.7, na.rm = FALSE,
   show.legend = FALSE, inherit.aes = TRUE)
 }
 \arguments{
@@ -52,7 +52,7 @@ rotation. Default to .01.}
 \item{tstep}{wordclould spiral angle increment at each step. Default to .02.}
 
 \item{perc_step}{parameter used to define the minimal distance between two
-successive candidate positions on the ellipse. Default to .1}
+successive candidate positions on the ellipse. Default to .01}
 
 \item{max_steps}{maximum number of steps avoided thanks to this minimal
 criterion. Default to 10. Set to 1 to recover the previous behavior}
@@ -79,7 +79,7 @@ aesthetic raised to a certain power when the scale_size_area is used. As
 this is not the classical choice, the default is \code{FALSE} so that, by
 default, the length of the text is not taken into account.}
 
-\item{area_corr_power}{the power used in the area correction. Default to 1.}
+\item{area_corr_power}{the power used in the area correction. Default to 1/.7 to match human perception.}
 
 \item{na.rm}{Remove missing values if TRUE}
 
