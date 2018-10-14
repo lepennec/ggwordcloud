@@ -88,6 +88,14 @@ ggplot(data = dat, aes(label = name, size = size)) +
   theme_minimal()
 ```
 
+One can equivalently use the `geom_text_wordcloud_area` geom:
+```{r, fig.width=7.5, fig.height=5}
+ggplot(data = dat, aes(label = name, size = size)) +
+  geom_text_wordcloud_area() +
+  scale_size_area(max_size = 12) +
+  theme_minimal()
+```
+
 By default, the area is proportional to the raw size aesthetic raised to the power $1/.7$ in order to match the human area perception. To obtain an area proportional to the raw size aesthetic, it suffices to set the `area_corr_power` to $1$:
 ```{r, fig.width=7.5, fig.height=5}
 ggplot(data = dat, aes(label = name, size = size)) +

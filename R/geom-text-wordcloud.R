@@ -1,11 +1,15 @@
-#' wordcloud text geom
+#' wordcloud text geoms
 #'
 #' \code{geom_text_wordcloud} adds text to the plot using a variation of the
 #' wordcloud2.js algorithm. The texts are layered around a spiral centered on
 #' the original position. This geom is based on
 #' \code{\link[ggrepel]{geom_text_repel}} which in turn is based on
 #' \code{\link[ggplot2]{geom_text}}. See the documentation for those functions
-#' for more details.
+#' for more details. By default, the font size is directly related to the size
+#' aesthetic. \code{geom_text_wordcloud_area} is an alias, with a different set
+#' of default, that chooses a font size so that the area of the text is now
+#' related to the size aesthetic.
+
 #' @param mapping Set of aesthetic mappings created by
 #'   \code{\link[ggplot2]{aes}} or \code{\link[ggplot2]{aes_}}. If specified and
 #'   \code{inherit.aes = TRUE} (the default), is combined with the default
@@ -55,7 +59,9 @@
 #'   aesthetic raised to a certain power when the scale_size_area is used. As
 #'   this is not the classical choice, the default is \code{FALSE} so that, by
 #'   default, the length of the text is not taken into account.
-#' @param area_corr_power the power used in the area correction. Default to 1/.7 to match human perception.
+#'   \code{geom_text_wordcloud_area} set this to \code{TRUE} by default.
+#' @param area_corr_power the power used in the area correction. Default to 1/.7
+#'   to match human perception.
 #'
 #' @return a ggplot
 #'
@@ -131,6 +137,67 @@ geom_text_wordcloud <- function(mapping = NULL, data = NULL,
   )
 }
 
+#' @rdname geom_text_wordcloud
+#' @export
+geom_text_wordcloud_area <- function(mapping = NULL, data = NULL,
+                                stat = "identity", position = "identity",
+                                ...,
+                                parse = FALSE,
+                                nudge_x = 0,
+                                nudge_y = 0,
+                                eccentricity = 0.65,
+                                rstep = .01,
+                                tstep = .02,
+                                perc_step = .01,
+                                max_steps = 10,
+                                grid_size = 4,
+                                max_grid_size = 128,
+                                grid_margin = 1,
+                                xlim = c(NA, NA),
+                                ylim = c(NA, NA),
+                                seed = NA,
+                                rm_outside = FALSE,
+                                area_corr = TRUE,
+                                area_corr_power = 1/.7,
+                                na.rm = FALSE,
+                                show.legend = FALSE,
+                                inherit.aes = TRUE) {
+  if (!missing(nudge_x) || !missing(nudge_y)) {
+    if (!missing(position)) {
+      stop("You must specify either `position` or `nudge_x`/`nudge_y`.", call. = FALSE)
+    }
+
+    position <- position_nudge(nudge_x, nudge_y)
+  }
+
+  layer(
+    data = data,
+    mapping = mapping,
+    stat = stat,
+    geom = GeomTextWordcloud,
+    position = position,
+    show.legend = show.legend,
+    inherit.aes = inherit.aes,
+    params = list(
+      parse = parse,
+      eccentricity = eccentricity,
+      rstep = rstep,
+      tstep = tstep,
+      perc_step = perc_step,
+      max_steps = max_steps,
+      grid_size = grid_size,
+      max_grid_size = max_grid_size,
+      grid_margin = grid_margin,
+      xlim = xlim,
+      ylim = ylim,
+      seed = seed,
+      rm_outside = rm_outside,
+      area_corr = area_corr,
+      area_corr_power = area_corr_power,
+      ...
+    )
+  )
+}
 
 GeomTextWordcloud <- ggproto("GeomTextWordcloud", Geom,
   required_aes = c("label"),

@@ -2,6 +2,7 @@
 
 S3method(makeContent,textwordcloudtree)
 export(geom_text_wordcloud)
+export(geom_text_wordcloud_area)
 export(ggwordcloud)
 export(ggwordcloud2)
 import(ggplot2)
