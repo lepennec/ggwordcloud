@@ -317,10 +317,14 @@ makeContent.textwordcloudtree <- function(x) {
   boxes <- lapply(valid_strings, compute_boxes, x, dev_dpi,
                   grid_size, max_grid_size, grid_margin, gw_ratio, gh_ratio)
   boxes_nb <- sapply(boxes, nrow)
+  bigboxes <- lapply(boxes, function(box) {
+    c(min(box[,1]), min(box[,2]), max(box[,3]), max(box[,4]))
+  })
   boxes_start <- cumsum(boxes_nb)
   text_boxes <- cbind(c(0, boxes_start[-length(boxes_start)]), boxes_start)
   boxes_text <- rep(0:(length(boxes_nb) - 1), boxes_nb)
   boxes <- do.call(rbind, boxes)
+  bigboxes <- do.call(rbind, bigboxes)
 
   # Make the repulsion reproducible if desired.
   if (is.null(x$seed) || !is.na(x$seed)) {
@@ -343,6 +347,7 @@ makeContent.textwordcloudtree <- function(x) {
     boxes = boxes,
     boxes_text = boxes_text,
     text_boxes = text_boxes,
+    bigboxes = bigboxes,
     xlim = range(x$limits$x),
     ylim = range(x$limits$y),
     eccentricity = x$eccentricity,

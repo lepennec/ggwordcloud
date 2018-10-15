@@ -97,6 +97,7 @@ DataFrame wordcloud_boxes(
     NumericMatrix boxes,
     IntegerVector boxes_text,
     IntegerMatrix text_boxes,
+    NumericMatrix bigboxes,
     NumericVector xlim, NumericVector ylim,
     const double eccentricity = 0.65,
     const double rstep = 0.1, const double tstep = 0.05,
@@ -160,6 +161,7 @@ DataFrame wordcloud_boxes(
   }
 
   std::vector<Box> TextBoxes(n_boxes);
+  std::vector<Box> BigBoxes(n_texts);
 
   Point d;
   double r;
@@ -189,6 +191,13 @@ DataFrame wordcloud_boxes(
 
       CurPos = PosOri + d;
       bool all_inside = true;
+      BigBoxes[i].x1 = CurPos.x + bigboxes(i, 0);
+      BigBoxes[i].x2 = CurPos.x + bigboxes(i, 2);
+      BigBoxes[i].y1 = CurPos.y + bigboxes(i, 1);
+      BigBoxes[i].y2 = CurPos.y + bigboxes(i, 3);
+      if (!overlaps(BigBoxes[i], inside)) {
+        all_inside = false;
+      }
       for (int ii = text_boxes(i,0); all_inside&&(ii < text_boxes(i,1)); ii++) {
         TextBoxes[ii].x1 = CurPos.x + boxes(ii, 0);
         TextBoxes[ii].x2 = CurPos.x + boxes(ii, 2);
@@ -214,16 +223,24 @@ DataFrame wordcloud_boxes(
             corr.y = std::min(ybounds.y-TextBoxes[ii].y2,corr.y);
           }
         }
+        BigBoxes[i] = BigBoxes[i] + corr;
         for (int ii = text_boxes(i,0); ii < text_boxes(i,1); ii++){
           TextBoxes[ii] = TextBoxes[ii] + corr;
         }
         CurPos = CurPos + corr;
 
-        for (int ii = text_boxes(i,0); (!i_overlaps) && (ii < text_boxes(i,1)); ii++){
-          for (int jj = 0 ; (!i_overlaps) && (jj < text_boxes(i,0)); jj++)
-            if (overlaps(TextBoxes[ii], TextBoxes[jj])) {
-              i_overlaps = true;
+        for (int j = 0; (!i_overlaps) && (j < i); j++) {
+          if (overlaps(BigBoxes[i], BigBoxes[j])) {
+            for (int ii = text_boxes(i,0); (!i_overlaps) && (ii < text_boxes(i,1)); ii++){
+              if (overlaps(TextBoxes[ii], BigBoxes[j])) {
+                for (int jj = text_boxes(j,0); (!i_overlaps) && (jj < text_boxes(j,1)); jj++){
+                  if (overlaps(TextBoxes[ii], TextBoxes[jj])) {
+                    i_overlaps = true;
+                  }
+                }
+              }
             }
+          }
         }
       } else {
         i_overlaps = true;
