@@ -19,9 +19,9 @@ geom_text_wordcloud_area(mapping = NULL, data = NULL,
   nudge_x = 0, nudge_y = 0, eccentricity = 0.65, rstep = 0.01,
   tstep = 0.02, perc_step = 0.01, max_steps = 10, grid_size = 4,
   max_grid_size = 128, grid_margin = 1, xlim = c(NA, NA),
-  ylim = c(NA, NA), seed = NA, rm_outside = TRUE, shape = "circle",
-  area_corr = FALSE, area_corr_power = 1/0.7, na.rm = FALSE,
-  show.legend = FALSE, inherit.aes = TRUE)
+  ylim = c(NA, NA), seed = NA, rm_outside = FALSE,
+  shape = "circle", area_corr = TRUE, area_corr_power = 1/0.7,
+  na.rm = FALSE, show.legend = FALSE, inherit.aes = TRUE)
 }
 \arguments{
 \item{mapping}{Set of aesthetic mappings created by
