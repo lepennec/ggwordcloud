@@ -11,16 +11,16 @@ geom_text_wordcloud(mapping = NULL, data = NULL, stat = "identity",
   perc_step = 0.01, max_steps = 10, grid_size = 4,
   max_grid_size = 128, grid_margin = 1, xlim = c(NA, NA),
   ylim = c(NA, NA), seed = NA, rm_outside = FALSE,
-  area_corr = FALSE, area_corr_power = 1/0.7, na.rm = FALSE,
-  show.legend = FALSE, inherit.aes = TRUE)
+  shape = "circle", area_corr = FALSE, area_corr_power = 1/0.7,
+  na.rm = FALSE, show.legend = FALSE, inherit.aes = TRUE)
 
 geom_text_wordcloud_area(mapping = NULL, data = NULL,
   stat = "identity", position = "identity", ..., parse = FALSE,
   nudge_x = 0, nudge_y = 0, eccentricity = 0.65, rstep = 0.01,
   tstep = 0.02, perc_step = 0.01, max_steps = 10, grid_size = 4,
   max_grid_size = 128, grid_margin = 1, xlim = c(NA, NA),
-  ylim = c(NA, NA), seed = NA, rm_outside = FALSE,
-  area_corr = TRUE, area_corr_power = 1/0.7, na.rm = FALSE,
+  ylim = c(NA, NA), seed = NA, rm_outside = TRUE, shape = "circle",
+  area_corr = FALSE, area_corr_power = 1/0.7, na.rm = FALSE,
   show.legend = FALSE, inherit.aes = TRUE)
 }
 \arguments{
@@ -83,6 +83,11 @@ which means that \code{set.seed} will not be called.}
 
 \item{rm_outside}{Remove the texts that could not be fitted. Default to
 \code{FALSE}}
+
+\item{shape}{select the shape of the clouds among \code{circle},
+\code{cardioid}, \code{diamond}, \code{square}, \code{triangle-forward},
+\code{triangle-upright}, \code{pentagon}, \code{star}. Default to
+\code{circle}}
 
 \item{area_corr}{Set the font size so that the area is proportional to size
 aesthetic raised to a certain power when the scale_size_area is used. As
