@@ -95,6 +95,7 @@ geom_text_wordcloud <- function(mapping = NULL, data = NULL,
                                 ylim = c(NA, NA),
                                 seed = NA,
                                 rm_outside = FALSE,
+                                shape = "circle",
                                 area_corr = FALSE,
                                 area_corr_power = 1/.7,
                                 na.rm = FALSE,
@@ -108,66 +109,19 @@ geom_text_wordcloud <- function(mapping = NULL, data = NULL,
     position <- position_nudge(nudge_x, nudge_y)
   }
 
-  layer(
-    data = data,
-    mapping = mapping,
-    stat = stat,
-    geom = GeomTextWordcloud,
-    position = position,
-    show.legend = show.legend,
-    inherit.aes = inherit.aes,
-    params = list(
-      parse = parse,
-      eccentricity = eccentricity,
-      rstep = rstep,
-      tstep = tstep,
-      perc_step = perc_step,
-      max_steps = max_steps,
-      grid_size = grid_size,
-      max_grid_size = max_grid_size,
-      grid_margin = grid_margin,
-      xlim = xlim,
-      ylim = ylim,
-      seed = seed,
-      rm_outside = rm_outside,
-      area_corr = area_corr,
-      area_corr_power = area_corr_power,
-      ...
-    )
-  )
-}
-
-#' @rdname geom_text_wordcloud
-#' @export
-geom_text_wordcloud_area <- function(mapping = NULL, data = NULL,
-                                stat = "identity", position = "identity",
-                                ...,
-                                parse = FALSE,
-                                nudge_x = 0,
-                                nudge_y = 0,
-                                eccentricity = 0.65,
-                                rstep = .01,
-                                tstep = .02,
-                                perc_step = .01,
-                                max_steps = 10,
-                                grid_size = 4,
-                                max_grid_size = 128,
-                                grid_margin = 1,
-                                xlim = c(NA, NA),
-                                ylim = c(NA, NA),
-                                seed = NA,
-                                rm_outside = FALSE,
-                                area_corr = TRUE,
-                                area_corr_power = 1/.7,
-                                na.rm = FALSE,
-                                show.legend = FALSE,
-                                inherit.aes = TRUE) {
-  if (!missing(nudge_x) || !missing(nudge_y)) {
-    if (!missing(position)) {
-      stop("You must specify either `position` or `nudge_x`/`nudge_y`.", call. = FALSE)
+  if (is.character(shape)) {
+    shape = which(c("circle", "cardioid", "diamond",
+                    "square", "triangle-forward", "triangle-upright",
+                    "pentagon", "star") == shape)
+    if (length(shape) != 1) {
+      shape = NA_integer_
     }
-
-    position <- position_nudge(nudge_x, nudge_y)
+  } else {
+    shape = as.integer(shape)
+  }
+  if (is.na(shape) || shape < 0 || shape > 8) {
+    warning("shape invalid. Using the default circle shape instead.")
+    shape = 1L
   }
 
   layer(
@@ -192,11 +146,23 @@ geom_text_wordcloud_area <- function(mapping = NULL, data = NULL,
       ylim = ylim,
       seed = seed,
       rm_outside = rm_outside,
+      shape = shape,
       area_corr = area_corr,
       area_corr_power = area_corr_power,
       ...
     )
   )
+}
+
+#' @rdname geom_text_wordcloud
+#' @export
+geom_text_wordcloud_area <- function(mapping = NULL, data = NULL,
+                                stat = "identity", position = "identity",
+                                ...) {
+  geom_text_wordcloud(mapping = mapping, data = data,
+                      stat = stat, position = position,
+                      area_corr = TRUE,
+                      ...)
 }
 
 GeomTextWordcloud <- ggproto("GeomTextWordcloud", Geom,
@@ -234,6 +200,7 @@ GeomTextWordcloud <- ggproto("GeomTextWordcloud", Geom,
                         ylim = c(NA, NA),
                         seed = NA,
                         rm_outside = FALSE,
+                        shape = "circle",
                         area_corr = FALSE,
                         area_corr_power = 1/.7
   ) {
@@ -272,6 +239,7 @@ GeomTextWordcloud <- ggproto("GeomTextWordcloud", Geom,
       grid_margin = grid_margin,
       seed = seed,
       rm_outside = rm_outside,
+      shape = shape,
       area_corr = area_corr,
       area_corr_power = area_corr_power,
       cl = "textwordcloudtree",
@@ -287,6 +255,7 @@ makeContent.textwordcloudtree <- function(x) {
   # Do not create text labels for empty strings.
   valid_strings <- which(not_empty(x$lab))
   invalid_strings <- which(!not_empty(x$lab))
+
 
   # Compute the native/pixel ratio
   dev_inch <- dev.size("in")
@@ -336,7 +305,8 @@ makeContent.textwordcloudtree <- function(x) {
     tstep = x$tstep,
     perc_step = x$perc_step,
     max_steps = x$max_steps,
-    rm_outside = x$rm_outside
+    rm_outside = x$rm_outside,
+    shape = x$shape
   )
 
   grobs <- lapply(seq_along(valid_strings), make_textgrob, x, valid_strings, wordcloud)

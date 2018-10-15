@@ -49,6 +49,48 @@ bool overlaps(Box a, Box b) {
     b.y2 >= a.y1;
 }
 
+double r_circle(double theta) {
+  return 1.0;
+}
+
+double r_cardioid(double theta) {
+  return (1.0 - std::sin(theta))/2;
+}
+
+double r_diamond(double theta) {
+  double thetaprime = std::fmod(theta, 2.0 * M_PI / 4.0);
+  return (1.0 / (std::cos(thetaprime) + std::sin(thetaprime)));
+}
+
+double r_square(double theta) {
+  return std::min(1.0/ std::max(1e-6, std::abs(std::cos(theta))),
+                  1.0/ std::max(1e-6,std::abs(std::sin(theta))))/std::sqrt(2.0);
+}
+
+double r_triangle_forward(double theta) {
+  double thetaprime = std::fmod(theta, 2.0 * M_PI /3.0);
+  return 1.0 / (std::cos(thetaprime) +
+              std::sqrt(3.0) * std::sin(thetaprime));
+}
+
+double r_triangle_upright(double theta) {
+  return r_triangle_forward(theta + M_PI * 3.0 /2.0);
+}
+
+double r_pentagon(double theta) {
+  double  thetaprime = std::fmod(theta + .955, 2.0 * M_PI / 5.0);
+  return 1.0 / (std::cos(thetaprime) + .726543 * std::sin(thetaprime));
+}
+
+double r_star(double theta) {
+  double thetaprime = std::fmod(theta + .955, 2.0 * M_PI / 10.0);
+  if (std::fmod(theta + .955, 2.0 * M_PI / 5.0) >= (2.0 * M_PI / 10.0)) {
+    thetaprime = (2.0 * M_PI / 10.0) - thetaprime;
+  }
+  return 1.0 / (std::cos(thetaprime) +
+                     3.07768 * std::sin(thetaprime));
+}
+
 // [[Rcpp::export]]
 DataFrame wordcloud_boxes(
     NumericMatrix data_points,
@@ -59,7 +101,8 @@ DataFrame wordcloud_boxes(
     const double eccentricity = 0.65,
     const double rstep = 0.1, const double tstep = 0.05,
     const double perc_step = 0.01, const int max_steps = 10,
-    const bool rm_outside = false) {
+    const bool rm_outside = false,
+    const int shape = 1) {
 
   int n_texts = text_boxes.nrow();
   int n_boxes = boxes.nrow();
@@ -69,6 +112,33 @@ DataFrame wordcloud_boxes(
   int iter = 0;
   bool i_overlaps = true;
 
+  double (* r_mult)(double);
+  switch (shape)
+  {
+  case 2:
+    r_mult = & r_cardioid;
+    break;
+  case 3:
+    r_mult = & r_diamond;
+    break;
+  case 4:
+    r_mult = & r_square;
+    break;
+  case 5:
+    r_mult = & r_triangle_forward;
+    break;
+  case 6:
+    r_mult = & r_triangle_upright;
+    break;
+  case 7:
+    r_mult = & r_pentagon;
+    break;
+  case 8:
+    r_mult = & r_star;
+    break;
+  default:
+    r_mult = &r_circle;
+  }
 
   Point xbounds, ybounds;
   xbounds.x = xlim[0];
@@ -93,6 +163,7 @@ DataFrame wordcloud_boxes(
 
   Point d;
   double r;
+  double rprime;
   const double rscale = ((xlim[1]-xlim[0])*(xlim[1]-xlim[0])+
                        (ylim[1]-ylim[0])*(ylim[1]-ylim[0])/(eccentricity * eccentricity));
   double theta;
@@ -103,7 +174,7 @@ DataFrame wordcloud_boxes(
     i_overlaps = true;
     iter       = 0;
     r          = 0;
-    theta      = R::runif(0, 2 * M_PI);
+    theta      = R::runif(0, 2.0 * M_PI);
     d.x        = 0;
     d.y        = 0;
     Point PosOri = current_centroids[i];
@@ -166,10 +237,11 @@ DataFrame wordcloud_boxes(
           nstep = 1;
         }
         nstep = std::max(1,std::min(nstep, max_steps));
-        theta += tstep * (2 * M_PI) * nstep;
+        theta += tstep * (2.0 * M_PI) * nstep;
         r     += rscale * rstep * tstep * nstep;
-        d.x    = r * cos(theta);
-        d.y    = r * sin(theta)*eccentricity;
+        rprime = r * r_mult(theta);
+        d.x    = rprime * cos(theta);
+        d.y    = rprime * sin(theta)*eccentricity;
       } else {
         current_centroids[i] = CurPos;
         text_inside[i] = true;
