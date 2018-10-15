@@ -177,38 +177,66 @@ geom_text_wordcloud_area <- function(mapping = NULL, data = NULL,
                                 xlim = c(NA, NA),
                                 ylim = c(NA, NA),
                                 seed = NA,
-                                rm_outside = TRUE,
+                                rm_outside = FALSE,
                                 shape = "circle",
-                                area_corr = FALSE,
+                                area_corr = TRUE,
                                 area_corr_power = 1/.7,
                                 na.rm = FALSE,
                                 show.legend = FALSE,
                                 inherit.aes = TRUE) {
-  geom_text_wordcloud(mapping = mapping, data = data,
-                      stat = stat, position = position,
-                      ...,
-                      parse = parse,
-                      nudge_x = nudge_x,
-                      nudge_y = nudge_y,
-                      eccentricity = eccentricity,
-                      rstep = rstep,
-                      tstep = tstep,
-                      perc_step = perc_step,
-                      max_steps = max_steps,
-                      grid_size = grid_size,
-                      max_grid_size = max_grid_size,
-                      grid_margin = grid_margin,
-                      xlim = xlim,
-                      ylim = ylim,
-                      seed = seed,
-                      rm_outside = rm_outside,
-                      shape = shape,
-                      area_corr = area_corr,
-                      area_corr_power = area_corr_power,
-                      na.rm = na.rm,
-                      show.legend = show.legend,
-                      inherit.aes = inherit.aes)
+  if (!missing(nudge_x) || !missing(nudge_y)) {
+    if (!missing(position)) {
+      stop("You must specify either `position` or `nudge_x`/`nudge_y`.", call. = FALSE)
+    }
+
+    position <- position_nudge(nudge_x, nudge_y)
+  }
+
+  if (is.character(shape)) {
+    shape = which(c("circle", "cardioid", "diamond",
+                    "square", "triangle-forward", "triangle-upright",
+                    "pentagon", "star") == shape)
+    if (length(shape) != 1) {
+      shape = NA_integer_
+    }
+  } else {
+    shape = as.integer(shape)
+  }
+  if (is.na(shape) || shape < 0 || shape > 8) {
+    warning("shape invalid. Using the default circle shape instead.")
+    shape = 1L
+  }
+
+  layer(
+    data = data,
+    mapping = mapping,
+    stat = stat,
+    geom = GeomTextWordcloud,
+    position = position,
+    show.legend = show.legend,
+    inherit.aes = inherit.aes,
+    params = list(
+      parse = parse,
+      eccentricity = eccentricity,
+      rstep = rstep,
+      tstep = tstep,
+      perc_step = perc_step,
+      max_steps = max_steps,
+      grid_size = grid_size,
+      max_grid_size = max_grid_size,
+      grid_margin = grid_margin,
+      xlim = xlim,
+      ylim = ylim,
+      seed = seed,
+      rm_outside = rm_outside,
+      shape = shape,
+      area_corr = area_corr,
+      area_corr_power = area_corr_power,
+      ...
+    )
+  )
 }
+
 
 GeomTextWordcloud <- ggproto("GeomTextWordcloud", Geom,
   required_aes = c("label"),
