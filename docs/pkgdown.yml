@@ -1,0 +1,6 @@
+pandoc: 2.0.6
+pkgdown: 1.1.0
+pkgdown_sha: ~
+articles:
+  ggwordcloud: ggwordcloud.html
+
