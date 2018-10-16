@@ -3,7 +3,7 @@
 
 # ggwordcloud
 
-`ggwordcloud` provides a wordcloud text geom for `ggplot2`. The
+`ggwordcloud` provides a word cloud text geom for `ggplot2`. The
 placement algorithm implemented in C++ is close to the one used in
 `wordcloud2.js` and thus aims to be a replacement of `wordcloud2` that
 produces `ggplot2` type plot instead of an html widget. Note that the
@@ -26,7 +26,7 @@ or the development version from the github repository
 devtools::install_github("lepennec/ggwordcloud")
 ```
 
-# A simple wordcloud example
+# A simple word cloud example
 
 As an example, we will use the `mtcars` dataset
 

@@ -1,4 +1,4 @@
-#' wordcloud text geoms
+#' word cloud text geoms
 #'
 #' \code{geom_text_wordcloud} adds text to the plot using a variation of the
 #' wordcloud2.js algorithm. The texts are layered around a spiral centered on

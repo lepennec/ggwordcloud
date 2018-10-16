@@ -1,5 +1,5 @@
 ---
-title: "ggwordcloud: a wordcloud geom for ggplot2"
+title: "ggwordcloud: a word cloud geom for ggplot2"
 author: "E. Le Pennec"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
@@ -16,7 +16,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-`ggwordcloud` provides a wordcloud text geom for `ggplot2`.  The placement algorithm implemented in C++ is close to the one used in `wordcloud2.js` and thus aims to be a replacement of `wordcloud2` that produces `ggplot2` type plot instead of an html widget. Note that the current version does not provide the shape and mask possibility of `wordcloud2`. Even if the algorithm of `wordcloud` is similar, `ggwordcloud` is much faster and allows arbitrary rotations of the words.
+`ggwordcloud` provides a word cloud text geom for `ggplot2`.  The placement algorithm implemented in C++ is close to the one used in `wordcloud2.js` and thus aims to be a replacement of `wordcloud2` that produces `ggplot2` type plot instead of an html widget. Note that the current version does not provide the shape and mask possibility of `wordcloud2`. Even if the algorithm of `wordcloud` is similar, `ggwordcloud` is much faster and allows arbitrary rotations of the words.
 
 This vignette is meant as a quick tour of its possibility.
 
@@ -31,7 +31,7 @@ or the development version from the github repository
 devtools::install_github("lepennec/ggwordcloud")
 ```
 
-# Wordcloud
+# Word cloud
 
 As an example, we will use the `mtcars` dataset 
 ```{r}
@@ -45,7 +45,7 @@ library(ggwordcloud)
 set.seed(42)
 ```
 
-A basic wordcloud can be obtained by:
+A basic word cloud can be obtained by:
 ```{r, fig.width=7.5, fig.height=5}
 ggplot(data = dat, aes(label = name)) + geom_text_wordcloud() + theme_minimal()
 ```
@@ -57,7 +57,7 @@ Because there is some randomness in the algorithm, the same command can yield a 
 ggplot(data = dat, aes(label = name)) + geom_text_wordcloud() + theme_minimal()
 ```
 
-# Wordcloud and text size
+# Word cloud and text size
 
 We will use the `mpg` variable to define a size and modify two cars so that they are much larger than the other ones:
 ```{r}
@@ -78,7 +78,7 @@ ggplot(data = dat, aes(label = name, size = size)) + geom_text_wordcloud() +
   theme_minimal()
 ```
 
-# Wordcloud and text area
+# Word cloud and text area
 
 By default, the size of the font depends linearly from the square root of the size aesthetic rather than the raw size aesthetic. This is a natural choice for a shape as the area of the shape will be proportional to the raw size aesthetic but not necessarily for texts with different lengths. In `ggwordcloud2`, there is an option, `area_corr` to scale the texts so that their area is a function of the raw size aesthetic when used in combination with `scale_size_area`:
 ```{r, fig.width=7.5, fig.height=5}
@@ -105,7 +105,7 @@ ggplot(data = dat, aes(label = name, size = size)) +
 ```
 
 
-# Wordcloud with too many words
+# Word cloud with too many words
 
 Note that words that cannot be placed due to a lack of space are by default displayed at their original position:
 ```{r, fig.width=7.5, fig.height=4}
@@ -127,7 +127,7 @@ ggplot(data = dat, aes(label = name, size = size)) +
 
 
 
-# Wordcloud and rotation
+# Word cloud and rotation
 
 Let's start by creating a rotation angle of 90 for 40 \% of the words:
 ```{r}
@@ -153,9 +153,9 @@ ggplot(data = dat, aes(label = name, size = size, angle = rot)) +
   theme_minimal()
 ```
 
-# Wordcloud and eccentricity
+# Word cloud and eccentricity
 
-The `ggwordcloud` algorithm moves the text around a spiral until it finds a free place for it.
+The `ggwordcloud` algorithm moves the text around a spiral until it finds a free space for it.
 This spiral has by default a vertical eccentricity of .65,
 so that the spiral is 1/.65 wider than taller.
 
@@ -206,7 +206,7 @@ ggplot(data = dat, aes(
 
 # `ggwordcloud` as an approximate replacement for `wordcloud` and `wordcloud2`
 
-`ggwordcloud` and `ggwordcloud2` are two approximate replacement for respectively `wordcloud` and `wordcloud2`. They provide a similar syntax than the original functions and yields similar wordclouds, but not all the options of the original functions are implemented. Note that both use a font size proportional to the raw size aesthetic. This is implemented in `ggwordcloud` by the use of the `scale_radius` size scale.
+`ggwordcloud` and `ggwordcloud2` are two approximate replacement for respectively `wordcloud` and `wordcloud2`. They provide a similar syntax than the original functions and yields similar word clouds, but not all the options of the original functions are implemented. Note that both use a font size proportional to the raw size aesthetic. This is implemented in `ggwordcloud` by the use of the `scale_radius` size scale.
 
 ```{r, fig.width=7.5, fig.height=5}
 ggwordcloud(dat$name, dat$size)

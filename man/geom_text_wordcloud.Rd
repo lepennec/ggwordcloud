@@ -3,7 +3,7 @@
 \name{geom_text_wordcloud}
 \alias{geom_text_wordcloud}
 \alias{geom_text_wordcloud_area}
-\title{wordcloud text geoms}
+\title{word cloud text geoms}
 \usage{
 geom_text_wordcloud(mapping = NULL, data = NULL, stat = "identity",
   position = "identity", ..., parse = FALSE, nudge_x = 0,
