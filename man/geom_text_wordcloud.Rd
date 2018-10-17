@@ -11,8 +11,9 @@ geom_text_wordcloud(mapping = NULL, data = NULL, stat = "identity",
   perc_step = 0.01, max_steps = 10, grid_size = 4,
   max_grid_size = 128, grid_margin = 1, xlim = c(NA, NA),
   ylim = c(NA, NA), seed = NA, rm_outside = FALSE,
-  shape = "circle", area_corr = FALSE, area_corr_power = 1/0.7,
-  na.rm = FALSE, show.legend = FALSE, inherit.aes = TRUE)
+  shape = "circle", mask = NA, area_corr = FALSE,
+  area_corr_power = 1/0.7, na.rm = FALSE, show.legend = FALSE,
+  inherit.aes = TRUE)
 
 geom_text_wordcloud_area(mapping = NULL, data = NULL,
   stat = "identity", position = "identity", ..., parse = FALSE,
@@ -20,8 +21,9 @@ geom_text_wordcloud_area(mapping = NULL, data = NULL,
   tstep = 0.02, perc_step = 0.01, max_steps = 10, grid_size = 4,
   max_grid_size = 128, grid_margin = 1, xlim = c(NA, NA),
   ylim = c(NA, NA), seed = NA, rm_outside = FALSE,
-  shape = "circle", area_corr = TRUE, area_corr_power = 1/0.7,
-  na.rm = FALSE, show.legend = FALSE, inherit.aes = TRUE)
+  shape = "circle", mask = NA, area_corr = TRUE,
+  area_corr_power = 1/0.7, na.rm = FALSE, show.legend = FALSE,
+  inherit.aes = TRUE)
 }
 \arguments{
 \item{mapping}{Set of aesthetic mappings created by
@@ -88,6 +90,12 @@ which means that \code{set.seed} will not be called.}
 \code{cardioid}, \code{diamond}, \code{square}, \code{triangle-forward},
 \code{triangle-upright}, \code{pentagon}, \code{star}. Default to
 \code{circle}}
+
+\item{mask}{a mask (or a list of masks) used to define a zone in which the
+text should be placed. Each mask should be coercible to a raster in which
+the color "black" defined the text zone. When a list of masks is given, the
+group aesthetic define which mask is going to be used. Default to
+\code{NA}, i.e. no mask.}
 
 \item{area_corr}{Set the font size so that the area is proportional to size
 aesthetic raised to a certain power when the scale_size_area is used. As

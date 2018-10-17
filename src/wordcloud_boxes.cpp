@@ -98,6 +98,10 @@ DataFrame wordcloud_boxes(
     IntegerVector boxes_text,
     IntegerMatrix text_boxes,
     NumericMatrix bigboxes,
+    NumericMatrix boxes_masks,
+    IntegerVector boxes_mask,
+    IntegerMatrix mask_boxes,
+    IntegerVector text_group,
     NumericVector xlim, NumericVector ylim,
     const double eccentricity = 0.65,
     const double rstep = 0.1, const double tstep = 0.05,
@@ -107,6 +111,7 @@ DataFrame wordcloud_boxes(
 
   int n_texts = text_boxes.nrow();
   int n_boxes = boxes.nrow();
+  int n_boxes_masks = boxes_masks.nrow();
 
   std::vector<bool> text_inside(n_texts);
 
@@ -163,9 +168,18 @@ DataFrame wordcloud_boxes(
   std::vector<Box> TextBoxes(n_boxes);
   std::vector<Box> BigBoxes(n_texts);
 
+  std::vector<Box> MaskBoxes(n_boxes_masks);
+  for (int jj = 0; jj < n_boxes_masks; jj++) {
+    MaskBoxes[jj].x1 = boxes_masks(jj,0);
+    MaskBoxes[jj].y1 = boxes_masks(jj,1);
+    MaskBoxes[jj].x2 = boxes_masks(jj,2);
+    MaskBoxes[jj].y2 = boxes_masks(jj,3);
+  }
+
   Point d;
   double r;
   double rprime;
+  int group;
   const double rscale = ((xlim[1]-xlim[0])*(xlim[1]-xlim[0])+
                        (ylim[1]-ylim[0])*(ylim[1]-ylim[0])/(eccentricity * eccentricity));
   double theta;
@@ -183,6 +197,7 @@ DataFrame wordcloud_boxes(
     Point CurPos;
     Point corr;
     text_inside[i] = false;
+    group = text_group[i];
 
     // Try to position the current text box
     while (i_overlaps && r < rscale) {
@@ -192,16 +207,17 @@ DataFrame wordcloud_boxes(
       CurPos = PosOri + d;
       bool all_inside = true;
       BigBoxes[i].x1 = CurPos.x + bigboxes(i, 0);
-      BigBoxes[i].x2 = CurPos.x + bigboxes(i, 2);
       BigBoxes[i].y1 = CurPos.y + bigboxes(i, 1);
+      BigBoxes[i].x2 = CurPos.x + bigboxes(i, 2);
       BigBoxes[i].y2 = CurPos.y + bigboxes(i, 3);
+
       if (!overlaps(BigBoxes[i], inside)) {
         all_inside = false;
       }
       for (int ii = text_boxes(i,0); all_inside&&(ii < text_boxes(i,1)); ii++) {
         TextBoxes[ii].x1 = CurPos.x + boxes(ii, 0);
-        TextBoxes[ii].x2 = CurPos.x + boxes(ii, 2);
         TextBoxes[ii].y1 = CurPos.y + boxes(ii, 1);
+        TextBoxes[ii].x2 = CurPos.x + boxes(ii, 2);
         TextBoxes[ii].y2 = CurPos.y + boxes(ii, 3);
         all_inside = all_inside && overlaps(TextBoxes[ii], inside);
       }
@@ -229,6 +245,7 @@ DataFrame wordcloud_boxes(
         }
         CurPos = CurPos + corr;
 
+        // Any overlap with previous texts?
         for (int j = 0; (!i_overlaps) && (j < i); j++) {
           if (overlaps(BigBoxes[i], BigBoxes[j])) {
             for (int ii = text_boxes(i,0); (!i_overlaps) && (ii < text_boxes(i,1)); ii++){
@@ -242,9 +259,21 @@ DataFrame wordcloud_boxes(
             }
           }
         }
+
+        // Within the mask?
+        for (int jj = mask_boxes(group,0); (!i_overlaps) && (jj < mask_boxes(group,1)); jj++) {
+          if (overlaps(MaskBoxes[jj], BigBoxes[i])) {
+            for (int ii = text_boxes(i,0); (!i_overlaps) && (ii < text_boxes(i,1)); ii++){
+              if (overlaps(TextBoxes[ii], MaskBoxes[jj])) {
+                i_overlaps = true;
+              }
+            }
+          }
+        }
       } else {
         i_overlaps = true;
       }
+
 
       if (i_overlaps) {
         int nstep;

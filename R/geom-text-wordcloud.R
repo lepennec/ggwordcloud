@@ -66,6 +66,11 @@
 #'   \code{geom_text_wordcloud_area} set this to \code{TRUE} by default.
 #' @param area_corr_power the power used in the area correction. Default to 1/.7
 #'   to match human perception.
+#' @param mask a mask (or a list of masks) used to define a zone in which the
+#'   text should be placed. Each mask should be coercible to a raster in which
+#'   the color "black" defined the text zone. When a list of masks is given, the
+#'   group aesthetic define which mask is going to be used. Default to
+#'   \code{NA}, i.e. no mask.
 #'
 #' @return a ggplot
 #'
@@ -100,6 +105,7 @@ geom_text_wordcloud <- function(mapping = NULL, data = NULL,
                                 seed = NA,
                                 rm_outside = FALSE,
                                 shape = "circle",
+                                mask = NA,
                                 area_corr = FALSE,
                                 area_corr_power = 1/.7,
                                 na.rm = FALSE,
@@ -151,6 +157,7 @@ geom_text_wordcloud <- function(mapping = NULL, data = NULL,
       seed = seed,
       rm_outside = rm_outside,
       shape = shape,
+      mask = mask,
       area_corr = area_corr,
       area_corr_power = area_corr_power,
       ...
@@ -179,6 +186,7 @@ geom_text_wordcloud_area <- function(mapping = NULL, data = NULL,
                                 seed = NA,
                                 rm_outside = FALSE,
                                 shape = "circle",
+                                mask = NA,
                                 area_corr = TRUE,
                                 area_corr_power = 1/.7,
                                 na.rm = FALSE,
@@ -230,6 +238,7 @@ geom_text_wordcloud_area <- function(mapping = NULL, data = NULL,
       seed = seed,
       rm_outside = rm_outside,
       shape = shape,
+      mask = mask,
       area_corr = area_corr,
       area_corr_power = area_corr_power,
       ...
@@ -274,6 +283,7 @@ GeomTextWordcloud <- ggproto("GeomTextWordcloud", Geom,
                         seed = NA,
                         rm_outside = FALSE,
                         shape = "circle",
+                        mask = NA,
                         area_corr = FALSE,
                         area_corr_power = 1/.7
   ) {
@@ -313,6 +323,7 @@ GeomTextWordcloud <- ggproto("GeomTextWordcloud", Geom,
       seed = seed,
       rm_outside = rm_outside,
       shape = shape,
+      mask = mask,
       area_corr = area_corr,
       area_corr_power = area_corr_power,
       cl = "textwordcloudtree",
@@ -341,20 +352,62 @@ makeContent.textwordcloudtree <- function(x) {
   max_grid_size <- max(floor(x$max_grid_size), grid_size)
   grid_margin <- max(floor(x$grid_margin), 0)
 
+  if ((length(x$mask)<=1) && is.na(x$mask)) {
+    boxes_masks <- list()
+  } else {
+    if (!is.list(x$mask)) {
+      mask <- list(x$mask)
+    } else {
+      mask <- x$mask
+    }
+    boxes_masks <- lapply(mask, compute_mask_boxes,  dev_dpi,
+                          grid_size, max_grid_size, grid_margin,
+                          gw_ratio, gh_ratio, dev_inch)
+  }
+  if (length(boxes_masks)>0) {
+    boxes_masks_nb <- sapply(boxes_masks, nrow)
+    boxes_masks_start <- cumsum(boxes_masks_nb)
+    mask_boxes <- cbind(c(0, boxes_masks_start[-length(boxes_masks_start)]), boxes_masks_start)
+    boxes_mask <- rep(0:(length(boxes_masks_nb) - 1), boxes_masks_nb)
+    boxes_masks <- do.call(rbind, boxes_masks)
 
-  boxes <- lapply(valid_strings, compute_boxes, x, dev_dpi,
+    text_group <- x$data$group[valid_strings]
+    text_group[text_group == -1] <- 1L
+    text_group <- text_group - 1
+    if (max(text_group) >= nrow(mask_boxes)) {
+      warnings("Less masks than groups please check if this is correct")
+      text_group <- text_group %% nrow(mask_boxes)
+    }
+
+  } else {
+    boxes_masks_nb <- vector("integer")
+    mask_boxes <- array(0, dim = c(0,2))
+    boxes_mask <- vector("integer")
+    boxes_masks <- array(0, dim = c(1,4))
+    text_group <- rep(0L, length(valid_strings))
+  }
+
+  boxes <- lapply(valid_strings, compute_text_boxes, x, dev_dpi,
                   grid_size, max_grid_size, grid_margin, gw_ratio, gh_ratio)
-  boxes_nb <- sapply(boxes, nrow)
-  bigboxes <- lapply(boxes, function(box) {
-    c(min(box[,1]), min(box[,2]), max(box[,3]), max(box[,4]))
-  })
-  boxes_start <- cumsum(boxes_nb)
-  text_boxes <- cbind(c(0, boxes_start[-length(boxes_start)]), boxes_start)
-  boxes_text <- rep(0:(length(boxes_nb) - 1), boxes_nb)
-  boxes <- do.call(rbind, boxes)
-  bigboxes <- do.call(rbind, bigboxes)
+  if (length(boxes)>0) {
+    boxes_nb <- sapply(boxes, nrow)
+    bigboxes <- lapply(boxes, function(box) {
+      c(min(box[,1]), min(box[,2]), max(box[,3]), max(box[,4]))
+    })
+    boxes_start <- cumsum(boxes_nb)
+    text_boxes <- cbind(c(0, boxes_start[-length(boxes_start)]), boxes_start)
+    boxes_text <- rep(0:(length(boxes_nb) - 1), boxes_nb)
+    boxes <- do.call(rbind, boxes)
+    bigboxes <- do.call(rbind, bigboxes)
+  } else {
+    boxes_nb <- vector("integer")
+    text_boxes <- array(0, dim = c(0,2))
+    boxes_text <- vector("integer")
+    boxes <- array(0, dim = c(0,4))
+    bigboxes <- array(0, dim = c(0,4))
+  }
 
-  # Make the repulsion reproducible if desired.
+  # Make the result reproducible if desired.
   if (is.null(x$seed) || !is.na(x$seed)) {
     set.seed(x$seed)
   }
@@ -376,6 +429,10 @@ makeContent.textwordcloudtree <- function(x) {
     boxes_text = boxes_text,
     text_boxes = text_boxes,
     bigboxes = bigboxes,
+    boxes_masks = boxes_masks,
+    boxes_mask = boxes_mask,
+    mask_boxes = mask_boxes,
+    text_group = text_group,
     xlim = range(x$limits$x),
     ylim = range(x$limits$y),
     eccentricity = x$eccentricity,
@@ -414,7 +471,7 @@ just_dir <- function(x, tol = 0.001) {
   out
 }
 
-compute_mask <- function(tg_inch, gw_pix, gh_pix, dev_dpi) {
+compute_mask <- function(tg_inch, gw_pix, gh_pix, dev_dpi, f_mask) {
   prev_dev_id <- dev.cur()
   dev_id <- Cairo(width = gw_pix, height = gh_pix, dpi = dev_dpi, units = "px", type = "raster")
   pushViewport(grid::viewport(width = 1, height = 1))
@@ -423,7 +480,7 @@ compute_mask <- function(tg_inch, gw_pix, gh_pix, dev_dpi) {
   img <- grid.cap()
   dev.off()
   dev.set(prev_dev_id)
-  img != "transparent"
+  f_mask(img)
 }
 
 compute_newsize <- function(i, data, dev_dpi, area_corr_power) {
@@ -461,7 +518,7 @@ compute_newsize <- function(i, data, dev_dpi, area_corr_power) {
   )
 
   # Compute the text mask
-  mask <- compute_mask(tg_inch, gw_pix, gh_pix, dev_dpi)
+  mask <- compute_mask(tg_inch, gw_pix, gh_pix, dev_dpi, function(img) (img != "transparent"))
   area <- sum(mask)
   if (area > 0) {
     row$size^(area_corr_power) / sqrt(area)
@@ -470,8 +527,33 @@ compute_newsize <- function(i, data, dev_dpi, area_corr_power) {
   }
 }
 
-compute_boxes <- function(i, x, dev_dpi, grid_size, max_grid_size, grid_margin,
-                          gw_ratio, gh_ratio) {
+compute_mask_boxes <- function(mask_matrix, dev_dpi, grid_size, max_grid_size, grid_margin,
+                          gw_ratio, gh_ratio, dev_inch) {
+
+  mask_raster <- rasterGrob(mask_matrix,
+                            x = unit(0.5, "native"), y = unit(0.5, "native"))
+
+  gw_inch <- convertWidth(grobWidth(mask_raster), "inch", TRUE)
+  gh_inch <- convertHeight(grobHeight(mask_raster), "inch", TRUE)
+
+  gw_native <- convertWidth(grobWidth(mask_raster), "native", TRUE)
+  gh_native <- convertHeight(grobHeight(mask_raster), "native", TRUE)
+
+
+  gw_pix <- max(1, ceiling(gw_inch / gw_native * dev_dpi / grid_size)) * grid_size
+  gh_pix <- max(1, ceiling(gh_inch / gh_native * dev_dpi / grid_size)) * grid_size
+
+  # Compute the mask mask
+  mask <- compute_mask(mask_raster, gw_pix, gh_pix, dev_dpi,
+                       function(img) {img != "black"})
+
+  compute_boxes_from_mask(mask, gw_pix, gh_pix, gw_ratio, gh_ratio,
+                          max_grid_w, max_grid_h, grid_size, max_grid_size,
+                          0, 0, 0)
+}
+
+compute_text_boxes <- function(i, x, dev_dpi, grid_size, max_grid_size, grid_margin,
+                               gw_ratio, gh_ratio) {
   row <- x$data[i, , drop = FALSE]
   hj <- x$data$hjust[i]
   vj <- x$data$vjust[i]
@@ -511,8 +593,15 @@ compute_boxes <- function(i, x, dev_dpi, grid_size, max_grid_size, grid_margin,
   )
 
   # Compute the text mask
-  mask <- compute_mask(tg_inch, gw_pix, gh_pix, dev_dpi)
+  mask <- compute_mask(tg_inch, gw_pix, gh_pix, dev_dpi,
+                       function(img) {img != "transparent"})
 
+  compute_boxes_from_mask(mask, gw_pix, gh_pix, gw_ratio, gh_ratio,
+                          max_grid_w, max_grid_h, grid_size, max_grid_size,
+                          grid_margin, gw_pix /2, gh_pix / 2)
+}
+
+compute_boxes_from_mask <- function(mask, gw_pix, gh_pix, gw_ratio, gh_ratio, max_grid_w, max_grid_h, grid_size, max_grid_size, grid_margin, delta_w, delta_h) {
   max_grid_w <- ceiling(gw_pix / grid_size) * grid_size
   max_grid_h <- ceiling(gh_pix / grid_size) * grid_size
   seq_grid_w <- seq.int(1, max_grid_w, grid_size)
@@ -562,10 +651,10 @@ compute_boxes <- function(i, x, dev_dpi, grid_size, max_grid_size, grid_margin,
     mask_ind <- which(cur_mask, arr.ind = TRUE)
     if (length(mask_ind) > 0) {
       mask_list <- array(0, dim = c(nrow(mask_ind), 4))
-      mask_list[, 2] <- (st * (mask_ind[, 1] - 1) * grid_size - gh_pix / 2) * gh_ratio
-      mask_list[, 1] <- (st * (mask_ind[, 2] - 1) * grid_size - gw_pix / 2) * gw_ratio
-      mask_list[, 3] <- pmin(mask_list[, 1] + st * grid_size * gw_ratio, (gw_pix + 1) / 2 * gw_ratio)
-      mask_list[, 4] <- pmin(mask_list[, 2] + st * grid_size * gh_ratio, (gh_pix + 1) / 2 * gh_ratio)
+      mask_list[, 1] <- (st * (mask_ind[, 2] - 1) * grid_size - delta_w) * gw_ratio
+      mask_list[, 2] <- (st * (mask_ind[, 1] - 1) * grid_size - delta_h) * gh_ratio
+      mask_list[, 3] <- pmin(mask_list[, 1] + st * grid_size * gw_ratio, (gw_pix - delta_w) * gw_ratio)
+      mask_list[, 4] <- pmin(mask_list[, 2] + st * grid_size * gh_ratio, (gh_pix - delta_h) * gh_ratio)
       mask_lists <- rbind(mask_lists, mask_list)
     }
 
