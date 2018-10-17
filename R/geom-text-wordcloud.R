@@ -267,6 +267,9 @@ GeomTextWordcloud <- ggproto("GeomTextWordcloud", Geom,
       dev_inch <- dev.size("in")
       dev_pix <- dev.size("px")
       dev_dpi <- dev_pix[1] / dev_inch[1]
+      if (is.null(data$size)) {
+        data$size <- 3.88
+      }
       newsize <- lapply(
         seq_along(data$label),
         compute_newsize, data, dev_dpi, params$area_corr_power
