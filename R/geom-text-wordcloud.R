@@ -109,7 +109,7 @@ geom_text_wordcloud <- function(mapping = NULL, data = NULL,
                                 shape = "circle",
                                 mask = NA,
                                 area_corr = FALSE,
-                                area_corr_power = 1/.7,
+                                area_corr_power = 1 / .7,
                                 na.rm = FALSE,
                                 show.legend = FALSE,
                                 inherit.aes = TRUE) {
@@ -122,18 +122,20 @@ geom_text_wordcloud <- function(mapping = NULL, data = NULL,
   }
 
   if (is.character(shape)) {
-    shape = which(c("circle", "cardioid", "diamond",
-                    "square", "triangle-forward", "triangle-upright",
-                    "pentagon", "star") == shape)
+    shape <- which(c(
+      "circle", "cardioid", "diamond",
+      "square", "triangle-forward", "triangle-upright",
+      "pentagon", "star"
+    ) == shape)
     if (length(shape) != 1) {
-      shape = NA_integer_
+      shape <- NA_integer_
     }
   } else {
-    shape = as.integer(shape)
+    shape <- as.integer(shape)
   }
   if (is.na(shape) || shape < 0 || shape > 8) {
     warning("shape invalid. Using the default circle shape instead.")
-    shape = 1L
+    shape <- 1L
   }
 
   layer(
@@ -170,30 +172,30 @@ geom_text_wordcloud <- function(mapping = NULL, data = NULL,
 #' @rdname geom_text_wordcloud
 #' @export
 geom_text_wordcloud_area <- function(mapping = NULL, data = NULL,
-                                stat = "identity", position = "identity",
-                                ...,
-                                parse = FALSE,
-                                nudge_x = 0,
-                                nudge_y = 0,
-                                eccentricity = 0.65,
-                                rstep = .01,
-                                tstep = .02,
-                                perc_step = .01,
-                                max_steps = 10,
-                                grid_size = 4,
-                                max_grid_size = 128,
-                                grid_margin = 1,
-                                xlim = c(NA, NA),
-                                ylim = c(NA, NA),
-                                seed = NA,
-                                rm_outside = FALSE,
-                                shape = "circle",
-                                mask = NA,
-                                area_corr = TRUE,
-                                area_corr_power = 1/.7,
-                                na.rm = FALSE,
-                                show.legend = FALSE,
-                                inherit.aes = TRUE) {
+                                     stat = "identity", position = "identity",
+                                     ...,
+                                     parse = FALSE,
+                                     nudge_x = 0,
+                                     nudge_y = 0,
+                                     eccentricity = 0.65,
+                                     rstep = .01,
+                                     tstep = .02,
+                                     perc_step = .01,
+                                     max_steps = 10,
+                                     grid_size = 4,
+                                     max_grid_size = 128,
+                                     grid_margin = 1,
+                                     xlim = c(NA, NA),
+                                     ylim = c(NA, NA),
+                                     seed = NA,
+                                     rm_outside = FALSE,
+                                     shape = "circle",
+                                     mask = NA,
+                                     area_corr = TRUE,
+                                     area_corr_power = 1 / .7,
+                                     na.rm = FALSE,
+                                     show.legend = FALSE,
+                                     inherit.aes = TRUE) {
   if (!missing(nudge_x) || !missing(nudge_y)) {
     if (!missing(position)) {
       stop("You must specify either `position` or `nudge_x`/`nudge_y`.", call. = FALSE)
@@ -203,18 +205,20 @@ geom_text_wordcloud_area <- function(mapping = NULL, data = NULL,
   }
 
   if (is.character(shape)) {
-    shape = which(c("circle", "cardioid", "diamond",
-                    "square", "triangle-forward", "triangle-upright",
-                    "pentagon", "star") == shape)
+    shape <- which(c(
+      "circle", "cardioid", "diamond",
+      "square", "triangle-forward", "triangle-upright",
+      "pentagon", "star"
+    ) == shape)
     if (length(shape) != 1) {
-      shape = NA_integer_
+      shape <- NA_integer_
     }
   } else {
-    shape = as.integer(shape)
+    shape <- as.integer(shape)
   }
   if (is.na(shape) || shape < 0 || shape > 8) {
     warning("shape invalid. Using the default circle shape instead.")
-    shape = 1L
+    shape <- 1L
   }
 
   layer(
@@ -263,8 +267,10 @@ GeomTextWordcloud <- ggproto("GeomTextWordcloud", Geom,
       dev_inch <- dev.size("in")
       dev_pix <- dev.size("px")
       dev_dpi <- dev_pix[1] / dev_inch[1]
-      newsize <- lapply(seq_along(data$label),
-                        compute_newsize, data, dev_dpi, params$area_corr_power)
+      newsize <- lapply(
+        seq_along(data$label),
+        compute_newsize, data, dev_dpi, params$area_corr_power
+      )
       data$size <- unlist(newsize)
     }
     if (is.null(data$angle_group)) {
@@ -283,24 +289,23 @@ GeomTextWordcloud <- ggproto("GeomTextWordcloud", Geom,
   },
 
   draw_panel = function(data, panel_params, coord,
-                        parse = FALSE,
-                        eccentricity = 0.65,
-                        rstep = .01,
-                        tstep = .02,
-                        perc_step = .01,
-                        max_steps = 10,
-                        grid_size = 4,
-                        max_grid_size = 128,
-                        grid_margin = 1,
-                        xlim = c(NA, NA),
-                        ylim = c(NA, NA),
-                        seed = NA,
-                        rm_outside = FALSE,
-                        shape = "circle",
-                        mask = NA,
-                        area_corr = FALSE,
-                        area_corr_power = 1/.7
-  ) {
+                          parse = FALSE,
+                          eccentricity = 0.65,
+                          rstep = .01,
+                          tstep = .02,
+                          perc_step = .01,
+                          max_steps = 10,
+                          grid_size = 4,
+                          max_grid_size = 128,
+                          grid_margin = 1,
+                          xlim = c(NA, NA),
+                          ylim = c(NA, NA),
+                          seed = NA,
+                          rm_outside = FALSE,
+                          shape = "circle",
+                          mask = NA,
+                          area_corr = FALSE,
+                          area_corr_power = 1 / .7) {
     lab <- data$label
     if (parse) {
       lab <- parse_safe(as.character(lab))
@@ -366,7 +371,7 @@ makeContent.textwordcloudtree <- function(x) {
   max_grid_size <- max(floor(x$max_grid_size), grid_size)
   grid_margin <- max(floor(x$grid_margin), 0)
 
-  if ((length(x$mask)<=1) && is.na(x$mask)) {
+  if ((length(x$mask) <= 1) && is.na(x$mask)) {
     boxes_masks <- list()
   } else {
     if (!is.list(x$mask)) {
@@ -374,11 +379,13 @@ makeContent.textwordcloudtree <- function(x) {
     } else {
       mask <- x$mask
     }
-    boxes_masks <- lapply(mask, compute_mask_boxes,  dev_dpi,
-                          grid_size, max_grid_size, grid_margin,
-                          gw_ratio, gh_ratio, dev_inch)
+    boxes_masks <- lapply(
+      mask, compute_mask_boxes, dev_dpi,
+      grid_size, max_grid_size, grid_margin,
+      gw_ratio, gh_ratio, dev_inch
+    )
   }
-  if (length(boxes_masks)>0) {
+  if (length(boxes_masks) > 0) {
     boxes_masks_nb <- sapply(boxes_masks, nrow)
     boxes_masks_start <- cumsum(boxes_masks_nb)
     mask_boxes <- cbind(c(0, boxes_masks_start[-length(boxes_masks_start)]), boxes_masks_start)
@@ -391,23 +398,24 @@ makeContent.textwordcloudtree <- function(x) {
       warnings("Less masks than groups please check if this is correct")
       mask_group <- mask_group %% nrow(mask_boxes)
     }
-
   } else {
     boxes_masks_nb <- vector("integer")
-    mask_boxes <- array(0, dim = c(0,2))
+    mask_boxes <- array(0, dim = c(0, 2))
     boxes_mask <- vector("integer")
-    boxes_masks <- array(0, dim = c(1,4))
+    boxes_masks <- array(0, dim = c(1, 4))
     mask_group <- rep(0L, length(valid_strings))
   }
 
-  angle_group <- x$data$angle_group[valid_strings]-1L
+  angle_group <- x$data$angle_group[valid_strings] - 1L
 
-  boxes <- lapply(valid_strings, compute_text_boxes, x, dev_dpi,
-                  grid_size, max_grid_size, grid_margin, gw_ratio, gh_ratio)
-  if (length(boxes)>0) {
+  boxes <- lapply(
+    valid_strings, compute_text_boxes, x, dev_dpi,
+    grid_size, max_grid_size, grid_margin, gw_ratio, gh_ratio
+  )
+  if (length(boxes) > 0) {
     boxes_nb <- sapply(boxes, nrow)
     bigboxes <- lapply(boxes, function(box) {
-      c(min(box[,1]), min(box[,2]), max(box[,3]), max(box[,4]))
+      c(min(box[, 1]), min(box[, 2]), max(box[, 3]), max(box[, 4]))
     })
     boxes_start <- cumsum(boxes_nb)
     text_boxes <- cbind(c(0, boxes_start[-length(boxes_start)]), boxes_start)
@@ -416,10 +424,10 @@ makeContent.textwordcloudtree <- function(x) {
     bigboxes <- do.call(rbind, bigboxes)
   } else {
     boxes_nb <- vector("integer")
-    text_boxes <- array(0, dim = c(0,2))
+    text_boxes <- array(0, dim = c(0, 2))
     boxes_text <- vector("integer")
-    boxes <- array(0, dim = c(0,4))
-    bigboxes <- array(0, dim = c(0,4))
+    boxes <- array(0, dim = c(0, 4))
+    bigboxes <- array(0, dim = c(0, 4))
   }
 
   # Make the result reproducible if desired.
@@ -501,7 +509,6 @@ compute_mask <- function(tg_inch, gw_pix, gh_pix, dev_dpi, f_mask) {
 }
 
 compute_newsize <- function(i, data, dev_dpi, area_corr_power) {
-
   row <- data[i, , drop = FALSE]
 
   tg_inch <- textGrob(
@@ -512,7 +519,7 @@ compute_newsize <- function(i, data, dev_dpi, area_corr_power) {
       fontsize = 20 * .pt,
       fontfamily = ifelse(is.null(row$family), "", row$family),
       fontface = ifelse(is.null(row$fontface), 1, row$fontface),
-      lineheight = ifelse(is.null(row$lineheight), 1.2 , row$lineheight)
+      lineheight = ifelse(is.null(row$lineheight), 1.2, row$lineheight)
     )
   )
 
@@ -530,7 +537,7 @@ compute_newsize <- function(i, data, dev_dpi, area_corr_power) {
       fontsize = 20 * .pt,
       fontfamily = ifelse(is.null(row$family), "", row$family),
       fontface = ifelse(is.null(row$fontface), 1, row$fontface),
-      lineheight = ifelse(is.null(row$lineheight), 1.2 , row$lineheight)
+      lineheight = ifelse(is.null(row$lineheight), 1.2, row$lineheight)
     )
   )
 
@@ -545,10 +552,10 @@ compute_newsize <- function(i, data, dev_dpi, area_corr_power) {
 }
 
 compute_mask_boxes <- function(mask_matrix, dev_dpi, grid_size, max_grid_size, grid_margin,
-                          gw_ratio, gh_ratio, dev_inch) {
-
+                               gw_ratio, gh_ratio, dev_inch) {
   mask_raster <- rasterGrob(mask_matrix,
-                            x = unit(0.5, "native"), y = unit(0.5, "native"))
+    x = unit(0.5, "native"), y = unit(0.5, "native")
+  )
 
   gw_inch <- convertWidth(grobWidth(mask_raster), "inch", TRUE)
   gh_inch <- convertHeight(grobHeight(mask_raster), "inch", TRUE)
@@ -561,12 +568,18 @@ compute_mask_boxes <- function(mask_matrix, dev_dpi, grid_size, max_grid_size, g
   gh_pix <- max(1, ceiling(gh_inch / gh_native * dev_dpi / grid_size)) * grid_size
 
   # Compute the mask mask
-  mask <- compute_mask(mask_raster, gw_pix, gh_pix, dev_dpi,
-                       function(img) {img != "black"})
+  mask <- compute_mask(
+    mask_raster, gw_pix, gh_pix, dev_dpi,
+    function(img) {
+      img != "black"
+    }
+  )
 
-  compute_boxes_from_mask(mask, gw_pix, gh_pix, gw_ratio, gh_ratio,
-                          max_grid_w, max_grid_h, grid_size, max_grid_size,
-                          0, 0, 0)
+  compute_boxes_from_mask(
+    mask, gw_pix, gh_pix, gw_ratio, gh_ratio,
+    max_grid_w, max_grid_h, grid_size, max_grid_size,
+    0, 0, 0
+  )
 }
 
 compute_text_boxes <- function(i, x, dev_dpi, grid_size, max_grid_size, grid_margin,
@@ -610,12 +623,18 @@ compute_text_boxes <- function(i, x, dev_dpi, grid_size, max_grid_size, grid_mar
   )
 
   # Compute the text mask
-  mask <- compute_mask(tg_inch, gw_pix, gh_pix, dev_dpi,
-                       function(img) {img != "transparent"})
+  mask <- compute_mask(
+    tg_inch, gw_pix, gh_pix, dev_dpi,
+    function(img) {
+      img != "transparent"
+    }
+  )
 
-  compute_boxes_from_mask(mask, gw_pix, gh_pix, gw_ratio, gh_ratio,
-                          max_grid_w, max_grid_h, grid_size, max_grid_size,
-                          grid_margin, gw_pix /2, gh_pix / 2)
+  compute_boxes_from_mask(
+    mask, gw_pix, gh_pix, gw_ratio, gh_ratio,
+    max_grid_w, max_grid_h, grid_size, max_grid_size,
+    grid_margin, gw_pix / 2, gh_pix / 2
+  )
 }
 
 compute_boxes_from_mask <- function(mask, gw_pix, gh_pix, gw_ratio, gh_ratio, max_grid_w, max_grid_h, grid_size, max_grid_size, grid_margin, delta_w, delta_h) {
@@ -634,7 +653,7 @@ compute_boxes_from_mask <- function(mask, gw_pix, gh_pix, gw_ratio, gh_ratio, ma
         pmin(pmax(1, -j + seq_grid_h), gh_pix),
         pmin(pmax(1, i + seq_grid_w), gw_pix),
         drop = FALSE
-        ]
+      ]
     }
   }
   cur_mask <- mask_s
@@ -648,9 +667,9 @@ compute_boxes_from_mask <- function(mask, gw_pix, gh_pix, gw_ratio, gh_ratio, ma
         for (i in 0:1) {
           next_mask <- next_mask &
             cur_mask[pmin(pmax(1, i + seq(1, nrow(cur_mask), 2)), nrow(cur_mask)),
-                     pmin(pmax(1, j + seq(1, ncol(cur_mask), 2)), ncol(cur_mask)),
-                     drop = FALSE
-                     ]
+              pmin(pmax(1, j + seq(1, ncol(cur_mask), 2)), ncol(cur_mask)),
+              drop = FALSE
+            ]
         }
       }
 
@@ -660,7 +679,7 @@ compute_boxes_from_mask <- function(mask, gw_pix, gh_pix, gw_ratio, gh_ratio, ma
           cur_mask[
             pmin(pmax(1, 2 * (mask_ind[ind, 1] - 1) + (1:2)), nrow(cur_mask)),
             pmin(pmax(1, 2 * (mask_ind[ind, 2] - 1) + (1:2)), ncol(cur_mask))
-            ] <- FALSE
+          ] <- FALSE
         }
       }
     }
