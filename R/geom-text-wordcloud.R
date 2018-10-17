@@ -16,7 +16,9 @@
 #'   mapping at the top level of the plot. You only need to supply
 #'   \code{mapping} if there isn't a mapping defined for the plot. Note that if
 #'   not specified both x and y are set to 0.5, i.e. the middle of the default
-#'   panel.
+#'   panel. Two non classic aesthetics are defined \code{angle_group} and
+#'   \code{mask_group} which define groups used respectively to use different
+#'   angular sector and different masks in the word cloud.
 #' @param inherit.aes Inherits aesthetics if TRUE
 #' @param na.rm Remove missing values if TRUE
 #' @param data A data frame. If specified, overrides the default data frame
@@ -69,7 +71,7 @@
 #' @param mask a mask (or a list of masks) used to define a zone in which the
 #'   text should be placed. Each mask should be coercible to a raster in which
 #'   the color "black" defined the text zone. When a list of masks is given, the
-#'   group aesthetic define which mask is going to be used. Default to
+#'   mask_group aesthetic defines which mask is going to be used. Default to
 #'   \code{NA}, i.e. no mask.
 #'
 #' @return a ggplot
@@ -253,7 +255,7 @@ GeomTextWordcloud <- ggproto("GeomTextWordcloud", Geom,
   default_aes = aes(
     x = 0.5, y = 0.5,
     colour = "black", size = 3.88, angle = 0, hjust = 0.5,
-    vjust = 0.5, alpha = NA, family = "", fontface = 1, lineheight = 1.2
+    vjust = 0.5, alpha = NA, family = "", fontface = 1, lineheight = 1.2, mask_group = 1L, angle_group = 1L
   ),
 
   setup_data = function(data, params) {
@@ -264,6 +266,18 @@ GeomTextWordcloud <- ggproto("GeomTextWordcloud", Geom,
       newsize <- lapply(seq_along(data$label),
                         compute_newsize, data, dev_dpi, params$area_corr_power)
       data$size <- unlist(newsize)
+    }
+    if (is.null(data$angle_group)) {
+      data$max_angle_group <- 1L
+      data$angle_group <- 1L
+    } else {
+      data$max_angle_group <- length(levels(as.factor(data$angle_group)))
+      data$angle_group <- as.numeric(as.factor(data$angle_group))
+    }
+    if (is.null(data$mask_group)) {
+      data$mask_group <- 1L
+    } else {
+      data$mask_group <- as.numeric(as.factor(data$mask_group))
     }
     data
   },
@@ -371,12 +385,11 @@ makeContent.textwordcloudtree <- function(x) {
     boxes_mask <- rep(0:(length(boxes_masks_nb) - 1), boxes_masks_nb)
     boxes_masks <- do.call(rbind, boxes_masks)
 
-    text_group <- x$data$group[valid_strings]
-    text_group[text_group == -1] <- 1L
-    text_group <- text_group - 1
-    if (max(text_group) >= nrow(mask_boxes)) {
+    mask_group <- x$data$mask_group[valid_strings]
+    mask_group <- mask_group - 1
+    if (max(mask_group) >= nrow(mask_boxes)) {
       warnings("Less masks than groups please check if this is correct")
-      text_group <- text_group %% nrow(mask_boxes)
+      mask_group <- mask_group %% nrow(mask_boxes)
     }
 
   } else {
@@ -384,8 +397,10 @@ makeContent.textwordcloudtree <- function(x) {
     mask_boxes <- array(0, dim = c(0,2))
     boxes_mask <- vector("integer")
     boxes_masks <- array(0, dim = c(1,4))
-    text_group <- rep(0L, length(valid_strings))
+    mask_group <- rep(0L, length(valid_strings))
   }
+
+  angle_group <- x$data$angle_group[valid_strings]-1L
 
   boxes <- lapply(valid_strings, compute_text_boxes, x, dev_dpi,
                   grid_size, max_grid_size, grid_margin, gw_ratio, gh_ratio)
@@ -432,7 +447,9 @@ makeContent.textwordcloudtree <- function(x) {
     boxes_masks = boxes_masks,
     boxes_mask = boxes_mask,
     mask_boxes = mask_boxes,
-    text_group = text_group,
+    mask_group = mask_group,
+    angle_group = angle_group,
+    max_angle_group = x$data$max_angle_group[1],
     xlim = range(x$limits$x),
     ylim = range(x$limits$y),
     eccentricity = x$eccentricity,

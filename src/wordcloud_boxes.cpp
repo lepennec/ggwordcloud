@@ -101,7 +101,9 @@ DataFrame wordcloud_boxes(
     NumericMatrix boxes_masks,
     IntegerVector boxes_mask,
     IntegerMatrix mask_boxes,
-    IntegerVector text_group,
+    IntegerVector mask_group,
+    IntegerVector angle_group,
+    int max_angle_group,
     NumericVector xlim, NumericVector ylim,
     const double eccentricity = 0.65,
     const double rstep = 0.1, const double tstep = 0.05,
@@ -180,6 +182,7 @@ DataFrame wordcloud_boxes(
   double r;
   double rprime;
   int group;
+  int sector;
   const double rscale = ((xlim[1]-xlim[0])*(xlim[1]-xlim[0])+
                        (ylim[1]-ylim[0])*(ylim[1]-ylim[0])/(eccentricity * eccentricity));
   double theta;
@@ -197,83 +200,89 @@ DataFrame wordcloud_boxes(
     Point CurPos;
     Point corr;
     text_inside[i] = false;
-    group = text_group[i];
+    group = mask_group[i];
 
     // Try to position the current text box
     while (i_overlaps && r < rscale) {
       iter += 1;
+
       i_overlaps = false;
 
-      CurPos = PosOri + d;
-      bool all_inside = true;
-      BigBoxes[i].x1 = CurPos.x + bigboxes(i, 0);
-      BigBoxes[i].y1 = CurPos.y + bigboxes(i, 1);
-      BigBoxes[i].x2 = CurPos.x + bigboxes(i, 2);
-      BigBoxes[i].y2 = CurPos.y + bigboxes(i, 3);
 
-      if (!overlaps(BigBoxes[i], inside)) {
-        all_inside = false;
-      }
-      for (int ii = text_boxes(i,0); all_inside&&(ii < text_boxes(i,1)); ii++) {
-        TextBoxes[ii].x1 = CurPos.x + boxes(ii, 0);
-        TextBoxes[ii].y1 = CurPos.y + boxes(ii, 1);
-        TextBoxes[ii].x2 = CurPos.x + boxes(ii, 2);
-        TextBoxes[ii].y2 = CurPos.y + boxes(ii, 3);
-        all_inside = all_inside && overlaps(TextBoxes[ii], inside);
-      }
+      sector = floor(std::fmod(theta, 2.0 * M_PI) / (2.0 * M_PI) * max_angle_group);
+      if (sector == angle_group[i]) {
+        CurPos = PosOri + d;
+        bool all_inside = true;
+        BigBoxes[i].x1 = CurPos.x + bigboxes(i, 0);
+        BigBoxes[i].y1 = CurPos.y + bigboxes(i, 1);
+        BigBoxes[i].x2 = CurPos.x + bigboxes(i, 2);
+        BigBoxes[i].y2 = CurPos.y + bigboxes(i, 3);
 
-      if (all_inside) {
-        corr.x = 0;
-        corr.y = 0;
-        for (int ii = text_boxes(i,0); ii < text_boxes(i,1); ii++){
-          if (TextBoxes[ii].x1 < xbounds.x) {
-            corr.x = std::max(xbounds.x-TextBoxes[ii].x1,corr.x);
-          }
-          if (TextBoxes[ii].x2 > xbounds.y) {
-            corr.x = std::min(xbounds.y-TextBoxes[ii].x2,corr.x);
-          }
-          if (TextBoxes[ii].y1 < ybounds.x) {
-            corr.y = std::max(ybounds.x-TextBoxes[ii].y1,corr.y);
-          }
-          if (TextBoxes[ii].y2 > ybounds.y) {
-            corr.y = std::min(ybounds.y-TextBoxes[ii].y2,corr.y);
-          }
+        if (!overlaps(BigBoxes[i], inside)) {
+          all_inside = false;
         }
-        BigBoxes[i] = BigBoxes[i] + corr;
-        for (int ii = text_boxes(i,0); ii < text_boxes(i,1); ii++){
-          TextBoxes[ii] = TextBoxes[ii] + corr;
+        for (int ii = text_boxes(i,0); all_inside&&(ii < text_boxes(i,1)); ii++) {
+          TextBoxes[ii].x1 = CurPos.x + boxes(ii, 0);
+          TextBoxes[ii].y1 = CurPos.y + boxes(ii, 1);
+          TextBoxes[ii].x2 = CurPos.x + boxes(ii, 2);
+          TextBoxes[ii].y2 = CurPos.y + boxes(ii, 3);
+          all_inside = all_inside && overlaps(TextBoxes[ii], inside);
         }
-        CurPos = CurPos + corr;
 
-        // Any overlap with previous texts?
-        for (int j = 0; (!i_overlaps) && (j < i); j++) {
-          if (overlaps(BigBoxes[i], BigBoxes[j])) {
-            for (int ii = text_boxes(i,0); (!i_overlaps) && (ii < text_boxes(i,1)); ii++){
-              if (overlaps(TextBoxes[ii], BigBoxes[j])) {
-                for (int jj = text_boxes(j,0); (!i_overlaps) && (jj < text_boxes(j,1)); jj++){
-                  if (overlaps(TextBoxes[ii], TextBoxes[jj])) {
-                    i_overlaps = true;
+        if (all_inside) {
+          corr.x = 0;
+          corr.y = 0;
+          for (int ii = text_boxes(i,0); ii < text_boxes(i,1); ii++){
+            if (TextBoxes[ii].x1 < xbounds.x) {
+              corr.x = std::max(xbounds.x-TextBoxes[ii].x1,corr.x);
+            }
+            if (TextBoxes[ii].x2 > xbounds.y) {
+              corr.x = std::min(xbounds.y-TextBoxes[ii].x2,corr.x);
+            }
+            if (TextBoxes[ii].y1 < ybounds.x) {
+              corr.y = std::max(ybounds.x-TextBoxes[ii].y1,corr.y);
+            }
+            if (TextBoxes[ii].y2 > ybounds.y) {
+              corr.y = std::min(ybounds.y-TextBoxes[ii].y2,corr.y);
+            }
+          }
+          BigBoxes[i] = BigBoxes[i] + corr;
+          for (int ii = text_boxes(i,0); ii < text_boxes(i,1); ii++){
+            TextBoxes[ii] = TextBoxes[ii] + corr;
+          }
+          CurPos = CurPos + corr;
+
+          // Any overlap with previous texts?
+          for (int j = 0; (!i_overlaps) && (j < i); j++) {
+            if (overlaps(BigBoxes[i], BigBoxes[j])) {
+              for (int ii = text_boxes(i,0); (!i_overlaps) && (ii < text_boxes(i,1)); ii++){
+                if (overlaps(TextBoxes[ii], BigBoxes[j])) {
+                  for (int jj = text_boxes(j,0); (!i_overlaps) && (jj < text_boxes(j,1)); jj++){
+                    if (overlaps(TextBoxes[ii], TextBoxes[jj])) {
+                      i_overlaps = true;
+                    }
                   }
                 }
               }
             }
           }
-        }
 
-        // Within the mask?
-        for (int jj = mask_boxes(group,0); (!i_overlaps) && (jj < mask_boxes(group,1)); jj++) {
-          if (overlaps(MaskBoxes[jj], BigBoxes[i])) {
-            for (int ii = text_boxes(i,0); (!i_overlaps) && (ii < text_boxes(i,1)); ii++){
-              if (overlaps(TextBoxes[ii], MaskBoxes[jj])) {
-                i_overlaps = true;
+          // Within the mask?
+          for (int jj = mask_boxes(group,0); (!i_overlaps) && (jj < mask_boxes(group,1)); jj++) {
+            if (overlaps(MaskBoxes[jj], BigBoxes[i])) {
+              for (int ii = text_boxes(i,0); (!i_overlaps) && (ii < text_boxes(i,1)); ii++){
+                if (overlaps(TextBoxes[ii], MaskBoxes[jj])) {
+                  i_overlaps = true;
+                }
               }
             }
           }
+        } else {
+          i_overlaps = true;
         }
       } else {
         i_overlaps = true;
       }
-
 
       if (i_overlaps) {
         int nstep;

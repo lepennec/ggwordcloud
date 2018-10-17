@@ -32,7 +32,9 @@ geom_text_wordcloud_area(mapping = NULL, data = NULL,
 mapping at the top level of the plot. You only need to supply
 \code{mapping} if there isn't a mapping defined for the plot. Note that if
 not specified both x and y are set to 0.5, i.e. the middle of the default
-panel.}
+panel. Two non classic aesthetics are defined \code{angle_group} and
+\code{mask_group} which define groups used respectively to use different
+angular sector and different masks in the word cloud.}
 
 \item{data}{A data frame. If specified, overrides the default data frame
 defined at the top level of the plot.}
@@ -94,7 +96,7 @@ which means that \code{set.seed} will not be called.}
 \item{mask}{a mask (or a list of masks) used to define a zone in which the
 text should be placed. Each mask should be coercible to a raster in which
 the color "black" defined the text zone. When a list of masks is given, the
-group aesthetic define which mask is going to be used. Default to
+mask_group aesthetic defines which mask is going to be used. Default to
 \code{NA}, i.e. no mask.}
 
 \item{area_corr}{Set the font size so that the area is proportional to size
