@@ -136,8 +136,9 @@ related to the size aesthetic.</p>
   <span class='kw'>perc_step</span> <span class='kw'>=</span> <span class='fl'>0.01</span>, <span class='kw'>max_steps</span> <span class='kw'>=</span> <span class='fl'>10</span>, <span class='kw'>grid_size</span> <span class='kw'>=</span> <span class='fl'>4</span>,
   <span class='kw'>max_grid_size</span> <span class='kw'>=</span> <span class='fl'>128</span>, <span class='kw'>grid_margin</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>xlim</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='fl'>NA</span>, <span class='fl'>NA</span>),
   <span class='kw'>ylim</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='fl'>NA</span>, <span class='fl'>NA</span>), <span class='kw'>seed</span> <span class='kw'>=</span> <span class='fl'>NA</span>, <span class='kw'>rm_outside</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>shape</span> <span class='kw'>=</span> <span class='st'>"circle"</span>, <span class='kw'>area_corr</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>area_corr_power</span> <span class='kw'>=</span> <span class='fl'>1</span>/<span class='fl'>0.7</span>,
-  <span class='kw'>na.rm</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>show.legend</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>inherit.aes</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
+  <span class='kw'>shape</span> <span class='kw'>=</span> <span class='st'>"circle"</span>, <span class='kw'>mask</span> <span class='kw'>=</span> <span class='fl'>NA</span>, <span class='kw'>area_corr</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+  <span class='kw'>area_corr_power</span> <span class='kw'>=</span> <span class='fl'>1</span>/<span class='fl'>0.7</span>, <span class='kw'>na.rm</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>show.legend</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+  <span class='kw'>inherit.aes</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
 
 <span class='fu'>geom_text_wordcloud_area</span>(<span class='kw'>mapping</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>data</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>stat</span> <span class='kw'>=</span> <span class='st'>"identity"</span>, <span class='kw'>position</span> <span class='kw'>=</span> <span class='st'>"identity"</span>, <span class='no'>...</span>, <span class='kw'>parse</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
@@ -145,8 +146,9 @@ related to the size aesthetic.</p>
   <span class='kw'>tstep</span> <span class='kw'>=</span> <span class='fl'>0.02</span>, <span class='kw'>perc_step</span> <span class='kw'>=</span> <span class='fl'>0.01</span>, <span class='kw'>max_steps</span> <span class='kw'>=</span> <span class='fl'>10</span>, <span class='kw'>grid_size</span> <span class='kw'>=</span> <span class='fl'>4</span>,
   <span class='kw'>max_grid_size</span> <span class='kw'>=</span> <span class='fl'>128</span>, <span class='kw'>grid_margin</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>xlim</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='fl'>NA</span>, <span class='fl'>NA</span>),
   <span class='kw'>ylim</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='fl'>NA</span>, <span class='fl'>NA</span>), <span class='kw'>seed</span> <span class='kw'>=</span> <span class='fl'>NA</span>, <span class='kw'>rm_outside</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>shape</span> <span class='kw'>=</span> <span class='st'>"circle"</span>, <span class='kw'>area_corr</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>area_corr_power</span> <span class='kw'>=</span> <span class='fl'>1</span>/<span class='fl'>0.7</span>,
-  <span class='kw'>na.rm</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>show.legend</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>inherit.aes</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
+  <span class='kw'>shape</span> <span class='kw'>=</span> <span class='st'>"circle"</span>, <span class='kw'>mask</span> <span class='kw'>=</span> <span class='fl'>NA</span>, <span class='kw'>area_corr</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
+  <span class='kw'>area_corr_power</span> <span class='kw'>=</span> <span class='fl'>1</span>/<span class='fl'>0.7</span>, <span class='kw'>na.rm</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>show.legend</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
+  <span class='kw'>inherit.aes</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -257,6 +259,14 @@ which means that <code>set.seed</code> will not be called.</p></td>
 <code>cardioid</code>, <code>diamond</code>, <code>square</code>, <code>triangle-forward</code>,
 <code>triangle-upright</code>, <code>pentagon</code>, <code>star</code>. Default to
 <code>circle</code></p></td>
+    </tr>
+    <tr>
+      <th>mask</th>
+      <td><p>a mask (or a list of masks) used to define a zone in which the
+text should be placed. Each mask should be coercible to a raster in which
+the color "black" defined the text zone. When a list of masks is given, the
+group aesthetic define which mask is going to be used. Default to
+<code>NA</code>, i.e. no mask.</p></td>
     </tr>
     <tr>
       <th>area_corr</th>
