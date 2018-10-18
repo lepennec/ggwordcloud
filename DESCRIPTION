@@ -30,7 +30,8 @@ Suggests:
     rmarkdown,
     ggrepel,
     wordcloud,
-    wordcloud2
+    wordcloud2,
+    covr
 LinkingTo: 
     Rcpp
 Encoding: UTF-8

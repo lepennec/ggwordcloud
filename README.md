@@ -5,6 +5,8 @@
 
 [![Travis build
 status](https://travis-ci.org/lepennec/ggwordcloud.svg?branch=master)](https://travis-ci.org/lepennec/ggwordcloud)
+[![Coverage
+status](https://codecov.io/gh/lepennec/ggwordcloud/branch/master/graph/badge.svg)](https://codecov.io/github/lepennec/ggwordcloud?branch=master)
 [![CRAN
 status](https://www.r-pkg.org/badges/version/ggwordcloud)](https://cran.r-project.org/package=ggwordcloud)
 
