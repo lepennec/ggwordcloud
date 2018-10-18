@@ -135,14 +135,16 @@ ggwordcloud2 <- function(data,
     dataOut <- dataOut[ord, ]
   }
 
-  if (color == "random-dark") {
-    dataOut$color <- random_dark(nrow(dataOut))
-  } else {
-    if (color == "random-light") {
+  if (length(color) == 1) {
+    if (color == "random-dark") {
       dataOut$color <- random_dark(nrow(dataOut))
     } else {
-      dataOut$color <- color
+      if (color == "random-light") {
+        dataOut$color <- random_light(nrow(dataOut))
+      }
     }
+  } else {
+    dataOut$color <- color
   }
 
   with(
