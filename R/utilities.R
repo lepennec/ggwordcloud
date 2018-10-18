@@ -1,7 +1,3 @@
-"%||%" <- function(a, b) {
-  if (!is.null(a)) a else b
-}
-
 #' Return a boolean vector of non-empty items.
 #'
 #' @param xs Vector with a mix of "expression" items, "character" items,
@@ -16,24 +12,4 @@ not_empty <- function(xs) {
       return(xs[i] != "")
     }
   })
-}
-
-#' Return a unit version of the argument.
-#'
-#' @param x Number or unit object.
-#' @return unit(x, "lines") if number or the unchanged argument if it's already
-#'  a unit object.
-#' @noRd
-to_unit <- function(x) {
-  # don't change arg if already unit
-  if (class(x) == "unit") {
-    return(x)
-  }
-
-  # NA used to exclude points from repulsion calculations
-  if (is.na(x)) {
-    return(NA)
-  }
-
-  unit(x, "lines")
 }
