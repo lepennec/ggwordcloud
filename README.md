@@ -3,6 +3,9 @@
 
 # ggwordcloud
 
+[![Travis build
+status](https://travis-ci.org/lepennec/ggwordcloud.svg?branch=master)](https://travis-ci.org/lepennec/ggwordcloud)
+
 `ggwordcloud` provides a word cloud text geom for `ggplot2`. The
 placement algorithm implemented in C++ is close to the one used in
 `wordcloud2.js` and thus aims to be a replacement of `wordcloud2` that
