@@ -91,6 +91,8 @@ double r_star(double theta) {
                      3.07768 * std::sin(thetaprime));
 }
 
+Rcpp::Function msg("message");
+
 // [[Rcpp::export]]
 DataFrame wordcloud_boxes(
     NumericMatrix data_points,
@@ -323,13 +325,13 @@ DataFrame wordcloud_boxes(
   if (nb_bad > 0) {
     if (nb_bad == 1) {
       if (rm_outside) {
-        Rcpp::warning("One word could not fit on page. It has been removed.");
+        msg("One word could not fit on page. It has been removed.");
       } else {
         Rcpp::warning("One word could not fit on page. It has been placed at its original position.");
       }
     } else {
       if (rm_outside) {
-        Rcpp::warning("Some words could not fit on page. They have been removed.");
+        msg("Some words could not fit on page. They have been removed.");
       } else {
         Rcpp::warning("Some words could not fit on page. They have been placed at their original positions.");
       }
