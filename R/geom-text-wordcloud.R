@@ -359,8 +359,8 @@ GeomTextWordcloud <- ggproto("GeomTextWordcloud", Geom,
 #' @export
 makeContent.textwordcloudtree <- function(x) {
   # Do not create text labels for empty strings.
-  valid_strings <- which(not_empty(x$lab))
-  invalid_strings <- which(!not_empty(x$lab))
+  valid_strings <- which(not_empty(x$lab)&(!is.na(x$data$size)))
+  invalid_strings <- which(!not_empty(x$lab)|(is.na(x$data$size)))
 
 
   # Compute the native/pixel ratio
@@ -418,7 +418,7 @@ makeContent.textwordcloudtree <- function(x) {
   if (length(boxes) > 0) {
     boxes_nb <- sapply(boxes, nrow)
     bigboxes <- lapply(boxes, function(box) {
-      c(min(box[, 1]), min(box[, 2]), max(box[, 3]), max(box[, 4]))
+        c(min(box[, 1]), min(box[, 2]), max(box[, 3]), max(box[, 4]))
     })
     boxes_start <- cumsum(boxes_nb)
     text_boxes <- cbind(c(0, boxes_start[-length(boxes_start)]), boxes_start)
