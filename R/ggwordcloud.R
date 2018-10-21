@@ -16,6 +16,7 @@
 #'   dev.off
 #'   dev.set
 #'   dev.size
+#'   png
 #' @importFrom colorspace
 #'   hex
 #'   HLS
