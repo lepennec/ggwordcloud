@@ -362,7 +362,6 @@ makeContent.textwordcloudtree <- function(x) {
   valid_strings <- which(not_empty(x$lab)&(!is.na(x$data$size)))
   invalid_strings <- which(!not_empty(x$lab)|(is.na(x$data$size)))
 
-
   # Compute the native/pixel ratio
   dev_inch <- dev.size("in")
   dev_pix <- dev.size("px")
@@ -418,8 +417,9 @@ makeContent.textwordcloudtree <- function(x) {
   if (length(boxes) > 0) {
     boxes_nb <- sapply(boxes, nrow)
     bigboxes <- lapply(boxes, function(box) {
-        c(min(box[, 1]), min(box[, 2]), max(box[, 3]), max(box[, 4]))
+      c(min(box[, 1]), min(box[, 2]), max(box[, 3]), max(box[, 4]))
     })
+
     boxes_start <- cumsum(boxes_nb)
     text_boxes <- cbind(c(0, boxes_start[-length(boxes_start)]), boxes_start)
     boxes_text <- rep(0:(length(boxes_nb) - 1), boxes_nb)
@@ -499,15 +499,68 @@ just_dir <- function(x, tol = 0.001) {
   out
 }
 
-compute_mask <- function(tg_inch, gw_pix, gh_pix, dev_dpi, f_mask) {
+compute_mask <- function(tg_inch, gw_pix, gh_pix, dev_dpi, f_mask, Cairo_fix = TRUE) {
   prev_dev_id <- dev.cur()
   dev_id <- Cairo(width = gw_pix, height = gh_pix, dpi = dev_dpi, units = "px", type = "raster")
-  pushViewport(grid::viewport(width = 1, height = 1))
+  pushViewport(viewport(width = gw_pix / dev_dpi,
+                        height = gh_pix / dev_dpi,
+                        default.units = "inch"))
   grid.draw(tg_inch)
   popViewport()
   img <- grid.cap()
   dev.off()
   dev.set(prev_dev_id)
+  if (Cairo_fix) {
+    # UTF8 character are not always rendered by the Cairo device
+    # Try png
+    if (all(img=="transparent")) {
+      prev_dev_id <- dev.cur()
+      tmp_file <- tempfile(fileext = "png")
+      png(filename = tmp_file,
+          width = gw_pix, height = gh_pix, res = dev_dpi,
+          units = "px")
+      pushViewport(viewport(width = gw_pix / dev_dpi,
+                            height = gh_pix / dev_dpi,
+                            default.units = "inch"))
+      grid.draw(tg_inch)
+      popViewport()
+      dev.off()
+      dev.set(prev_dev_id)
+      tmp_png <- readPNG(tmp_file)
+      file.remove(tmp_file)
+      img <- apply(tmp_png, c(1,2), sum)
+      img[which(img==3)] <- "transparent"
+    }
+    # Fallback to a rectangle
+    if (all(img=="transparent")) {
+      rot <- tg_inch$rot
+      tg_inch$rot <- 0
+      w_inch <- convertWidth(grobWidth(tg_inch), "inch", TRUE)
+      h_inch <- convertHeight(grobHeight(tg_inch), "inch", TRUE)
+      desc_inch <- convertHeight(grobDescent(tg_inch), "inch", TRUE)
+      prev_dev_id <- dev.cur()
+      dev_id <- Cairo(width = gw_pix, height = gh_pix, dpi = dev_dpi, units = "px", type = "raster")
+      pushViewport(viewport(width = gw_pix / dev_dpi,
+                            height = gh_pix / dev_dpi,
+                            default.units = "inch"))
+      pushViewport(viewport(
+        x = gw_pix/2 / dev_dpi,
+        y = gh_pix/2 / dev_dpi,
+        width = gw_pix / dev_dpi,
+        height = gh_pix / dev_dpi,
+        default.units = "inch",
+        angle = rot))
+      grid.rect(x = gw_pix/2/dev_dpi, gh_pix/2/dev_dpi-desc_inch/2,
+                width = w_inch, height = h_inch + desc_inch,
+                default.units = "inch",
+                gp = gpar(fill = "black"))
+      popViewport()
+      popViewport()
+      img <- grid.cap()
+      dev.off()
+      dev.set(prev_dev_id)
+    }
+  }
   f_mask(img)
 }
 
@@ -575,7 +628,8 @@ compute_mask_boxes <- function(mask_matrix, dev_dpi, grid_size, max_grid_size, g
     mask_raster, gw_pix, gh_pix, dev_dpi,
     function(img) {
       img != "black"
-    }
+    },
+    Cairo_fix = FALSE
   )
 
   compute_boxes_from_mask(
@@ -584,6 +638,7 @@ compute_mask_boxes <- function(mask_matrix, dev_dpi, grid_size, max_grid_size, g
     0, 0, 0
   )
 }
+
 
 compute_text_boxes <- function(i, x, dev_dpi, grid_size, max_grid_size, grid_margin,
                                gw_ratio, gh_ratio) {

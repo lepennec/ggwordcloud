@@ -23,7 +23,8 @@ Imports:
     grid,
     Rcpp,
     scales (>= 1.0.0),
-    colorspace
+    colorspace,
+    png
 Suggests: 
     testthat (>= 2.0.0),
     knitr,

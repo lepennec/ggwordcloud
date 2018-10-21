@@ -20,4 +20,5 @@
 #'   hex
 #'   HLS
 #' @importFrom stats runif
+#' @importFrom png readPNG
 NULL
