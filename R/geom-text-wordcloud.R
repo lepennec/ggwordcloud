@@ -78,15 +78,17 @@
 #'
 #' @examples
 #' set.seed(42)
-#' dat <- mtcars
-#' dat$name <- row.names(mtcars)
-#' dat$size <- dat$mpg
-#' dat$size[1] <- 300
-#' ggplot(data = dat, aes(size = size, label = name)) + geom_text_wordcloud() +
-#'   theme_minimal()
-#' dat$angle <- (-90+180*runif(nrow(dat)))*(runif(nrow(dat)>.6))
-#' ggplot(data = dat, aes(size = size, label = name, angle = angle)) +
-#'  geom_text_wordcloud() + theme_minimal()
+#' data("love_words_small")
+#'
+#' ggplot(love_words_small, aes(label = word, size = speakers)) +
+#' geom_text_wordcloud() +
+#' scale_size_area(max_size = 20) +
+#' theme_minimal()
+#'
+#' ggplot(love_words_small, aes(label = word, size = speakers)) +
+#' geom_text_wordcloud_area() +
+#' scale_size_area(max_size = 20) +
+#' theme_minimal()
 #' @export
 geom_text_wordcloud <- function(mapping = NULL, data = NULL,
                                 stat = "identity", position = "identity",

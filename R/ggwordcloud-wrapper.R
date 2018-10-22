@@ -24,12 +24,9 @@
 #' @return a ggplot
 #' @examples
 #' set.seed(42)
-#' dat <- mtcars
-#' dat$name <- row.names(mtcars)
-#' dat$size <- dat$mpg
-#' dat$size[1] <- 300
+#' data("love_words_small")
 #'
-#' ggwordcloud(dat$name, dat$size)
+#' ggwordcloud(love_words_small$word, love_words_small$speakers)])
 #' @export
 ggwordcloud <- function(words, freq, scale = c(4, 0.5), min.freq = 3, max.words = Inf,
                         random.order = TRUE, random.color = FALSE, rot.per = 0.1,
@@ -97,16 +94,15 @@ ggwordcloud <- function(words, freq, scale = c(4, 0.5), min.freq = 3, max.words 
 #' @param rotateRatio the proportion of rotated words
 #' @param shuffle if TRUE, the words are shuffled at the beginning
 #' @param ellipticity control the eccentricity of the wordcloud
+#' @param shape control the shape of the cloud
+#' @param figPath path to an image used a mask
 #' @param ... the remaining parameters are passed to geom_text_wordcloud
 #' @return a ggplot
 #' @examples
 #' set.seed(42)
-#' dat <- mtcars
-#' dat$name <- row.names(mtcars)
-#' dat$size <- dat$mpg
-#' dat$size[1] <- 300
+#' data("love_words_small")
 #'
-#' ggwordcloud2(dat[,c("name", "size")])
+#' ggwordcloud2(love_words_small[,c("word", "speakers")])
 #' @export
 ggwordcloud2 <- function(data,
                          size = 1,
@@ -116,8 +112,9 @@ ggwordcloud2 <- function(data,
                          # backgroundColor = "white",
                          minRotation = -pi / 4, maxRotation = pi / 4, shuffle = TRUE,
                          rotateRatio = 0.4,
-                         # shape = "circle",
+                         shape = "circle",
                          ellipticity = 0.65,
+                         figPath = NA,
                          ...) {
   if ("table" %in% class(data)) {
     dataOut <- data.frame(name = names(data), freq = as.vector(data))
@@ -153,7 +150,7 @@ ggwordcloud2 <- function(data,
       label = name, size = freq, angle = rot,
       color = color
     )) +
-      geom_text_wordcloud(eccentricity = ellipticity, rm_outside = TRUE, ...) +
+      geom_text_wordcloud(eccentricity = ellipticity, rm_outside = TRUE, shape = shape, mask = figPath, ...) +
       scale_color_identity() +
       scale_radius(limits = c(0, NA), range = c(0, 18 * size)) +
       theme_minimal()
