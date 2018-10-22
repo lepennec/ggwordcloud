@@ -32,7 +32,9 @@ Suggests:
     ggrepel,
     wordcloud,
     wordcloud2,
-    covr
+    covr,
+    dplyr,
+    tidyr
 LinkingTo: 
     Rcpp
 Encoding: UTF-8
