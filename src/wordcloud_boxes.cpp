@@ -7,30 +7,30 @@ typedef struct {
   double x, y;
 } Point;
 
-Point operator -(const Point& a, const Point& b) {
-  Point p = {a.x - b.x, a.y - b.y};
-  return p;
-}
+// Point operator -(const Point& a, const Point& b) {
+//   Point p = {a.x - b.x, a.y - b.y};
+//   return p;
+// }
 
 Point operator +(const Point& a, const Point& b) {
   Point p = {a.x + b.x, a.y + b.y};
   return p;
 }
 
-Point operator /(const Point& a, const double& b) {
-  Point p = {a.x / b, a.y / b};
-  return p;
-}
-
-Point operator *(const double& b, const Point& a) {
-  Point p = {a.x * b, a.y * b};
-  return p;
-}
-
-Point operator *(const Point& a, const double& b) {
-  Point p = {a.x * b, a.y * b};
-  return p;
-}
+// Point operator /(const Point& a, const double& b) {
+//   Point p = {a.x / b, a.y / b};
+//   return p;
+// }
+//
+// Point operator *(const double& b, const Point& a) {
+//   Point p = {a.x * b, a.y * b};
+//   return p;
+// }
+//
+// Point operator *(const Point& a, const double& b) {
+//   Point p = {a.x * b, a.y * b};
+//   return p;
+// }
 
 typedef struct {
   double x1, y1, x2, y2;
