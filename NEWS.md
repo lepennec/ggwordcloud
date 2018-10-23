@@ -1,4 +1,5 @@
 # ggwordcloud 0.2.0.9000
+* rewritten doc
 * fix a Cairo issue with some utf8 strings
 * allow to use a mask
 * add a parameter to select the shape of the cloud

@@ -34,7 +34,7 @@ or the development version from the github repository
 devtools::install_github("lepennec/ggwordcloud")
 ```
 
-Please check the lasest development version before submitting an issue.
+Please check the latest development version before submitting an issue.
 
 # Some word clouds
 
@@ -63,13 +63,15 @@ ggplot(
     color = speakers
   )
 ) +
-  geom_text_wordcloud_area(aes(angle = 45 * sample(-2:2, nrow(love_words), replace = TRUE,
-                                                   prob = c(1, 1, 4, 1, 1))),
-    area_corr_power = 1,
-    mask = png::readPNG(system.file("extdata/hearth.png",
-      package = "ggwordcloud", mustWork = TRUE
-    )),
-    rm_outside = TRUE
+  geom_text_wordcloud_area(aes(angle = 45 * sample(-2:2, nrow(love_words),
+    replace = TRUE,
+    prob = c(1, 1, 4, 1, 1)
+  )),
+  area_corr_power = 1,
+  mask = png::readPNG(system.file("extdata/hearth.png",
+    package = "ggwordcloud", mustWork = TRUE
+  )),
+  rm_outside = TRUE
   ) +
   scale_size_area(max_size = 25) +
   theme_minimal() +
