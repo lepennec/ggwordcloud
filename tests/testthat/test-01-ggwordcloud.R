@@ -97,7 +97,7 @@ test_that("geom_text_wordcloud complains when one word do not fit", {
   expect_warning({
     set.seed(42)
     print(ggplot(
-      data = love_words_small[1, ],
+      data = love_words_small[2, ],
       aes(label = word, size = 1)
     ) +
       geom_text_wordcloud() +
@@ -109,7 +109,7 @@ test_that("geom_text_wordcloud complains silently when one word does not fit and
   expect_message({
     set.seed(42)
     print(ggplot(
-      data = love_words_small[1, ],
+      data = love_words_small[2, ],
       aes(label = word, size = 1)
     ) +
       geom_text_wordcloud(rm_outside = TRUE) +
