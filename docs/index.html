@@ -90,7 +90,7 @@
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw">install.packages</span>(<span class="st">"ggwordcloud"</span>)</a></code></pre></div>
 <p>or the development version from the github repository</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1">devtools<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/devtools/topics/reexports">install_github</a></span>(<span class="st">"lepennec/ggwordcloud"</span>)</a></code></pre></div>
-<p>Please check the lasest development version before submitting an issue.</p>
+<p>Please check the latest development version before submitting an issue.</p>
 </div>
 </div>
 <div id="some-word-clouds" class="section level1">
@@ -115,18 +115,20 @@
 <a class="sourceLine" id="cb4-7" data-line-number="7">    <span class="dt">color =</span> speakers</a>
 <a class="sourceLine" id="cb4-8" data-line-number="8">  )</a>
 <a class="sourceLine" id="cb4-9" data-line-number="9">) <span class="op">+</span></a>
-<a class="sourceLine" id="cb4-10" data-line-number="10"><span class="st">  </span><span class="kw"><a href="reference/geom_text_wordcloud.html">geom_text_wordcloud_area</a></span>(<span class="kw">aes</span>(<span class="dt">angle =</span> <span class="dv">45</span> <span class="op">*</span><span class="st"> </span><span class="kw">sample</span>(<span class="op">-</span><span class="dv">2</span><span class="op">:</span><span class="dv">2</span>, <span class="kw">nrow</span>(love_words), <span class="dt">replace =</span> <span class="ot">TRUE</span>,</a>
-<a class="sourceLine" id="cb4-11" data-line-number="11">                                                   <span class="dt">prob =</span> <span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">4</span>, <span class="dv">1</span>, <span class="dv">1</span>))),</a>
-<a class="sourceLine" id="cb4-12" data-line-number="12">    <span class="dt">area_corr_power =</span> <span class="dv">1</span>,</a>
-<a class="sourceLine" id="cb4-13" data-line-number="13">    <span class="dt">mask =</span> png<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/png/topics/readPNG">readPNG</a></span>(<span class="kw">system.file</span>(<span class="st">"extdata/hearth.png"</span>,</a>
-<a class="sourceLine" id="cb4-14" data-line-number="14">      <span class="dt">package =</span> <span class="st">"ggwordcloud"</span>, <span class="dt">mustWork =</span> <span class="ot">TRUE</span></a>
-<a class="sourceLine" id="cb4-15" data-line-number="15">    )),</a>
-<a class="sourceLine" id="cb4-16" data-line-number="16">    <span class="dt">rm_outside =</span> <span class="ot">TRUE</span></a>
-<a class="sourceLine" id="cb4-17" data-line-number="17">  ) <span class="op">+</span></a>
-<a class="sourceLine" id="cb4-18" data-line-number="18"><span class="st">  </span><span class="kw">scale_size_area</span>(<span class="dt">max_size =</span> <span class="dv">25</span>) <span class="op">+</span></a>
-<a class="sourceLine" id="cb4-19" data-line-number="19"><span class="st">  </span><span class="kw">theme_minimal</span>() <span class="op">+</span></a>
-<a class="sourceLine" id="cb4-20" data-line-number="20"><span class="st">  </span><span class="kw">scale_color_gradient</span>(<span class="dt">low =</span> <span class="st">"darkred"</span>, <span class="dt">high =</span> <span class="st">"red"</span>)</a>
-<a class="sourceLine" id="cb4-21" data-line-number="21"><span class="co">#&gt; Some words could not fit on page. They have been removed.</span></a></code></pre></div>
+<a class="sourceLine" id="cb4-10" data-line-number="10"><span class="st">  </span><span class="kw"><a href="reference/geom_text_wordcloud.html">geom_text_wordcloud_area</a></span>(<span class="kw">aes</span>(<span class="dt">angle =</span> <span class="dv">45</span> <span class="op">*</span><span class="st"> </span><span class="kw">sample</span>(<span class="op">-</span><span class="dv">2</span><span class="op">:</span><span class="dv">2</span>, <span class="kw">nrow</span>(love_words),</a>
+<a class="sourceLine" id="cb4-11" data-line-number="11">    <span class="dt">replace =</span> <span class="ot">TRUE</span>,</a>
+<a class="sourceLine" id="cb4-12" data-line-number="12">    <span class="dt">prob =</span> <span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">4</span>, <span class="dv">1</span>, <span class="dv">1</span>)</a>
+<a class="sourceLine" id="cb4-13" data-line-number="13">  )),</a>
+<a class="sourceLine" id="cb4-14" data-line-number="14">  <span class="dt">area_corr_power =</span> <span class="dv">1</span>,</a>
+<a class="sourceLine" id="cb4-15" data-line-number="15">  <span class="dt">mask =</span> png<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/png/topics/readPNG">readPNG</a></span>(<span class="kw">system.file</span>(<span class="st">"extdata/hearth.png"</span>,</a>
+<a class="sourceLine" id="cb4-16" data-line-number="16">    <span class="dt">package =</span> <span class="st">"ggwordcloud"</span>, <span class="dt">mustWork =</span> <span class="ot">TRUE</span></a>
+<a class="sourceLine" id="cb4-17" data-line-number="17">  )),</a>
+<a class="sourceLine" id="cb4-18" data-line-number="18">  <span class="dt">rm_outside =</span> <span class="ot">TRUE</span></a>
+<a class="sourceLine" id="cb4-19" data-line-number="19">  ) <span class="op">+</span></a>
+<a class="sourceLine" id="cb4-20" data-line-number="20"><span class="st">  </span><span class="kw">scale_size_area</span>(<span class="dt">max_size =</span> <span class="dv">25</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb4-21" data-line-number="21"><span class="st">  </span><span class="kw">theme_minimal</span>() <span class="op">+</span></a>
+<a class="sourceLine" id="cb4-22" data-line-number="22"><span class="st">  </span><span class="kw">scale_color_gradient</span>(<span class="dt">low =</span> <span class="st">"darkred"</span>, <span class="dt">high =</span> <span class="st">"red"</span>)</a>
+<a class="sourceLine" id="cb4-23" data-line-number="23"><span class="co">#&gt; Some words could not fit on page. They have been removed.</span></a></code></pre></div>
 <p><img src="reference/figures/README-unnamed-chunk-4-1.png" width="100%"></p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="kw">library</span>(dplyr, <span class="dt">quietly =</span> <span class="ot">TRUE</span>, <span class="dt">warn.conflicts =</span> <span class="ot">FALSE</span>)</a>
 <a class="sourceLine" id="cb5-2" data-line-number="2"><span class="kw">library</span>(tidyr, <span class="dt">quietly =</span> <span class="ot">TRUE</span>)</a>

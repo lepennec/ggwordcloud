@@ -11,6 +11,7 @@
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js" integrity="sha384-cV+rhyOuRHc9Ub/91rihWcGmMmCXDeksTtCihMupQHSsi8GIIRDG0ThDc3HGQFJ3" crossorigin="anonymous"></script><!-- sticky kit --><script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-kit/1.1.3/sticky-kit.min.js" integrity="sha256-c4Rlo1ZozqTPE2RLuvbusY3+SU1pQaJC0TjuhygMipw=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
 <script src="../pkgdown.js"></script><meta property="og:title" content="ggwordcloud: a word cloud geom for ggplot2">
 <meta property="og:description" content="">
+<meta property="og:image" content="/logo.png">
 <meta name="twitter:card" content="summary">
 <!-- mathjax --><script src="https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
@@ -73,7 +74,7 @@
       <h1>ggwordcloud: a word cloud geom for ggplot2</h1>
                         <h4 class="author">E. Le Pennec</h4>
             
-            <h4 class="date">2018-10-17</h4>
+            <h4 class="date">2018-10-23</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/lepennec/ggwordcloud/blob/master/vignettes/ggwordcloud.Rmd"><code>vignettes/ggwordcloud.Rmd</code></a></small>
       <div class="hidden name"><code>ggwordcloud.Rmd</code></div>
@@ -82,7 +83,7 @@
 
     
     
-<p><code>ggwordcloud</code> provides a word cloud text geom for <code>ggplot2</code>. The placement algorithm implemented in C++ is close to the one used in <code>wordcloud2.js</code> and thus aims to be a replacement of <code>wordcloud2</code> that produces <code>ggplot2</code> type plot instead of an html widget. Note that the current version does not provide the shape and mask possibility of <code>wordcloud2</code>. Even if the algorithm of <code>wordcloud</code> is similar, <code>ggwordcloud</code> is much faster and allows arbitrary rotations of the words.</p>
+<p><code>ggwordcloud</code> provides a word cloud text geom for <code>ggplot2</code>. The placement algorithm implemented in C++ is an hybrid between the one of <code>wordcloud</code> and the one of <code>wordcloud2.js</code>. The cloud can grow according to a shape and stay within a mask. The size aesthetic is used either to control the font size or the printed area of the words. <code>ggwordcloud</code> also supports arbitrary text rotation. The faceting scheme of <code>ggplot2</code> can also be used. Two functions meant to be the equivalent of <code>wordcloud</code> and <code>wordcloud2</code> are proposed.</p>
 <p>This vignette is meant as a quick tour of its possibility.</p>
 <div id="package-installation" class="section level1">
 <h1 class="hasAnchor">
@@ -90,154 +91,320 @@
 <p>The package can be installed from CRAN by</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw">install.packages</span>(<span class="st">"ggwordcloud"</span>)</a></code></pre></div>
 <p>or the development version from the github repository</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1">devtools<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/devtools/topics/install_github">install_github</a></span>(<span class="st">"lepennec/ggwordcloud"</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1">devtools<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/devtools/topics/reexports">install_github</a></span>(<span class="st">"lepennec/ggwordcloud"</span>)</a></code></pre></div>
+<p>Please check the latest development version before submitting an issue.</p>
+</div>
+<div id="the-love-words-dataset" class="section level1">
+<h1 class="hasAnchor">
+<a href="#the-love-words-dataset" class="anchor"></a>The love words dataset</h1>
+<p>Along this vignette, we will use a <em>lovely</em> dataset: a collection of the word love in several language combined with the number of native speakers of those language as well as the total number of speakers. The data have been extracted from <em>wikipedia</em> and is exposed in two data frame of 4 columns: - <code>lang</code>: the ISO 649 language code - <code>words</code>: the word love in those languages - <code>native_speakers</code>: the number of native speakers (in millions) of those languages - <code>speaker</code>: the corresponding total number of speakers (in millions) The first one <code>love_words</code> contains 147 different languages while the second <code>love_words_small</code> contains the 34 languages having more than 50 millions speakers.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="kw">library</span>(ggwordcloud)</a>
+<a class="sourceLine" id="cb3-2" data-line-number="2"><span class="co">#&gt; Loading required package: ggplot2</span></a>
+<a class="sourceLine" id="cb3-3" data-line-number="3"><span class="kw">data</span>(<span class="st">"love_words_small"</span>)</a>
+<a class="sourceLine" id="cb3-4" data-line-number="4"><span class="kw">data</span>(<span class="st">"love_words"</span>)</a></code></pre></div>
 </div>
 <div id="word-cloud" class="section level1">
 <h1 class="hasAnchor">
 <a href="#word-cloud" class="anchor"></a>Word cloud</h1>
-<p>As an example, we will use the <code>mtcars</code> dataset</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1">dat &lt;-<span class="st"> </span>mtcars</a>
-<a class="sourceLine" id="cb3-2" data-line-number="2">dat<span class="op">$</span>name &lt;-<span class="st"> </span><span class="kw">row.names</span>(mtcars)</a></code></pre></div>
-<p>Let’s load the package and set the random seed.</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="kw">library</span>(ggwordcloud)</a>
-<a class="sourceLine" id="cb4-2" data-line-number="2"><span class="co">#&gt; Loading required package: ggplot2</span></a>
-<a class="sourceLine" id="cb4-3" data-line-number="3"><span class="kw">set.seed</span>(<span class="dv">42</span>)</a></code></pre></div>
-<p>A basic word cloud can be obtained by:</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="kw">ggplot</span>(<span class="dt">data =</span> dat, <span class="kw">aes</span>(<span class="dt">label =</span> name)) <span class="op">+</span><span class="st"> </span><span class="kw"><a href="../reference/geom_text_wordcloud.html">geom_text_wordcloud</a></span>() <span class="op">+</span><span class="st"> </span><span class="kw">theme_minimal</span>()</a></code></pre></div>
-<p><img src="ggwordcloud_files/figure-html/unnamed-chunk-5-1.png" width="720"> We have used a minimal theme to display only the words.</p>
-<p>Because there is some randomness in the algorithm, the same command can yield a different result:</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1"><span class="kw">ggplot</span>(<span class="dt">data =</span> dat, <span class="kw">aes</span>(<span class="dt">label =</span> name)) <span class="op">+</span><span class="st"> </span><span class="kw"><a href="../reference/geom_text_wordcloud.html">geom_text_wordcloud</a></span>() <span class="op">+</span><span class="st"> </span><span class="kw">theme_minimal</span>()</a></code></pre></div>
-<p><img src="ggwordcloud_files/figure-html/unnamed-chunk-6-1.png" width="720"></p>
+<p>The <code>geom_text_wordcloud</code> geom constructs a word cloud from a list of words given by the <code>label</code> aesthetic:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="kw">set.seed</span>(<span class="dv">42</span>)</a>
+<a class="sourceLine" id="cb4-2" data-line-number="2"><span class="kw">ggplot</span>(love_words_small, <span class="kw">aes</span>(<span class="dt">label =</span> word)) <span class="op">+</span></a>
+<a class="sourceLine" id="cb4-3" data-line-number="3"><span class="st">  </span><span class="kw"><a href="../reference/geom_text_wordcloud.html">geom_text_wordcloud</a></span>() <span class="op">+</span></a>
+<a class="sourceLine" id="cb4-4" data-line-number="4"><span class="st">  </span><span class="kw">theme_minimal</span>()</a></code></pre></div>
+<p><img src="ggwordcloud_files/figure-html/unnamed-chunk-4-1.png" width="480" style="display: block; margin: auto;"> Note that we have used <code>theme_minimal()</code> to display the words and nothing else. The word cloud is, by default, centered and the words are placed along a spiral in a way they do not overlap.</p>
+<p>Because there is some randomness in the placement algorithm, the same command can yield a different result when using a different random seed:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="kw">set.seed</span>(<span class="dv">43</span>)</a>
+<a class="sourceLine" id="cb5-2" data-line-number="2"><span class="kw">ggplot</span>(love_words_small, <span class="kw">aes</span>(<span class="dt">label =</span> word)) <span class="op">+</span></a>
+<a class="sourceLine" id="cb5-3" data-line-number="3"><span class="st">  </span><span class="kw"><a href="../reference/geom_text_wordcloud.html">geom_text_wordcloud</a></span>() <span class="op">+</span></a>
+<a class="sourceLine" id="cb5-4" data-line-number="4"><span class="st">  </span><span class="kw">theme_minimal</span>()</a></code></pre></div>
+<p><img src="ggwordcloud_files/figure-html/unnamed-chunk-5-1.png" width="480" style="display: block; margin: auto;"></p>
 </div>
 <div id="word-cloud-and-text-size" class="section level1">
 <h1 class="hasAnchor">
 <a href="#word-cloud-and-text-size" class="anchor"></a>Word cloud and text size</h1>
-<p>We will use the <code>mpg</code> variable to define a size and modify two cars so that they are much larger than the other ones:</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1">dat<span class="op">$</span>size &lt;-<span class="st"> </span>dat<span class="op">$</span>mpg</a>
-<a class="sourceLine" id="cb7-2" data-line-number="2">dat<span class="op">$</span>size[<span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">4</span>)] &lt;-<span class="st"> </span>dat<span class="op">$</span>size[<span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">4</span>)] <span class="op">+</span><span class="st"> </span><span class="dv">100</span></a></code></pre></div>
-<p>We can now add this new variable to the aesthetic:</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" data-line-number="1"><span class="kw">ggplot</span>(<span class="dt">data =</span> dat, <span class="kw">aes</span>(<span class="dt">label =</span> name, <span class="dt">size =</span> size)) <span class="op">+</span><span class="st"> </span><span class="kw"><a href="../reference/geom_text_wordcloud.html">geom_text_wordcloud</a></span>() <span class="op">+</span></a>
-<a class="sourceLine" id="cb8-2" data-line-number="2"><span class="st">  </span><span class="kw">theme_minimal</span>()</a></code></pre></div>
-<p><img src="ggwordcloud_files/figure-html/unnamed-chunk-8-1.png" width="720"></p>
-<p>In order to obtain a better picture, one can play with the size scale:</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" data-line-number="1"><span class="kw">ggplot</span>(<span class="dt">data =</span> dat, <span class="kw">aes</span>(<span class="dt">label =</span> name, <span class="dt">size =</span> size)) <span class="op">+</span><span class="st"> </span><span class="kw"><a href="../reference/geom_text_wordcloud.html">geom_text_wordcloud</a></span>() <span class="op">+</span></a>
-<a class="sourceLine" id="cb9-2" data-line-number="2"><span class="st">  </span><span class="kw">scale_size_area</span>(<span class="dt">max_size =</span> <span class="dv">12</span>) <span class="op">+</span></a>
-<a class="sourceLine" id="cb9-3" data-line-number="3"><span class="st">  </span><span class="kw">theme_minimal</span>()</a></code></pre></div>
-<p><img src="ggwordcloud_files/figure-html/unnamed-chunk-9-1.png" width="720"></p>
+<p>So far all the words had the same size because we do not specify a size aesthetic. If we use the total number of speakers, we obtain:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1"><span class="kw">set.seed</span>(<span class="dv">42</span>)</a>
+<a class="sourceLine" id="cb6-2" data-line-number="2"><span class="kw">ggplot</span>(love_words_small, <span class="kw">aes</span>(<span class="dt">label =</span> word, <span class="dt">size =</span> speakers)) <span class="op">+</span></a>
+<a class="sourceLine" id="cb6-3" data-line-number="3"><span class="st">  </span><span class="kw"><a href="../reference/geom_text_wordcloud.html">geom_text_wordcloud</a></span>() <span class="op">+</span></a>
+<a class="sourceLine" id="cb6-4" data-line-number="4"><span class="st">  </span><span class="kw">theme_minimal</span>()</a></code></pre></div>
+<p><img src="ggwordcloud_files/figure-html/unnamed-chunk-6-1.png" width="480" style="display: block; margin: auto;"> The words are scaled according to the value of the size aesthetic, the number of speakers here. There are several classical choices for the scaling: the font size could be chosen proportional to the value or to the square root of the value so that the area of a given character is respectively proportional to the square of the value or the value itself. By default, <code>ggplot2</code> uses the square root scaling but does not map a value of <span class="math inline">\(0\)</span> to <span class="math inline">\(0\)</span>.</p>
+<p>In order to obtain a true proportionality (and a better font size control), one can use the <code>scale_size_area()</code> scale:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1"><span class="kw">set.seed</span>(<span class="dv">42</span>)</a>
+<a class="sourceLine" id="cb7-2" data-line-number="2"><span class="kw">ggplot</span>(love_words_small, <span class="kw">aes</span>(<span class="dt">label =</span> word, <span class="dt">size =</span> speakers)) <span class="op">+</span></a>
+<a class="sourceLine" id="cb7-3" data-line-number="3"><span class="st">  </span><span class="kw"><a href="../reference/geom_text_wordcloud.html">geom_text_wordcloud</a></span>() <span class="op">+</span></a>
+<a class="sourceLine" id="cb7-4" data-line-number="4"><span class="st">  </span><span class="kw">scale_size_area</span>(<span class="dt">max_size =</span> <span class="dv">20</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb7-5" data-line-number="5"><span class="st">  </span><span class="kw">theme_minimal</span>()</a></code></pre></div>
+<p><img src="ggwordcloud_files/figure-html/unnamed-chunk-7-1.png" width="480" style="display: block; margin: auto;"></p>
+<p>It turns out that both <code>wordcloud</code> and <code>wordcloud2</code> default to a linear scaling between the value and the font size. This can be obtained with the <code>scale_radius()</code> scale:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" data-line-number="1"><span class="kw">set.seed</span>(<span class="dv">42</span>)</a>
+<a class="sourceLine" id="cb8-2" data-line-number="2"><span class="kw">ggplot</span>(love_words_small, <span class="kw">aes</span>(<span class="dt">label =</span> word, <span class="dt">size =</span> speakers)) <span class="op">+</span></a>
+<a class="sourceLine" id="cb8-3" data-line-number="3"><span class="st">  </span><span class="kw"><a href="../reference/geom_text_wordcloud.html">geom_text_wordcloud</a></span>() <span class="op">+</span></a>
+<a class="sourceLine" id="cb8-4" data-line-number="4"><span class="st">  </span><span class="kw">scale_radius</span>(<span class="dt">range =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">20</span>), <span class="dt">limits =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="ot">NA</span>)) <span class="op">+</span></a>
+<a class="sourceLine" id="cb8-5" data-line-number="5"><span class="st">  </span><span class="kw">theme_minimal</span>()</a></code></pre></div>
+<p><img src="ggwordcloud_files/figure-html/unnamed-chunk-8-1.png" width="480" style="display: block; margin: auto;"></p>
 </div>
 <div id="word-cloud-and-text-area" class="section level1">
 <h1 class="hasAnchor">
 <a href="#word-cloud-and-text-area" class="anchor"></a>Word cloud and text area</h1>
-<p>By default, the size of the font depends linearly from the square root of the size aesthetic rather than the raw size aesthetic. This is a natural choice for a shape as the area of the shape will be proportional to the raw size aesthetic but not necessarily for texts with different lengths. In <code>ggwordcloud2</code>, there is an option, <code>area_corr</code> to scale the texts so that their area is a function of the raw size aesthetic when used in combination with <code>scale_size_area</code>:</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" data-line-number="1"><span class="kw">ggplot</span>(<span class="dt">data =</span> dat, <span class="kw">aes</span>(<span class="dt">label =</span> name, <span class="dt">size =</span> size)) <span class="op">+</span></a>
-<a class="sourceLine" id="cb10-2" data-line-number="2"><span class="st">  </span><span class="kw"><a href="../reference/geom_text_wordcloud.html">geom_text_wordcloud</a></span>(<span class="dt">area_corr =</span> <span class="ot">TRUE</span>) <span class="op">+</span></a>
-<a class="sourceLine" id="cb10-3" data-line-number="3"><span class="st">  </span><span class="kw">scale_size_area</span>(<span class="dt">max_size =</span> <span class="dv">12</span>) <span class="op">+</span></a>
-<a class="sourceLine" id="cb10-4" data-line-number="4"><span class="st">  </span><span class="kw">theme_minimal</span>()</a></code></pre></div>
-<p><img src="ggwordcloud_files/figure-html/unnamed-chunk-10-1.png" width="720"></p>
+<p>As explained before, by default, this is the size of the font which is proportional to the square root of the value of the size aesthetic. This is a natural choice for a shape as the area of the shape will be proportional to the raw size aesthetic but not necessarily for texts with different lengths. In <code>ggwordcloud2</code>, there is an option, <code>area_corr</code> to scale the font of each label so that the text area is a function of the raw size aesthetic when used in combination with <code>scale_size_area</code>:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" data-line-number="1"><span class="kw">set.seed</span>(<span class="dv">42</span>)</a>
+<a class="sourceLine" id="cb9-2" data-line-number="2"><span class="kw">ggplot</span>(love_words_small, <span class="kw">aes</span>(<span class="dt">label =</span> word, <span class="dt">size =</span> speakers)) <span class="op">+</span></a>
+<a class="sourceLine" id="cb9-3" data-line-number="3"><span class="st">  </span><span class="kw"><a href="../reference/geom_text_wordcloud.html">geom_text_wordcloud</a></span>(<span class="dt">area_corr =</span> <span class="ot">TRUE</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb9-4" data-line-number="4"><span class="st">  </span><span class="kw">scale_size_area</span>(<span class="dt">max_size =</span> <span class="dv">24</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb9-5" data-line-number="5"><span class="st">  </span><span class="kw">theme_minimal</span>()</a></code></pre></div>
+<p><img src="ggwordcloud_files/figure-html/unnamed-chunk-9-1.png" width="480" style="display: block; margin: auto;"></p>
 <p>One can equivalently use the <code>geom_text_wordcloud_area</code> geom:</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" data-line-number="1"><span class="kw">ggplot</span>(<span class="dt">data =</span> dat, <span class="kw">aes</span>(<span class="dt">label =</span> name, <span class="dt">size =</span> size)) <span class="op">+</span></a>
-<a class="sourceLine" id="cb11-2" data-line-number="2"><span class="st">  </span><span class="kw"><a href="../reference/geom_text_wordcloud.html">geom_text_wordcloud_area</a></span>() <span class="op">+</span></a>
-<a class="sourceLine" id="cb11-3" data-line-number="3"><span class="st">  </span><span class="kw">scale_size_area</span>(<span class="dt">max_size =</span> <span class="dv">12</span>) <span class="op">+</span></a>
-<a class="sourceLine" id="cb11-4" data-line-number="4"><span class="st">  </span><span class="kw">theme_minimal</span>()</a></code></pre></div>
-<p><img src="ggwordcloud_files/figure-html/unnamed-chunk-11-1.png" width="720"></p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" data-line-number="1"><span class="kw">set.seed</span>(<span class="dv">42</span>)</a>
+<a class="sourceLine" id="cb10-2" data-line-number="2"><span class="kw">ggplot</span>(love_words_small, <span class="kw">aes</span>(<span class="dt">label =</span> word, <span class="dt">size =</span> speakers)) <span class="op">+</span></a>
+<a class="sourceLine" id="cb10-3" data-line-number="3"><span class="st">  </span><span class="kw"><a href="../reference/geom_text_wordcloud.html">geom_text_wordcloud_area</a></span>() <span class="op">+</span></a>
+<a class="sourceLine" id="cb10-4" data-line-number="4"><span class="st">  </span><span class="kw">scale_size_area</span>(<span class="dt">max_size =</span> <span class="dv">24</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb10-5" data-line-number="5"><span class="st">  </span><span class="kw">theme_minimal</span>()</a></code></pre></div>
+<p><img src="ggwordcloud_files/figure-html/unnamed-chunk-10-1.png" width="480" style="display: block; margin: auto;"></p>
 <p>By default, the area is proportional to the raw size aesthetic raised to the power <span class="math inline">\(1/.7\)</span> in order to match the human area perception. To obtain an area proportional to the raw size aesthetic, it suffices to set the <code>area_corr_power</code> to <span class="math inline">\(1\)</span>:</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" data-line-number="1"><span class="kw">ggplot</span>(<span class="dt">data =</span> dat, <span class="kw">aes</span>(<span class="dt">label =</span> name, <span class="dt">size =</span> size)) <span class="op">+</span></a>
-<a class="sourceLine" id="cb12-2" data-line-number="2"><span class="st">  </span><span class="kw"><a href="../reference/geom_text_wordcloud.html">geom_text_wordcloud</a></span>(<span class="dt">area_corr =</span> <span class="ot">TRUE</span>, <span class="dt">area_corr_power =</span> <span class="dv">1</span>) <span class="op">+</span></a>
-<a class="sourceLine" id="cb12-3" data-line-number="3"><span class="st">  </span><span class="kw">scale_size_area</span>(<span class="dt">max_size =</span> <span class="dv">12</span>) <span class="op">+</span></a>
-<a class="sourceLine" id="cb12-4" data-line-number="4"><span class="st">  </span><span class="kw">theme_minimal</span>()</a></code></pre></div>
-<p><img src="ggwordcloud_files/figure-html/unnamed-chunk-12-1.png" width="720"></p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" data-line-number="1"><span class="kw">set.seed</span>(<span class="dv">42</span>)</a>
+<a class="sourceLine" id="cb11-2" data-line-number="2"><span class="kw">ggplot</span>(love_words_small, <span class="kw">aes</span>(<span class="dt">label =</span> word, <span class="dt">size =</span> speakers)) <span class="op">+</span></a>
+<a class="sourceLine" id="cb11-3" data-line-number="3"><span class="st">  </span><span class="kw"><a href="../reference/geom_text_wordcloud.html">geom_text_wordcloud_area</a></span>(<span class="dt">area_corr_power =</span> <span class="dv">1</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb11-4" data-line-number="4"><span class="st">  </span><span class="kw">scale_size_area</span>(<span class="dt">max_size =</span> <span class="dv">24</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb11-5" data-line-number="5"><span class="st">  </span><span class="kw">theme_minimal</span>()</a></code></pre></div>
+<p><img src="ggwordcloud_files/figure-html/unnamed-chunk-11-1.png" width="480" style="display: block; margin: auto;"></p>
 </div>
 <div id="word-cloud-with-too-many-words" class="section level1">
 <h1 class="hasAnchor">
 <a href="#word-cloud-with-too-many-words" class="anchor"></a>Word cloud with too many words</h1>
-<p>Note that words that cannot be placed due to a lack of space are by default displayed at their original position:</p>
+<p>The non overlapping algorithm may fail to place some words due to a lack of space. By default, those words are displayed at the center of the word cloud and comes with a warning.</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" data-line-number="1"><span class="kw">set.seed</span>(<span class="dv">42</span>)</a>
+<a class="sourceLine" id="cb12-2" data-line-number="2"><span class="kw">ggplot</span>(love_words_small, <span class="kw">aes</span>(<span class="dt">label =</span> word, <span class="dt">size =</span> speakers)) <span class="op">+</span></a>
+<a class="sourceLine" id="cb12-3" data-line-number="3"><span class="st">  </span><span class="kw"><a href="../reference/geom_text_wordcloud.html">geom_text_wordcloud_area</a></span>() <span class="op">+</span></a>
+<a class="sourceLine" id="cb12-4" data-line-number="4"><span class="st">  </span><span class="kw">scale_size_area</span>(<span class="dt">max_size =</span> <span class="dv">40</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb12-5" data-line-number="5"><span class="st">  </span><span class="kw">theme_minimal</span>()</a>
+<a class="sourceLine" id="cb12-6" data-line-number="6"><span class="co">#&gt; Warning in wordcloud_boxes(data_points = points_valid_first, boxes =</span></a>
+<a class="sourceLine" id="cb12-7" data-line-number="7"><span class="co">#&gt; boxes, : Some words could not fit on page. They have been placed at their</span></a>
+<a class="sourceLine" id="cb12-8" data-line-number="8"><span class="co">#&gt; original positions.</span></a></code></pre></div>
+<p><img src="ggwordcloud_files/figure-html/unnamed-chunk-12-1.png" width="480" style="display: block; margin: auto;"></p>
+<p>It is up to the user to avoid this issue by either removing some words or changing the size scale. One can also chose to remove those words using the <code>rm_outside</code> option:</p>
 <div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" data-line-number="1"><span class="kw">set.seed</span>(<span class="dv">42</span>)</a>
-<a class="sourceLine" id="cb13-2" data-line-number="2"><span class="kw">ggplot</span>(<span class="dt">data =</span> dat, <span class="kw">aes</span>(<span class="dt">label =</span> name, <span class="dt">size =</span> size)) <span class="op">+</span><span class="st"> </span><span class="kw"><a href="../reference/geom_text_wordcloud.html">geom_text_wordcloud</a></span>() <span class="op">+</span></a>
-<a class="sourceLine" id="cb13-3" data-line-number="3"><span class="st">  </span><span class="kw">scale_size_area</span>(<span class="dt">max_size =</span> <span class="dv">20</span>) <span class="op">+</span></a>
-<a class="sourceLine" id="cb13-4" data-line-number="4"><span class="st">  </span><span class="kw">theme_minimal</span>()</a>
-<a class="sourceLine" id="cb13-5" data-line-number="5"><span class="co">#&gt; Warning in wordcloud_boxes(data_points = points_valid_first, boxes =</span></a>
-<a class="sourceLine" id="cb13-6" data-line-number="6"><span class="co">#&gt; boxes, : Some words could not fit on page. They have been placed at their</span></a>
-<a class="sourceLine" id="cb13-7" data-line-number="7"><span class="co">#&gt; original positions.</span></a></code></pre></div>
-<p><img src="ggwordcloud_files/figure-html/unnamed-chunk-13-1.png" width="720"> It is up to the user to avoid this issue by either removing some words or changing the size scale.</p>
-<p>One can also chose to remove those words using the <code>rm_outside</code> option:</p>
-<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb14-1" data-line-number="1"><span class="kw">set.seed</span>(<span class="dv">42</span>)</a>
-<a class="sourceLine" id="cb14-2" data-line-number="2"><span class="kw">ggplot</span>(<span class="dt">data =</span> dat, <span class="kw">aes</span>(<span class="dt">label =</span> name, <span class="dt">size =</span> size)) <span class="op">+</span></a>
-<a class="sourceLine" id="cb14-3" data-line-number="3"><span class="st">  </span><span class="kw"><a href="../reference/geom_text_wordcloud.html">geom_text_wordcloud</a></span>(<span class="dt">rm_outside =</span> <span class="ot">TRUE</span>) <span class="op">+</span></a>
-<a class="sourceLine" id="cb14-4" data-line-number="4"><span class="st">  </span><span class="kw">scale_size_area</span>(<span class="dt">max_size =</span> <span class="dv">20</span>) <span class="op">+</span></a>
-<a class="sourceLine" id="cb14-5" data-line-number="5"><span class="st">  </span><span class="kw">theme_minimal</span>()</a>
-<a class="sourceLine" id="cb14-6" data-line-number="6"><span class="co">#&gt; Warning in wordcloud_boxes(data_points = points_valid_first, boxes =</span></a>
-<a class="sourceLine" id="cb14-7" data-line-number="7"><span class="co">#&gt; boxes, : Some words could not fit on page. They have been removed.</span></a></code></pre></div>
-<p><img src="ggwordcloud_files/figure-html/unnamed-chunk-14-1.png" width="720"></p>
+<a class="sourceLine" id="cb13-2" data-line-number="2"><span class="kw">ggplot</span>(love_words_small, <span class="kw">aes</span>(<span class="dt">label =</span> word, <span class="dt">size =</span> speakers)) <span class="op">+</span></a>
+<a class="sourceLine" id="cb13-3" data-line-number="3"><span class="st">  </span><span class="kw"><a href="../reference/geom_text_wordcloud.html">geom_text_wordcloud_area</a></span>(<span class="dt">rm_outside =</span> <span class="ot">TRUE</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb13-4" data-line-number="4"><span class="st">  </span><span class="kw">scale_size_area</span>(<span class="dt">max_size =</span> <span class="dv">40</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb13-5" data-line-number="5"><span class="st">  </span><span class="kw">theme_minimal</span>()</a>
+<a class="sourceLine" id="cb13-6" data-line-number="6"><span class="co">#&gt; Some words could not fit on page. They have been removed.</span></a></code></pre></div>
+<p><img src="ggwordcloud_files/figure-html/unnamed-chunk-13-1.png" width="480" style="display: block; margin: auto;"></p>
 </div>
 <div id="word-cloud-and-rotation" class="section level1">
 <h1 class="hasAnchor">
 <a href="#word-cloud-and-rotation" class="anchor"></a>Word cloud and rotation</h1>
-<p>Let’s start by creating a rotation angle of 90 for 40 % of the words:</p>
-<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb15-1" data-line-number="1">dat<span class="op">$</span>rot &lt;-<span class="st"> </span><span class="dv">90</span> <span class="op">*</span><span class="st"> </span>(<span class="kw">runif</span>(<span class="kw">nrow</span>(dat)) <span class="op">&gt;</span><span class="st"> </span><span class="fl">.6</span>)</a></code></pre></div>
-<p>We can use this variable in the aesthetic:</p>
-<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb16-1" data-line-number="1"><span class="kw">ggplot</span>(<span class="dt">data =</span> dat, <span class="kw">aes</span>(<span class="dt">label =</span> name, <span class="dt">size =</span> size, <span class="dt">angle =</span> rot)) <span class="op">+</span></a>
-<a class="sourceLine" id="cb16-2" data-line-number="2"><span class="st">  </span><span class="kw"><a href="../reference/geom_text_wordcloud.html">geom_text_wordcloud</a></span>() <span class="op">+</span></a>
-<a class="sourceLine" id="cb16-3" data-line-number="3"><span class="st">  </span><span class="kw">scale_size_area</span>(<span class="dt">max_size =</span> <span class="dv">12</span>) <span class="op">+</span></a>
-<a class="sourceLine" id="cb16-4" data-line-number="4"><span class="st">  </span><span class="kw">theme_minimal</span>()</a></code></pre></div>
-<p><img src="ggwordcloud_files/figure-html/unnamed-chunk-16-1.png" width="720"></p>
-<p><code>ggwordcloud</code> allows arbitrary rotations:</p>
-<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb17-1" data-line-number="1">dat<span class="op">$</span>rot &lt;-<span class="st"> </span>(<span class="op">-</span><span class="dv">90</span> <span class="op">+</span><span class="st"> </span><span class="dv">180</span> <span class="op">*</span><span class="st"> </span><span class="kw">runif</span>(<span class="kw">nrow</span>(dat))) <span class="op">*</span><span class="st"> </span>(<span class="kw">runif</span>(<span class="kw">nrow</span>(dat)) <span class="op">&gt;</span><span class="st"> </span><span class="fl">.2</span>)</a></code></pre></div>
-<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb18-1" data-line-number="1"><span class="kw">ggplot</span>(<span class="dt">data =</span> dat, <span class="kw">aes</span>(<span class="dt">label =</span> name, <span class="dt">size =</span> size, <span class="dt">angle =</span> rot)) <span class="op">+</span></a>
-<a class="sourceLine" id="cb18-2" data-line-number="2"><span class="st">  </span><span class="kw"><a href="../reference/geom_text_wordcloud.html">geom_text_wordcloud</a></span>() <span class="op">+</span></a>
-<a class="sourceLine" id="cb18-3" data-line-number="3"><span class="st">  </span><span class="kw">scale_size_area</span>(<span class="dt">max_size =</span> <span class="dv">12</span>) <span class="op">+</span></a>
-<a class="sourceLine" id="cb18-4" data-line-number="4"><span class="st">  </span><span class="kw">theme_minimal</span>()</a></code></pre></div>
-<p><img src="ggwordcloud_files/figure-html/unnamed-chunk-18-1.png" width="720"></p>
+<p>The words can be rotated by setting the <code>angle</code> aesthetic. For instance, one can use a rotation of 90 degrees for a random subset of 40 % of the words:</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb14-1" data-line-number="1"><span class="kw">library</span>(dplyr, <span class="dt">quietly =</span> <span class="ot">TRUE</span>)</a>
+<a class="sourceLine" id="cb14-2" data-line-number="2"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb14-3" data-line-number="3"><span class="co">#&gt; Attaching package: 'dplyr'</span></a>
+<a class="sourceLine" id="cb14-4" data-line-number="4"><span class="co">#&gt; The following objects are masked from 'package:stats':</span></a>
+<a class="sourceLine" id="cb14-5" data-line-number="5"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb14-6" data-line-number="6"><span class="co">#&gt;     filter, lag</span></a>
+<a class="sourceLine" id="cb14-7" data-line-number="7"><span class="co">#&gt; The following objects are masked from 'package:base':</span></a>
+<a class="sourceLine" id="cb14-8" data-line-number="8"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb14-9" data-line-number="9"><span class="co">#&gt;     intersect, setdiff, setequal, union</span></a>
+<a class="sourceLine" id="cb14-10" data-line-number="10">love_words_small &lt;-<span class="st"> </span>love_words_small <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb14-11" data-line-number="11"><span class="st">  </span><span class="kw"><a href="http://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span>(<span class="dt">angle =</span> <span class="dv">90</span> <span class="op">*</span><span class="st"> </span><span class="kw"><a href="http://dplyr.tidyverse.org/reference/sample.html">sample</a></span>(<span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">1</span>), <span class="kw"><a href="http://dplyr.tidyverse.org/reference/n.html">n</a></span>(), <span class="dt">replace =</span> <span class="ot">TRUE</span>, <span class="dt">prob =</span> <span class="kw">c</span>(<span class="dv">60</span>, <span class="dv">40</span>)))</a></code></pre></div>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb15-1" data-line-number="1"><span class="kw">set.seed</span>(<span class="dv">42</span>)</a>
+<a class="sourceLine" id="cb15-2" data-line-number="2"><span class="kw">ggplot</span>(love_words_small, <span class="kw">aes</span>(</a>
+<a class="sourceLine" id="cb15-3" data-line-number="3">  <span class="dt">label =</span> word, <span class="dt">size =</span> speakers,</a>
+<a class="sourceLine" id="cb15-4" data-line-number="4">  <span class="dt">angle =</span> angle</a>
+<a class="sourceLine" id="cb15-5" data-line-number="5">)) <span class="op">+</span></a>
+<a class="sourceLine" id="cb15-6" data-line-number="6"><span class="st">  </span><span class="kw"><a href="../reference/geom_text_wordcloud.html">geom_text_wordcloud_area</a></span>() <span class="op">+</span></a>
+<a class="sourceLine" id="cb15-7" data-line-number="7"><span class="st">  </span><span class="kw">scale_size_area</span>(<span class="dt">max_size =</span> <span class="dv">24</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb15-8" data-line-number="8"><span class="st">  </span><span class="kw">theme_minimal</span>()</a></code></pre></div>
+<p><img src="ggwordcloud_files/figure-html/unnamed-chunk-15-1.png" width="480" style="display: block; margin: auto;"></p>
+<p><code>ggwordcloud</code> is not restricted to rotation of 90 degrees:</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb16-1" data-line-number="1">love_words_small &lt;-<span class="st"> </span>love_words_small <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb16-2" data-line-number="2"><span class="st">  </span><span class="kw"><a href="http://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span>(<span class="dt">angle =</span> <span class="dv">45</span> <span class="op">*</span><span class="st"> </span><span class="kw"><a href="http://dplyr.tidyverse.org/reference/sample.html">sample</a></span>(<span class="op">-</span><span class="dv">2</span><span class="op">:</span><span class="dv">2</span>, <span class="kw"><a href="http://dplyr.tidyverse.org/reference/n.html">n</a></span>(), <span class="dt">replace =</span> <span class="ot">TRUE</span>, <span class="dt">prob =</span> <span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">4</span>, <span class="dv">1</span>, <span class="dv">1</span>)))</a></code></pre></div>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb17-1" data-line-number="1"><span class="kw">set.seed</span>(<span class="dv">42</span>)</a>
+<a class="sourceLine" id="cb17-2" data-line-number="2"><span class="kw">ggplot</span>(love_words_small, <span class="kw">aes</span>(</a>
+<a class="sourceLine" id="cb17-3" data-line-number="3">  <span class="dt">label =</span> word, <span class="dt">size =</span> speakers,</a>
+<a class="sourceLine" id="cb17-4" data-line-number="4">  <span class="dt">angle =</span> angle</a>
+<a class="sourceLine" id="cb17-5" data-line-number="5">)) <span class="op">+</span></a>
+<a class="sourceLine" id="cb17-6" data-line-number="6"><span class="st">  </span><span class="kw"><a href="../reference/geom_text_wordcloud.html">geom_text_wordcloud_area</a></span>() <span class="op">+</span></a>
+<a class="sourceLine" id="cb17-7" data-line-number="7"><span class="st">  </span><span class="kw">scale_size_area</span>(<span class="dt">max_size =</span> <span class="dv">24</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb17-8" data-line-number="8"><span class="st">  </span><span class="kw">theme_minimal</span>()</a></code></pre></div>
+<p><img src="ggwordcloud_files/figure-html/unnamed-chunk-17-1.png" width="480" style="display: block; margin: auto;"></p>
 </div>
 <div id="word-cloud-and-eccentricity" class="section level1">
 <h1 class="hasAnchor">
 <a href="#word-cloud-and-eccentricity" class="anchor"></a>Word cloud and eccentricity</h1>
 <p>The <code>ggwordcloud</code> algorithm moves the text around a spiral until it finds a free space for it. This spiral has by default a vertical eccentricity of .65, so that the spiral is 1/.65 wider than taller.</p>
-<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb19-1" data-line-number="1"><span class="kw">ggplot</span>(<span class="dt">data =</span> dat, <span class="kw">aes</span>(<span class="dt">label =</span> name, <span class="dt">size =</span> size, <span class="dt">angle =</span> rot)) <span class="op">+</span></a>
-<a class="sourceLine" id="cb19-2" data-line-number="2"><span class="st">  </span><span class="kw"><a href="../reference/geom_text_wordcloud.html">geom_text_wordcloud</a></span>() <span class="op">+</span></a>
-<a class="sourceLine" id="cb19-3" data-line-number="3"><span class="st">  </span><span class="kw">scale_size_area</span>(<span class="dt">max_size =</span> <span class="dv">12</span>) <span class="op">+</span></a>
-<a class="sourceLine" id="cb19-4" data-line-number="4"><span class="st">  </span><span class="kw">theme_minimal</span>()</a></code></pre></div>
-<p><img src="ggwordcloud_files/figure-html/unnamed-chunk-19-1.png" width="720"></p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb18-1" data-line-number="1"><span class="kw">set.seed</span>(<span class="dv">42</span>)</a>
+<a class="sourceLine" id="cb18-2" data-line-number="2"><span class="kw">ggplot</span>(love_words_small, <span class="kw">aes</span>(<span class="dt">label =</span> word, <span class="dt">size =</span> speakers)) <span class="op">+</span></a>
+<a class="sourceLine" id="cb18-3" data-line-number="3"><span class="st">  </span><span class="kw"><a href="../reference/geom_text_wordcloud.html">geom_text_wordcloud_area</a></span>() <span class="op">+</span></a>
+<a class="sourceLine" id="cb18-4" data-line-number="4"><span class="st">  </span><span class="kw">scale_size_area</span>(<span class="dt">max_size =</span> <span class="dv">24</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb18-5" data-line-number="5"><span class="st">  </span><span class="kw">theme_minimal</span>()</a></code></pre></div>
+<p><img src="ggwordcloud_files/figure-html/unnamed-chunk-18-1.png" width="480" style="display: block; margin: auto;"></p>
 <p>This can be changed using the <code>eccentricity</code> parameter:</p>
-<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb20-1" data-line-number="1"><span class="kw">ggplot</span>(<span class="dt">data =</span> dat, <span class="kw">aes</span>(<span class="dt">label =</span> name, <span class="dt">size =</span> size, <span class="dt">angle =</span> rot)) <span class="op">+</span></a>
-<a class="sourceLine" id="cb20-2" data-line-number="2"><span class="st">  </span><span class="kw"><a href="../reference/geom_text_wordcloud.html">geom_text_wordcloud</a></span>(<span class="dt">eccentricity =</span> <span class="dv">1</span>) <span class="op">+</span></a>
-<a class="sourceLine" id="cb20-3" data-line-number="3"><span class="st">  </span><span class="kw">scale_size_area</span>(<span class="dt">max_size =</span> <span class="dv">12</span>) <span class="op">+</span></a>
-<a class="sourceLine" id="cb20-4" data-line-number="4"><span class="st">  </span><span class="kw">theme_minimal</span>()</a></code></pre></div>
-<p><img src="ggwordcloud_files/figure-html/unnamed-chunk-20-1.png" width="720"></p>
-<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb21-1" data-line-number="1"><span class="kw">ggplot</span>(<span class="dt">data =</span> dat, <span class="kw">aes</span>(<span class="dt">label =</span> name, <span class="dt">size =</span> size, <span class="dt">angle =</span> rot)) <span class="op">+</span></a>
-<a class="sourceLine" id="cb21-2" data-line-number="2"><span class="st">  </span><span class="kw"><a href="../reference/geom_text_wordcloud.html">geom_text_wordcloud</a></span>(<span class="dt">eccentricity =</span> <span class="fl">.35</span>) <span class="op">+</span></a>
-<a class="sourceLine" id="cb21-3" data-line-number="3"><span class="st">  </span><span class="kw">scale_size_area</span>(<span class="dt">max_size =</span> <span class="dv">12</span>) <span class="op">+</span></a>
-<a class="sourceLine" id="cb21-4" data-line-number="4"><span class="st">  </span><span class="kw">theme_minimal</span>()</a></code></pre></div>
-<p><img src="ggwordcloud_files/figure-html/unnamed-chunk-21-1.png" width="720"></p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb19-1" data-line-number="1"><span class="kw">set.seed</span>(<span class="dv">42</span>)</a>
+<a class="sourceLine" id="cb19-2" data-line-number="2"><span class="kw">ggplot</span>(love_words_small, <span class="kw">aes</span>(<span class="dt">label =</span> word, <span class="dt">size =</span> speakers)) <span class="op">+</span></a>
+<a class="sourceLine" id="cb19-3" data-line-number="3"><span class="st">  </span><span class="kw"><a href="../reference/geom_text_wordcloud.html">geom_text_wordcloud_area</a></span>(<span class="dt">eccentricity =</span> <span class="dv">1</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb19-4" data-line-number="4"><span class="st">  </span><span class="kw">scale_size_area</span>(<span class="dt">max_size =</span> <span class="dv">24</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb19-5" data-line-number="5"><span class="st">  </span><span class="kw">theme_minimal</span>()</a></code></pre></div>
+<p><img src="ggwordcloud_files/figure-html/unnamed-chunk-19-1.png" width="480" style="display: block; margin: auto;"></p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb20-1" data-line-number="1"><span class="kw">set.seed</span>(<span class="dv">42</span>)</a>
+<a class="sourceLine" id="cb20-2" data-line-number="2"><span class="kw">ggplot</span>(love_words_small, <span class="kw">aes</span>(<span class="dt">label =</span> word, <span class="dt">size =</span> speakers)) <span class="op">+</span></a>
+<a class="sourceLine" id="cb20-3" data-line-number="3"><span class="st">  </span><span class="kw"><a href="../reference/geom_text_wordcloud.html">geom_text_wordcloud_area</a></span>(<span class="dt">eccentricity =</span> <span class="fl">.35</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb20-4" data-line-number="4"><span class="st">  </span><span class="kw">scale_size_area</span>(<span class="dt">max_size =</span> <span class="dv">24</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb20-5" data-line-number="5"><span class="st">  </span><span class="kw">theme_minimal</span>()</a></code></pre></div>
+<p><img src="ggwordcloud_files/figure-html/unnamed-chunk-20-1.png" width="480" style="display: block; margin: auto;"></p>
 </div>
-<div id="advanced-wordcloud" class="section level1">
+<div id="word-cloud-and-shape" class="section level1">
 <h1 class="hasAnchor">
-<a href="#advanced-wordcloud" class="anchor"></a>Advanced wordcloud</h1>
-<p><code>geom_text_wordcloud</code> is compatible with the facet system of <code>ggplot2</code>:</p>
-<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb22-1" data-line-number="1"><span class="kw">ggplot</span>(<span class="dt">data =</span> dat, <span class="kw">aes</span>(<span class="dt">label =</span> name, <span class="dt">size =</span> size, <span class="dt">angle =</span> rot)) <span class="op">+</span></a>
-<a class="sourceLine" id="cb22-2" data-line-number="2"><span class="st">  </span><span class="kw"><a href="../reference/geom_text_wordcloud.html">geom_text_wordcloud</a></span>() <span class="op">+</span></a>
-<a class="sourceLine" id="cb22-3" data-line-number="3"><span class="st">  </span><span class="kw">scale_size_area</span>(<span class="dt">max_size =</span> <span class="dv">12</span>) <span class="op">+</span></a>
-<a class="sourceLine" id="cb22-4" data-line-number="4"><span class="st">  </span><span class="kw">facet_wrap</span>(<span class="op">~</span>am) <span class="op">+</span></a>
-<a class="sourceLine" id="cb22-5" data-line-number="5"><span class="st">  </span><span class="kw">theme_minimal</span>()</a></code></pre></div>
-<p><img src="ggwordcloud_files/figure-html/unnamed-chunk-22-1.png" width="720"></p>
+<a href="#word-cloud-and-shape" class="anchor"></a>Word cloud and shape</h1>
+<p>The base shape of <code>ggwordcloud</code> is a circle: the words are place by following a <em>circle</em> spiral. This base shape <code>circle</code> can be change to others (<code>cardioid</code>, <code>diamond</code>, <code>square</code>, <code>triangle-forward</code>, <code>triangle-upright</code>, <code>pentagon</code> or <code>star</code>) using the <code>shape</code> option.</p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb21-1" data-line-number="1"><span class="cf">for</span> (shape <span class="cf">in</span> <span class="kw">c</span>(</a>
+<a class="sourceLine" id="cb21-2" data-line-number="2">  <span class="st">"circle"</span>, <span class="st">"cardioid"</span>, <span class="st">"diamond"</span>,</a>
+<a class="sourceLine" id="cb21-3" data-line-number="3">  <span class="st">"square"</span>, <span class="st">"triangle-forward"</span>, <span class="st">"triangle-upright"</span>,</a>
+<a class="sourceLine" id="cb21-4" data-line-number="4">  <span class="st">"pentagon"</span>, <span class="st">"star"</span></a>
+<a class="sourceLine" id="cb21-5" data-line-number="5">)) {</a>
+<a class="sourceLine" id="cb21-6" data-line-number="6">  <span class="kw">set.seed</span>(<span class="dv">42</span>)</a>
+<a class="sourceLine" id="cb21-7" data-line-number="7">  <span class="kw">print</span>(<span class="kw">ggplot</span>(love_words_small, <span class="kw">aes</span>(<span class="dt">label =</span> word, <span class="dt">size =</span> speakers)) <span class="op">+</span></a>
+<a class="sourceLine" id="cb21-8" data-line-number="8"><span class="st">    </span><span class="kw"><a href="../reference/geom_text_wordcloud.html">geom_text_wordcloud_area</a></span>(<span class="dt">shape =</span> shape) <span class="op">+</span></a>
+<a class="sourceLine" id="cb21-9" data-line-number="9"><span class="st">    </span><span class="kw">scale_size_area</span>(<span class="dt">max_size =</span> <span class="dv">24</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb21-10" data-line-number="10"><span class="st">    </span><span class="kw">theme_minimal</span>() <span class="op">+</span><span class="st"> </span><span class="kw">ggtitle</span>(shape))</a>
+<a class="sourceLine" id="cb21-11" data-line-number="11">}</a></code></pre></div>
+<p><img src="ggwordcloud_files/figure-html/unnamed-chunk-21-1.png" width="480" style="display: block; margin: auto;"><img src="ggwordcloud_files/figure-html/unnamed-chunk-21-2.png" width="480" style="display: block; margin: auto;"><img src="ggwordcloud_files/figure-html/unnamed-chunk-21-3.png" width="480" style="display: block; margin: auto;"><img src="ggwordcloud_files/figure-html/unnamed-chunk-21-4.png" width="480" style="display: block; margin: auto;"><img src="ggwordcloud_files/figure-html/unnamed-chunk-21-5.png" width="480" style="display: block; margin: auto;"><img src="ggwordcloud_files/figure-html/unnamed-chunk-21-6.png" width="480" style="display: block; margin: auto;"><img src="ggwordcloud_files/figure-html/unnamed-chunk-21-7.png" width="480" style="display: block; margin: auto;"><img src="ggwordcloud_files/figure-html/unnamed-chunk-21-8.png" width="480" style="display: block; margin: auto;"></p>
+</div>
+<div id="word-cloud-and-color" class="section level1">
+<h1 class="hasAnchor">
+<a href="#word-cloud-and-color" class="anchor"></a>Word cloud and color</h1>
+<p>A color can be assign to each word using the color aesthetic. For instance, one can assign a random factor to each word:</p>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb22-1" data-line-number="1"><span class="kw">set.seed</span>(<span class="dv">42</span>)</a>
+<a class="sourceLine" id="cb22-2" data-line-number="2"><span class="kw">ggplot</span>(</a>
+<a class="sourceLine" id="cb22-3" data-line-number="3">  love_words_small,</a>
+<a class="sourceLine" id="cb22-4" data-line-number="4">  <span class="kw">aes</span>(</a>
+<a class="sourceLine" id="cb22-5" data-line-number="5">    <span class="dt">label =</span> word, <span class="dt">size =</span> speakers,</a>
+<a class="sourceLine" id="cb22-6" data-line-number="6">    <span class="dt">color =</span> <span class="kw">factor</span>(<span class="kw">sample.int</span>(<span class="dv">10</span>, <span class="kw">nrow</span>(love_words_small), <span class="dt">replace =</span> <span class="ot">TRUE</span>)),</a>
+<a class="sourceLine" id="cb22-7" data-line-number="7">    <span class="dt">angle =</span> angle</a>
+<a class="sourceLine" id="cb22-8" data-line-number="8">  )</a>
+<a class="sourceLine" id="cb22-9" data-line-number="9">) <span class="op">+</span></a>
+<a class="sourceLine" id="cb22-10" data-line-number="10"><span class="st">  </span><span class="kw"><a href="../reference/geom_text_wordcloud.html">geom_text_wordcloud_area</a></span>() <span class="op">+</span></a>
+<a class="sourceLine" id="cb22-11" data-line-number="11"><span class="st">  </span><span class="kw">scale_size_area</span>(<span class="dt">max_size =</span> <span class="dv">24</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb22-12" data-line-number="12"><span class="st">  </span><span class="kw">theme_minimal</span>()</a></code></pre></div>
+<p><img src="ggwordcloud_files/figure-html/unnamed-chunk-22-1.png" width="480" style="display: block; margin: auto;"></p>
+<p>One can also map the color to a value, for instance the number of speakers, and chose the colormap with a <code>scale_color_*</code> scale:</p>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb23-1" data-line-number="1"><span class="kw">set.seed</span>(<span class="dv">42</span>)</a>
+<a class="sourceLine" id="cb23-2" data-line-number="2"><span class="kw">ggplot</span>(</a>
+<a class="sourceLine" id="cb23-3" data-line-number="3">  love_words_small,</a>
+<a class="sourceLine" id="cb23-4" data-line-number="4">  <span class="kw">aes</span>(</a>
+<a class="sourceLine" id="cb23-5" data-line-number="5">    <span class="dt">label =</span> word, <span class="dt">size =</span> speakers,</a>
+<a class="sourceLine" id="cb23-6" data-line-number="6">    <span class="dt">color =</span> speakers, <span class="dt">angle =</span> angle</a>
+<a class="sourceLine" id="cb23-7" data-line-number="7">  )</a>
+<a class="sourceLine" id="cb23-8" data-line-number="8">) <span class="op">+</span></a>
+<a class="sourceLine" id="cb23-9" data-line-number="9"><span class="st">  </span><span class="kw"><a href="../reference/geom_text_wordcloud.html">geom_text_wordcloud_area</a></span>() <span class="op">+</span></a>
+<a class="sourceLine" id="cb23-10" data-line-number="10"><span class="st">  </span><span class="kw">scale_size_area</span>(<span class="dt">max_size =</span> <span class="dv">24</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb23-11" data-line-number="11"><span class="st">  </span><span class="kw">theme_minimal</span>() <span class="op">+</span></a>
+<a class="sourceLine" id="cb23-12" data-line-number="12"><span class="st">  </span><span class="kw">scale_color_gradient</span>(<span class="dt">low =</span> <span class="st">"darkred"</span>, <span class="dt">high =</span> <span class="st">"red"</span>)</a></code></pre></div>
+<p><img src="ggwordcloud_files/figure-html/unnamed-chunk-23-1.png" width="480" style="display: block; margin: auto;"></p>
+</div>
+<div id="word-cloud-and-mask" class="section level1">
+<h1 class="hasAnchor">
+<a href="#word-cloud-and-mask" class="anchor"></a>Word cloud and mask</h1>
+<p><code>ggwordcloud</code> allows to specify a mask within which the words should be placed. More precisely, the <em>black</em> pixels in an image array will be used as a mask:</p>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb24-1" data-line-number="1"><span class="kw">set.seed</span>(<span class="dv">42</span>)</a>
+<a class="sourceLine" id="cb24-2" data-line-number="2"><span class="kw">ggplot</span>(love_words_small, <span class="kw">aes</span>(<span class="dt">label =</span> word, <span class="dt">size =</span> speakers)) <span class="op">+</span></a>
+<a class="sourceLine" id="cb24-3" data-line-number="3"><span class="st">  </span><span class="kw"><a href="../reference/geom_text_wordcloud.html">geom_text_wordcloud_area</a></span>(</a>
+<a class="sourceLine" id="cb24-4" data-line-number="4">    <span class="dt">mask =</span> png<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/png/topics/readPNG">readPNG</a></span>(<span class="kw">system.file</span>(<span class="st">"extdata/hearth.png"</span>,</a>
+<a class="sourceLine" id="cb24-5" data-line-number="5">      <span class="dt">package =</span> <span class="st">"ggwordcloud"</span>, <span class="dt">mustWork =</span> <span class="ot">TRUE</span></a>
+<a class="sourceLine" id="cb24-6" data-line-number="6">    )),</a>
+<a class="sourceLine" id="cb24-7" data-line-number="7">    <span class="dt">rm_outside =</span> <span class="ot">TRUE</span></a>
+<a class="sourceLine" id="cb24-8" data-line-number="8">  ) <span class="op">+</span></a>
+<a class="sourceLine" id="cb24-9" data-line-number="9"><span class="st">  </span><span class="kw">scale_size_area</span>(<span class="dt">max_size =</span> <span class="dv">18</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb24-10" data-line-number="10"><span class="st">  </span><span class="kw">theme_minimal</span>()</a>
+<a class="sourceLine" id="cb24-11" data-line-number="11"><span class="co">#&gt; Some words could not fit on page. They have been removed.</span></a></code></pre></div>
+<p><img src="ggwordcloud_files/figure-html/unnamed-chunk-24-1.png" width="480" style="display: block; margin: auto;"></p>
+</div>
+<div id="word-cloud-with-almost-everything" class="section level1">
+<h1 class="hasAnchor">
+<a href="#word-cloud-with-almost-everything" class="anchor"></a>Word cloud with almost everything</h1>
+<p>We are now ready to make a <em>lovely</em> word cloud:</p>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb25-1" data-line-number="1">love_words &lt;-<span class="st"> </span>love_words <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb25-2" data-line-number="2"><span class="st">  </span><span class="kw"><a href="http://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span>(<span class="dt">angle =</span> <span class="dv">45</span> <span class="op">*</span><span class="st"> </span><span class="kw"><a href="http://dplyr.tidyverse.org/reference/sample.html">sample</a></span>(<span class="op">-</span><span class="dv">2</span><span class="op">:</span><span class="dv">2</span>, <span class="kw"><a href="http://dplyr.tidyverse.org/reference/n.html">n</a></span>(), <span class="dt">replace =</span> <span class="ot">TRUE</span>, <span class="dt">prob =</span> <span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">4</span>, <span class="dv">1</span>, <span class="dv">1</span>)))</a></code></pre></div>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb26-1" data-line-number="1"><span class="kw">set.seed</span>(<span class="dv">42</span>)</a>
+<a class="sourceLine" id="cb26-2" data-line-number="2"><span class="kw">ggplot</span>(</a>
+<a class="sourceLine" id="cb26-3" data-line-number="3">  love_words,</a>
+<a class="sourceLine" id="cb26-4" data-line-number="4">  <span class="kw">aes</span>(</a>
+<a class="sourceLine" id="cb26-5" data-line-number="5">    <span class="dt">label =</span> word, <span class="dt">size =</span> speakers,</a>
+<a class="sourceLine" id="cb26-6" data-line-number="6">    <span class="dt">color =</span> speakers, <span class="dt">angle =</span> angle</a>
+<a class="sourceLine" id="cb26-7" data-line-number="7">  )</a>
+<a class="sourceLine" id="cb26-8" data-line-number="8">) <span class="op">+</span></a>
+<a class="sourceLine" id="cb26-9" data-line-number="9"><span class="st">  </span><span class="kw"><a href="../reference/geom_text_wordcloud.html">geom_text_wordcloud_area</a></span>(</a>
+<a class="sourceLine" id="cb26-10" data-line-number="10">    <span class="dt">mask =</span> png<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/png/topics/readPNG">readPNG</a></span>(<span class="kw">system.file</span>(<span class="st">"extdata/hearth.png"</span>,</a>
+<a class="sourceLine" id="cb26-11" data-line-number="11">      <span class="dt">package =</span> <span class="st">"ggwordcloud"</span>, <span class="dt">mustWork =</span> <span class="ot">TRUE</span></a>
+<a class="sourceLine" id="cb26-12" data-line-number="12">    )),</a>
+<a class="sourceLine" id="cb26-13" data-line-number="13">    <span class="dt">rm_outside =</span> <span class="ot">TRUE</span></a>
+<a class="sourceLine" id="cb26-14" data-line-number="14">  ) <span class="op">+</span></a>
+<a class="sourceLine" id="cb26-15" data-line-number="15"><span class="st">  </span><span class="kw">scale_size_area</span>(<span class="dt">max_size =</span> <span class="dv">16</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb26-16" data-line-number="16"><span class="st">  </span><span class="kw">theme_minimal</span>() <span class="op">+</span></a>
+<a class="sourceLine" id="cb26-17" data-line-number="17"><span class="st">  </span><span class="kw">scale_color_gradient</span>(<span class="dt">low =</span> <span class="st">"darkred"</span>, <span class="dt">high =</span> <span class="st">"red"</span>)</a>
+<a class="sourceLine" id="cb26-18" data-line-number="18"><span class="co">#&gt; Some words could not fit on page. They have been removed.</span></a></code></pre></div>
+<p><img src="ggwordcloud_files/figure-html/unnamed-chunk-26-1.png" width="480" style="display: block; margin: auto;"></p>
+</div>
+<div id="advanced-feature" class="section level1">
+<h1 class="hasAnchor">
+<a href="#advanced-feature" class="anchor"></a>Advanced feature</h1>
+<p><code>geom_text_wordcloud</code> is compatible with the facet system of <code>ggplot2</code>. For instance, one can easily display two word clouds for the speakers and the native speakers with the same scales:</p>
+<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb27-1" data-line-number="1"><span class="kw">library</span>(dplyr, <span class="dt">quietly =</span> <span class="ot">TRUE</span>, <span class="dt">warn.conflicts =</span> <span class="ot">FALSE</span>)</a>
+<a class="sourceLine" id="cb27-2" data-line-number="2"><span class="kw">library</span>(tidyr, <span class="dt">quietly =</span> <span class="ot">TRUE</span>)</a>
+<a class="sourceLine" id="cb27-3" data-line-number="3">love_words_small_l &lt;-<span class="st"> </span>love_words_small <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb27-4" data-line-number="4"><span class="st">  </span><span class="kw"><a href="http://www.rdocumentation.org/packages/tidyr/topics/gather">gather</a></span>(<span class="dt">key =</span> <span class="st">"type"</span>, <span class="dt">value =</span> <span class="st">"speakers"</span>, <span class="op">-</span>lang, <span class="op">-</span>word, <span class="op">-</span>angle) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb27-5" data-line-number="5"><span class="st">  </span><span class="kw"><a href="http://dplyr.tidyverse.org/reference/arrange.html">arrange</a></span>(<span class="kw"><a href="http://dplyr.tidyverse.org/reference/desc.html">desc</a></span>(speakers))</a></code></pre></div>
+<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb28-1" data-line-number="1"><span class="kw">set.seed</span>(<span class="dv">42</span>)</a>
+<a class="sourceLine" id="cb28-2" data-line-number="2"><span class="kw">ggplot</span>(</a>
+<a class="sourceLine" id="cb28-3" data-line-number="3">  love_words_small_l,</a>
+<a class="sourceLine" id="cb28-4" data-line-number="4">  <span class="kw">aes</span>(<span class="dt">label =</span> word, <span class="dt">size =</span> speakers)</a>
+<a class="sourceLine" id="cb28-5" data-line-number="5">) <span class="op">+</span></a>
+<a class="sourceLine" id="cb28-6" data-line-number="6"><span class="st">  </span><span class="kw"><a href="../reference/geom_text_wordcloud.html">geom_text_wordcloud_area</a></span>() <span class="op">+</span></a>
+<a class="sourceLine" id="cb28-7" data-line-number="7"><span class="st">  </span><span class="kw">scale_size_area</span>(<span class="dt">max_size =</span> <span class="dv">20</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb28-8" data-line-number="8"><span class="st">  </span><span class="kw">theme_minimal</span>() <span class="op">+</span></a>
+<a class="sourceLine" id="cb28-9" data-line-number="9"><span class="st">  </span><span class="kw">facet_wrap</span>(<span class="op">~</span>type)</a></code></pre></div>
+<p><img src="ggwordcloud_files/figure-html/unnamed-chunk-28-1.png" width="480" style="display: block; margin: auto;"></p>
 <p>One can also specify an original position for each label that what will be used as the starting point of the spiral algorithm for this label:</p>
-<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb23-1" data-line-number="1"><span class="kw">ggplot</span>(<span class="dt">data =</span> dat, <span class="kw">aes</span>(</a>
-<a class="sourceLine" id="cb23-2" data-line-number="2">  <span class="dt">x =</span> <span class="kw">factor</span>(am), <span class="dt">label =</span> name, <span class="dt">size =</span> size, <span class="dt">angle =</span> rot,</a>
-<a class="sourceLine" id="cb23-3" data-line-number="3">  <span class="dt">color =</span> <span class="kw">factor</span>(am)</a>
-<a class="sourceLine" id="cb23-4" data-line-number="4">)) <span class="op">+</span></a>
-<a class="sourceLine" id="cb23-5" data-line-number="5"><span class="st">  </span><span class="kw"><a href="../reference/geom_text_wordcloud.html">geom_text_wordcloud</a></span>() <span class="op">+</span></a>
-<a class="sourceLine" id="cb23-6" data-line-number="6"><span class="st">  </span><span class="kw">scale_size_area</span>(<span class="dt">max_size =</span> <span class="dv">12</span>) <span class="op">+</span></a>
-<a class="sourceLine" id="cb23-7" data-line-number="7"><span class="st">  </span><span class="kw">theme_minimal</span>()</a></code></pre></div>
-<p><img src="ggwordcloud_files/figure-html/unnamed-chunk-23-1.png" width="720"></p>
+<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb29-1" data-line-number="1"><span class="kw">set.seed</span>(<span class="dv">42</span>)</a>
+<a class="sourceLine" id="cb29-2" data-line-number="2"><span class="kw">ggplot</span>(</a>
+<a class="sourceLine" id="cb29-3" data-line-number="3">  love_words_small_l,</a>
+<a class="sourceLine" id="cb29-4" data-line-number="4">  <span class="kw">aes</span>(</a>
+<a class="sourceLine" id="cb29-5" data-line-number="5">    <span class="dt">label =</span> word, <span class="dt">size =</span> speakers,</a>
+<a class="sourceLine" id="cb29-6" data-line-number="6">    <span class="dt">x =</span> type, <span class="dt">color =</span> type</a>
+<a class="sourceLine" id="cb29-7" data-line-number="7">  )</a>
+<a class="sourceLine" id="cb29-8" data-line-number="8">) <span class="op">+</span></a>
+<a class="sourceLine" id="cb29-9" data-line-number="9"><span class="st">  </span><span class="kw"><a href="../reference/geom_text_wordcloud.html">geom_text_wordcloud_area</a></span>() <span class="op">+</span></a>
+<a class="sourceLine" id="cb29-10" data-line-number="10"><span class="st">  </span><span class="kw">scale_size_area</span>(<span class="dt">max_size =</span> <span class="dv">20</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb29-11" data-line-number="11"><span class="st">  </span><span class="kw">scale_x_discrete</span>(<span class="dt">breaks =</span> <span class="ot">NULL</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb29-12" data-line-number="12"><span class="st">  </span><span class="kw">theme_minimal</span>()</a></code></pre></div>
+<p><img src="ggwordcloud_files/figure-html/unnamed-chunk-29-1.png" width="480" style="display: block; margin: auto;"></p>
+<p>Finally, there is a <code>angle_group</code> option that can be used to restrict the words to appear only in a angular sector depending on their <code>angle_group</code>. For instance, we will visualize the changes of proportions of each language between the speakers and the native speakers by displaying the words above the horizontal line if the proportion is greater than in the other category and below otherwise.</p>
+<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb30-1" data-line-number="1">love_words_small_l &lt;-<span class="st"> </span>love_words_small_l <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb30-2" data-line-number="2"><span class="st">  </span><span class="kw"><a href="http://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span>(type) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb30-3" data-line-number="3"><span class="st">  </span><span class="kw"><a href="http://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span>(<span class="dt">prop =</span> speakers <span class="op">/</span><span class="st"> </span><span class="kw">sum</span>(speakers)) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb30-4" data-line-number="4"><span class="st">  </span><span class="kw"><a href="http://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span>(lang, word) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb30-5" data-line-number="5"><span class="st">  </span><span class="kw"><a href="http://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span>(<span class="dt">propdelta =</span> (prop <span class="op">-</span><span class="st"> </span><span class="kw">mean</span>(prop)) <span class="op">/</span><span class="st"> </span><span class="kw">sqrt</span>(<span class="kw">mean</span>(prop)))</a></code></pre></div>
+<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb31-1" data-line-number="1"><span class="kw">set.seed</span>(<span class="dv">42</span>)</a>
+<a class="sourceLine" id="cb31-2" data-line-number="2"><span class="kw">ggplot</span>(</a>
+<a class="sourceLine" id="cb31-3" data-line-number="3">  love_words_small_l,</a>
+<a class="sourceLine" id="cb31-4" data-line-number="4">  <span class="kw">aes</span>(</a>
+<a class="sourceLine" id="cb31-5" data-line-number="5">    <span class="dt">label =</span> word, <span class="dt">size =</span> <span class="kw">abs</span>(propdelta),</a>
+<a class="sourceLine" id="cb31-6" data-line-number="6">    <span class="dt">color =</span> propdelta <span class="op">&lt;</span><span class="st"> </span><span class="dv">0</span>, <span class="dt">angle_group =</span> propdelta <span class="op">&lt;</span><span class="st"> </span><span class="dv">0</span></a>
+<a class="sourceLine" id="cb31-7" data-line-number="7">  )</a>
+<a class="sourceLine" id="cb31-8" data-line-number="8">) <span class="op">+</span></a>
+<a class="sourceLine" id="cb31-9" data-line-number="9"><span class="st">  </span><span class="kw"><a href="../reference/geom_text_wordcloud.html">geom_text_wordcloud_area</a></span>() <span class="op">+</span></a>
+<a class="sourceLine" id="cb31-10" data-line-number="10"><span class="st">  </span><span class="kw">scale_size_area</span>(<span class="dt">max_size =</span> <span class="dv">8</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb31-11" data-line-number="11"><span class="st">  </span><span class="kw">theme_minimal</span>() <span class="op">+</span></a>
+<a class="sourceLine" id="cb31-12" data-line-number="12"><span class="st">  </span><span class="kw">facet_wrap</span>(<span class="op">~</span>type)</a></code></pre></div>
+<p><img src="ggwordcloud_files/figure-html/unnamed-chunk-31-1.png" width="480" style="display: block; margin: auto;"></p>
 </div>
 <div id="ggwordcloud-as-an-approximate-replacement-for-wordcloud-and-wordcloud2" class="section level1">
 <h1 class="hasAnchor">
 <a href="#ggwordcloud-as-an-approximate-replacement-for-wordcloud-and-wordcloud2" class="anchor"></a><code>ggwordcloud</code> as an approximate replacement for <code>wordcloud</code> and <code>wordcloud2</code>
 </h1>
-<p><code>ggwordcloud</code> and <code>ggwordcloud2</code> are two approximate replacement for respectively <code>wordcloud</code> and <code>wordcloud2</code>. They provide a similar syntax than the original functions and yields similar word clouds, but not all the options of the original functions are implemented. Note that both use a font size proportional to the raw size aesthetic. This is implemented in <code>ggwordcloud</code> by the use of the <code>scale_radius</code> size scale.</p>
-<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb24-1" data-line-number="1"><span class="kw"><a href="../reference/ggwordcloud.html">ggwordcloud</a></span>(dat<span class="op">$</span>name, dat<span class="op">$</span>size)</a></code></pre></div>
-<p><img src="ggwordcloud_files/figure-html/unnamed-chunk-24-1.png" width="720"></p>
-<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb25-1" data-line-number="1"><span class="kw"><a href="../reference/ggwordcloud2.html">ggwordcloud2</a></span>(dat[, <span class="kw">c</span>(<span class="st">"name"</span>, <span class="st">"size"</span>)])</a></code></pre></div>
-<p><img src="ggwordcloud_files/figure-html/unnamed-chunk-25-1.png" width="720"></p>
+<p><code>ggwordcloud</code> and <code>ggwordcloud2</code> are two approximate replacement for respectively <code>wordcloud</code> and <code>wordcloud2</code>. They provide a similar syntax than the original functions and yields similar word clouds, but not all the options of the original functions are implemented. Note that both use a font size proportional to the raw size aesthetic rather than its square root.</p>
+<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb32-1" data-line-number="1"><span class="kw"><a href="../reference/ggwordcloud.html">ggwordcloud</a></span>(love_words<span class="op">$</span>word, love_words<span class="op">$</span>speakers)</a></code></pre></div>
+<p><img src="ggwordcloud_files/figure-html/unnamed-chunk-32-1.png" width="480" style="display: block; margin: auto;"></p>
+<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb33-1" data-line-number="1"><span class="kw"><a href="../reference/ggwordcloud2.html">ggwordcloud2</a></span>(love_words[, <span class="kw">c</span>(<span class="st">"word"</span>, <span class="st">"speakers"</span>)], <span class="dt">size =</span> <span class="fl">1.5</span>)</a></code></pre></div>
+<p><img src="ggwordcloud_files/figure-html/unnamed-chunk-33-1.png" width="480" style="display: block; margin: auto;"></p>
 </div>
   </div>
 
@@ -247,13 +414,18 @@
 <a href="#tocnav" class="anchor"></a>Contents</h2>
       <ul class="nav nav-pills nav-stacked">
 <li><a href="#package-installation">Package installation</a></li>
+      <li><a href="#the-love-words-dataset">The love words dataset</a></li>
       <li><a href="#word-cloud">Word cloud</a></li>
       <li><a href="#word-cloud-and-text-size">Word cloud and text size</a></li>
       <li><a href="#word-cloud-and-text-area">Word cloud and text area</a></li>
       <li><a href="#word-cloud-with-too-many-words">Word cloud with too many words</a></li>
       <li><a href="#word-cloud-and-rotation">Word cloud and rotation</a></li>
       <li><a href="#word-cloud-and-eccentricity">Word cloud and eccentricity</a></li>
-      <li><a href="#advanced-wordcloud">Advanced wordcloud</a></li>
+      <li><a href="#word-cloud-and-shape">Word cloud and shape</a></li>
+      <li><a href="#word-cloud-and-color">Word cloud and color</a></li>
+      <li><a href="#word-cloud-and-mask">Word cloud and mask</a></li>
+      <li><a href="#word-cloud-with-almost-everything">Word cloud with almost everything</a></li>
+      <li><a href="#advanced-feature">Advanced feature</a></li>
       <li><a href="#ggwordcloud-as-an-approximate-replacement-for-wordcloud-and-wordcloud2"><code>ggwordcloud</code> as an approximate replacement for <code>wordcloud</code> and <code>wordcloud2</code></a></li>
       </ul>
 </div>
