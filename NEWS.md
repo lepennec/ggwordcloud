@@ -1,12 +1,11 @@
 # ggwordcloud 0.3.0
-
-# ggwordcloud 0.2.0.9000
-* rewritten doc
-* fix a Cairo issue with some utf8 strings
-* allow to use a mask
-* add a parameter to select the shape of the cloud
-* fix a zero pixel size issue
-* better replacement functions using a radius scale instead of a size scale
+* Novelties:
+    * documentation with a lovely example
+    * new mask and shape parameters
+    * better replacement by using the right scale
+* Bug fixes:
+    * workaround for a Cairo issue with some utf8 strings
+    * geom_wordcloud_area works even if no sizes are given
 
 # ggwordcloud 0.2.0
 * add the rm_outside option
