@@ -7,4 +7,5 @@
 0 errors | 0 warnings | 0 note
 
 * This is a new release.
+* The increase of size is due to a larger (and hopefully better) vignette
 
