@@ -1,3 +1,5 @@
+# ggwordcloud 0.3.0
+
 # ggwordcloud 0.2.0.9000
 * rewritten doc
 * fix a Cairo issue with some utf8 strings
