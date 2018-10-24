@@ -361,8 +361,8 @@ GeomTextWordcloud <- ggproto("GeomTextWordcloud", Geom,
 #' @export
 makeContent.textwordcloudtree <- function(x) {
   # Do not create text labels for empty strings.
-  valid_strings <- which(not_empty(x$lab)&(!is.na(x$data$size)))
-  invalid_strings <- which(!not_empty(x$lab)|(is.na(x$data$size)))
+  valid_strings <- which(not_empty(x$lab) & (!is.na(x$data$size)))
+  invalid_strings <- which(!not_empty(x$lab) | (is.na(x$data$size)))
 
   # Compute the native/pixel ratio
   dev_inch <- dev.size("in")
@@ -504,9 +504,11 @@ just_dir <- function(x, tol = 0.001) {
 compute_mask <- function(tg_inch, gw_pix, gh_pix, dev_dpi, f_mask, Cairo_fix = TRUE) {
   prev_dev_id <- dev.cur()
   dev_id <- Cairo(width = gw_pix, height = gh_pix, dpi = dev_dpi, units = "px", type = "raster")
-  pushViewport(viewport(width = gw_pix / dev_dpi,
-                        height = gh_pix / dev_dpi,
-                        default.units = "inch"))
+  pushViewport(viewport(
+    width = gw_pix / dev_dpi,
+    height = gh_pix / dev_dpi,
+    default.units = "inch"
+  ))
   grid.draw(tg_inch)
   popViewport()
   img <- grid.cap()
@@ -515,26 +517,30 @@ compute_mask <- function(tg_inch, gw_pix, gh_pix, dev_dpi, f_mask, Cairo_fix = T
   if (Cairo_fix) {
     # UTF8 character are not always rendered by the Cairo device
     # Try png
-    if (all(img=="transparent")) {
+    if (all(img == "transparent")) {
       prev_dev_id <- dev.cur()
       tmp_file <- tempfile(fileext = "png")
-      png(filename = tmp_file,
-          width = gw_pix, height = gh_pix, res = dev_dpi,
-          units = "px")
-      pushViewport(viewport(width = gw_pix / dev_dpi,
-                            height = gh_pix / dev_dpi,
-                            default.units = "inch"))
+      png(
+        filename = tmp_file,
+        width = gw_pix, height = gh_pix, res = dev_dpi,
+        units = "px"
+      )
+      pushViewport(viewport(
+        width = gw_pix / dev_dpi,
+        height = gh_pix / dev_dpi,
+        default.units = "inch"
+      ))
       grid.draw(tg_inch)
       popViewport()
       dev.off()
       dev.set(prev_dev_id)
       tmp_png <- readPNG(tmp_file)
       file.remove(tmp_file)
-      img <- apply(tmp_png, c(1,2), sum)
-      img[which(img==3)] <- "transparent"
+      img <- apply(tmp_png, c(1, 2), sum)
+      img[which(img == 3)] <- "transparent"
     }
     # Fallback to a rectangle
-    if (all(img=="transparent")) {
+    if (all(img == "transparent")) {
       rot <- tg_inch$rot
       tg_inch$rot <- 0
       w_inch <- convertWidth(grobWidth(tg_inch), "inch", TRUE)
@@ -542,20 +548,25 @@ compute_mask <- function(tg_inch, gw_pix, gh_pix, dev_dpi, f_mask, Cairo_fix = T
       desc_inch <- convertHeight(grobDescent(tg_inch), "inch", TRUE)
       prev_dev_id <- dev.cur()
       dev_id <- Cairo(width = gw_pix, height = gh_pix, dpi = dev_dpi, units = "px", type = "raster")
-      pushViewport(viewport(width = gw_pix / dev_dpi,
-                            height = gh_pix / dev_dpi,
-                            default.units = "inch"))
       pushViewport(viewport(
-        x = gw_pix/2 / dev_dpi,
-        y = gh_pix/2 / dev_dpi,
+        width = gw_pix / dev_dpi,
+        height = gh_pix / dev_dpi,
+        default.units = "inch"
+      ))
+      pushViewport(viewport(
+        x = gw_pix / 2 / dev_dpi,
+        y = gh_pix / 2 / dev_dpi,
         width = gw_pix / dev_dpi,
         height = gh_pix / dev_dpi,
         default.units = "inch",
-        angle = rot))
-      grid.rect(x = gw_pix/2/dev_dpi, gh_pix/2/dev_dpi-desc_inch/2,
-                width = w_inch, height = h_inch + desc_inch,
-                default.units = "inch",
-                gp = gpar(fill = "black"))
+        angle = rot
+      ))
+      grid.rect(
+        x = gw_pix / 2 / dev_dpi, gh_pix / 2 / dev_dpi - desc_inch / 2,
+        width = w_inch, height = h_inch + desc_inch,
+        default.units = "inch",
+        gp = gpar(fill = "black")
+      )
       popViewport()
       popViewport()
       img <- grid.cap()
