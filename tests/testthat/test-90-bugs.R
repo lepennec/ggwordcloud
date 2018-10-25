@@ -48,4 +48,15 @@ test_that("geom_text_wordcloud does not crash with empty words", {
   }, "ggplot")
 })
 
+
+test_that("geom_text_wordcloud works with parse = TRUE", {
+  expect_silent({
+    set.seed(42)
+    print(ggplot(
+      data = love_words_small[2,],
+      aes(label = word)
+    ) +
+      geom_text_wordcloud(parse = TRUE))
+  })
+})
 file.remove(tmp_file)
