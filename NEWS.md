@@ -1,4 +1,6 @@
 # ggwordcloud 0.3.0.9000
+* Bug fixes
+    * add missing parse_safe function
 
 # ggwordcloud 0.3.0
 * Novelties:
