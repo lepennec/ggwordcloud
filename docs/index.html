@@ -32,7 +32,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">ggwordcloud</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.3.0</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.3.0.9000</span>
       </span>
     </div>
 
@@ -135,7 +135,7 @@
 <a class="sourceLine" id="cb5-3" data-line-number="3"><span class="kw">set.seed</span>(<span class="dv">42</span>)</a>
 <a class="sourceLine" id="cb5-4" data-line-number="4"><span class="kw">ggplot</span>(</a>
 <a class="sourceLine" id="cb5-5" data-line-number="5">  love_words_small <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb5-6" data-line-number="6"><span class="st">    </span><span class="kw"><a href="http://www.rdocumentation.org/packages/tidyr/topics/gather">gather</a></span>(<span class="dt">key =</span> <span class="st">"type"</span>, <span class="dt">value =</span> <span class="st">"speakers"</span>, <span class="op">-</span>lang, <span class="op">-</span>word) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb5-6" data-line-number="6"><span class="st">    </span><span class="kw"><a href="https://tidyr.tidyverse.org/reference/gather.html">gather</a></span>(<span class="dt">key =</span> <span class="st">"type"</span>, <span class="dt">value =</span> <span class="st">"speakers"</span>, <span class="op">-</span>lang, <span class="op">-</span>word) <span class="op">%&gt;%</span></a>
 <a class="sourceLine" id="cb5-7" data-line-number="7"><span class="st">    </span><span class="kw"><a href="http://dplyr.tidyverse.org/reference/arrange.html">arrange</a></span>(<span class="kw"><a href="http://dplyr.tidyverse.org/reference/desc.html">desc</a></span>(speakers)),</a>
 <a class="sourceLine" id="cb5-8" data-line-number="8">  <span class="kw">aes</span>(<span class="dt">label =</span> word, <span class="dt">size =</span> speakers)</a>
 <a class="sourceLine" id="cb5-9" data-line-number="9">) <span class="op">+</span></a>

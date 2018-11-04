@@ -30,7 +30,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ggwordcloud</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.3.0</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.3.0.9000</span>
       </span>
     </div>
 
@@ -74,7 +74,7 @@
       <h1>ggwordcloud: a word cloud geom for ggplot2</h1>
                         <h4 class="author">E. Le Pennec</h4>
             
-            <h4 class="date">2018-10-24</h4>
+            <h4 class="date">2018-11-04</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/lepennec/ggwordcloud/blob/master/vignettes/ggwordcloud.Rmd"><code>vignettes/ggwordcloud.Rmd</code></a></small>
       <div class="hidden name"><code>ggwordcloud.Rmd</code></div>
@@ -350,7 +350,7 @@
 <div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb27-1" data-line-number="1"><span class="kw">library</span>(dplyr, <span class="dt">quietly =</span> <span class="ot">TRUE</span>, <span class="dt">warn.conflicts =</span> <span class="ot">FALSE</span>)</a>
 <a class="sourceLine" id="cb27-2" data-line-number="2"><span class="kw">library</span>(tidyr, <span class="dt">quietly =</span> <span class="ot">TRUE</span>)</a>
 <a class="sourceLine" id="cb27-3" data-line-number="3">love_words_small_l &lt;-<span class="st"> </span>love_words_small <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb27-4" data-line-number="4"><span class="st">  </span><span class="kw"><a href="http://www.rdocumentation.org/packages/tidyr/topics/gather">gather</a></span>(<span class="dt">key =</span> <span class="st">"type"</span>, <span class="dt">value =</span> <span class="st">"speakers"</span>, <span class="op">-</span>lang, <span class="op">-</span>word, <span class="op">-</span>angle) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb27-4" data-line-number="4"><span class="st">  </span><span class="kw"><a href="https://tidyr.tidyverse.org/reference/gather.html">gather</a></span>(<span class="dt">key =</span> <span class="st">"type"</span>, <span class="dt">value =</span> <span class="st">"speakers"</span>, <span class="op">-</span>lang, <span class="op">-</span>word, <span class="op">-</span>angle) <span class="op">%&gt;%</span></a>
 <a class="sourceLine" id="cb27-5" data-line-number="5"><span class="st">  </span><span class="kw"><a href="http://dplyr.tidyverse.org/reference/arrange.html">arrange</a></span>(<span class="kw"><a href="http://dplyr.tidyverse.org/reference/desc.html">desc</a></span>(speakers))</a></code></pre></div>
 <div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb28-1" data-line-number="1"><span class="kw">set.seed</span>(<span class="dv">42</span>)</a>
 <a class="sourceLine" id="cb28-2" data-line-number="2"><span class="kw">ggplot</span>(</a>
