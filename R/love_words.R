@@ -7,7 +7,7 @@
 #' @format a data.frame with 147 observations (or 34 for the small one) of 4
 #'   variables
 #'   \describe{
-#'   \item{lang}{the ISO 639 language code}
+#'   \item{iso_639_3}{the ISO 639-3 language code}
 #'   \item{word}{the word love in that language}
 #'   \item{native_speakers}{number of native speakers in millions}
 #'   \item{speakers}{number of speakers in millions}
