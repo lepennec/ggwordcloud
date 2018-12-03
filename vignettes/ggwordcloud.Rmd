@@ -38,20 +38,22 @@ devtools::install_github("lepennec/ggwordcloud")
 Please check the latest development version before submitting an issue.
 
 
-# The love words dataset
+# The love / thank you words dataset
 
-Along this vignette, we will use a _lovely_ dataset: a collection of the word love in several language combined with the number of native speakers of those language as well as the total number of speakers. The data have been extracted from _wikipedia_ and is exposed in two data frame of 4 columns: 
+Along this vignette, we will use a _lovely_ (and _thank you_) dataset: a collection of the word love (thank you) in several language combined with the number of native speakers of those language as well as the total number of speakers. The data have been extracted from _wikipedia_ and is exposed in two data frame of 4 columns: 
 - `lang`: the ISO 649 language code
 - `words`: the word love in those languages
 - `native_speakers`: the number of native speakers (in millions) of those languages
 - `speaker`: the corresponding total number of speakers (in millions)
-The first one `love_words` contains 147 different languages while the second `love_words_small` contains the 34 languages having more than 50 millions speakers.
+The first one `love_words` (`thankyou_words`) contains 147 (133) different languages while the second `love_words_small` (`thankyou_words_small`) contains the 34 (34) languages having more than 50 millions speakers.
 
 ```{r}
 library(ggwordcloud)
 data("love_words_small")
 data("love_words")
 ```
+
+
 
 # Word cloud
 
