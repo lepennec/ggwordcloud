@@ -780,7 +780,9 @@ compute_boxes_from_mask <- function(mask, gw_pix, gh_pix, gw_ratio, gh_ratio, gr
       mask_lists <- rbind(mask_lists, mask_list)
     }
 
-    cur_mask <- next_mask
+    if (st != max(step)) {
+      cur_mask <- next_mask
+    }
   }
 
   mask_lists
