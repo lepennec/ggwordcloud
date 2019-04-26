@@ -544,7 +544,7 @@ compute_mask <- function(tg_inch, gw_pix, gh_pix, dev_dpi, f_mask, Cairo_fix = T
       rot <- tg_inch$rot
       tg_inch$rot <- 0
       w_inch <- convertWidth(grobWidth(tg_inch), "inch", TRUE)
-      h_inch <- convertHeight(grobHeight(tg_inch), "inch", TRUE)
+      h_inch <- convertHeight(grobAscent(tg_inch), "inch", TRUE)
       desc_inch <- convertHeight(grobDescent(tg_inch), "inch", TRUE)
       prev_dev_id <- dev.cur()
       dev_id <- Cairo(width = gw_pix, height = gh_pix, dpi = dev_dpi, units = "px", type = "raster")
@@ -593,7 +593,8 @@ compute_newsize <- function(i, data, dev_dpi, area_corr_power) {
   )
 
   gw_inch <- convertWidth(grobWidth(tg_inch), "inch", TRUE) * 1.2
-  gh_inch <- convertHeight(grobHeight(tg_inch), "inch", TRUE) * 1.2 + 2 * convertHeight(grobDescent(tg_inch), "inch", TRUE)
+  gh_inch <- convertHeight(grobAscent(tg_inch), "inch", TRUE) * 1.2 +
+    convertHeight(grobDescent(tg_inch), "inch", TRUE) * 1.2
 
   gw_pix <- max(1, ceiling(gw_inch * dev_dpi))
   gh_pix <- max(1, ceiling(gh_inch * dev_dpi))
@@ -674,7 +675,8 @@ compute_text_boxes <- function(i, x, dev_dpi, grid_size, max_grid_size, grid_mar
   )
 
   gw_inch <- convertWidth(grobWidth(tg_inch), "inch", TRUE) * 1.2
-  gh_inch <- convertHeight(grobHeight(tg_inch), "inch", TRUE) * 1.2 + 2 * convertHeight(grobDescent(tg_inch), "inch", TRUE)
+  gh_inch <- convertHeight(grobAscent(tg_inch), "inch", TRUE) * 1.2 +
+    convertHeight(grobDescent(tg_inch), "inch", TRUE) * 1.2
 
   gw_pix <- max(1, ceiling(gw_inch * dev_dpi / grid_size)) * grid_size
   gh_pix <- max(1, ceiling(gh_inch * dev_dpi / grid_size)) * grid_size
