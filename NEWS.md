@@ -1,6 +1,11 @@
 # ggwordcloud 0.3.0.9000
+* Novelties:
+    * New thank you word list thanks to Enrico Spinielli
+    * Use png instead of Cairo
+    * New show_boxes option to visualiez the bounding boxes used in the placement algorithm
 * Bug fixes
     * add missing parse_safe function
+    * fix a bug when using only one box size
 
 # ggwordcloud 0.3.0
 * Novelties:
