@@ -59,4 +59,16 @@ test_that("geom_text_wordcloud works with parse = TRUE", {
       geom_text_wordcloud(parse = TRUE))
   })
 })
+
+test_that("geom_text_wordcloud works when grid_size = max_grid_size", {
+  expect_is({
+    set.seed(42)
+    print(ggplot(
+      data = love_words_small,
+      aes(label = word, size = speakers)
+    ) +
+      geom_text_wordcloud(grid_size = 4, max_grid_size = 4))
+  }, "ggplot")
+})
+
 file.remove(tmp_file)

@@ -116,4 +116,20 @@ test_that("geom_text_wordcloud complains silently when one word does not fit and
       scale_size_area(max_size = 200))
   })
 })
+
+
+test_that("geom_text_wordcloud works with a show_boxes = TRUE", {
+  expect_is({
+    set.seed(42)
+    print(ggplot(
+      data = love_words_small,
+      aes(label = word)
+    ) +
+      geom_text_wordcloud(show_boxes = TRUE) +
+      scale_size_area(max_size = 10))
+  }, "ggplot")
+})
+
+
+
 file.remove(tmp_file)
