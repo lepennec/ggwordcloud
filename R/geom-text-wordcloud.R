@@ -73,7 +73,7 @@
 #'   the color "black" defined the text zone. When a list of masks is given, the
 #'   mask_group aesthetic defines which mask is going to be used. Default to
 #'   \code{NA}, i.e. no mask.
-#' @param show_boxes display the boxes used in the placement algorithm is set
+#' @param show_boxes display the bounding boxes used in the placement algorithm is set
 #' to \code{TRUE}. Default to \code{FALSE}.
 #'
 #' @return a ggplot
