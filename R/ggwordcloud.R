@@ -10,7 +10,6 @@
 #' @import ggplot2
 #' @importFrom scales alpha
 #' @import grid
-#' @importFrom Cairo Cairo
 #' @importFrom grDevices
 #'   dev.cur
 #'   dev.off

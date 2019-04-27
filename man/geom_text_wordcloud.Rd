@@ -13,7 +13,7 @@ geom_text_wordcloud(mapping = NULL, data = NULL, stat = "identity",
   ylim = c(NA, NA), seed = NA, rm_outside = FALSE,
   shape = "circle", mask = NA, area_corr = FALSE,
   area_corr_power = 1/0.7, na.rm = FALSE, show.legend = FALSE,
-  inherit.aes = TRUE)
+  inherit.aes = TRUE, show_boxes = FALSE)
 
 geom_text_wordcloud_area(mapping = NULL, data = NULL,
   stat = "identity", position = "identity", ..., parse = FALSE,
@@ -23,7 +23,7 @@ geom_text_wordcloud_area(mapping = NULL, data = NULL,
   ylim = c(NA, NA), seed = NA, rm_outside = FALSE,
   shape = "circle", mask = NA, area_corr = TRUE,
   area_corr_power = 1/0.7, na.rm = FALSE, show.legend = FALSE,
-  inherit.aes = TRUE)
+  inherit.aes = TRUE, show_boxes = FALSE)
 }
 \arguments{
 \item{mapping}{Set of aesthetic mappings created by
@@ -113,6 +113,9 @@ to match human perception.}
 \item{show.legend}{is set by default to \code{FALSE}}
 
 \item{inherit.aes}{Inherits aesthetics if TRUE}
+
+\item{show_boxes}{display the boxes used in the placement algorithm is set
+to \code{TRUE}. Default to \code{FALSE}.}
 }
 \value{
 a ggplot

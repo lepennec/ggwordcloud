@@ -514,9 +514,14 @@ just_dir <- function(x, tol = 0.001) {
   out
 }
 
-compute_mask <- function(tg_inch, gw_pix, gh_pix, dev_dpi, f_mask, Cairo_fix = TRUE) {
+compute_mask <- function(tg_inch, gw_pix, gh_pix, dev_dpi, f_mask) {
   prev_dev_id <- dev.cur()
-  dev_id <- Cairo(width = gw_pix, height = gh_pix, dpi = dev_dpi, units = "px", type = "raster")
+  tmp_file <- tempfile(fileext = "_wordcloud.png")
+  png(
+    filename = tmp_file,
+    width = gw_pix, height = gh_pix, res = dev_dpi,
+    units = "px"
+  )
   pushViewport(viewport(
     width = gw_pix / dev_dpi,
     height = gh_pix / dev_dpi,
@@ -524,50 +529,29 @@ compute_mask <- function(tg_inch, gw_pix, gh_pix, dev_dpi, f_mask, Cairo_fix = T
   ))
   grid.draw(tg_inch)
   popViewport()
-  img <- grid.cap()
   dev.off()
   dev.set(prev_dev_id)
-  if (Cairo_fix) {
-    # UTF8 character are not always rendered by the Cairo device
-    # Try png
-    if (all(img == "transparent")) {
-      prev_dev_id <- dev.cur()
-      tmp_file <- tempfile(fileext = "png")
-      png(
-        filename = tmp_file,
-        width = gw_pix, height = gh_pix, res = dev_dpi,
-        units = "px"
-      )
-      pushViewport(viewport(
-        width = gw_pix / dev_dpi,
-        height = gh_pix / dev_dpi,
-        default.units = "inch"
-      ))
-      grid.draw(tg_inch)
-      popViewport()
-      dev.off()
-      dev.set(prev_dev_id)
-      tmp_png <- readPNG(tmp_file)
-      file.remove(tmp_file)
-      img <- apply(tmp_png, c(1, 2), sum)
-      img[which(img == 3)] <- "transparent"
-    }
-    # Fallback to a rectangle
-    if (all(img == "transparent")) {
-      rot <- tg_inch$rot
-      tg_inch$rot <- 0
-      w_inch <- convertWidth(grobWidth(tg_inch), "inch", TRUE)
-      h_inch <- convertHeight(grobAscent(tg_inch), "inch", TRUE)
-      desc_inch <- convertHeight(grobDescent(tg_inch), "inch", TRUE)
-      prev_dev_id <- dev.cur()
-      dev_id <- Cairo(width = gw_pix, height = gh_pix, dpi = dev_dpi, units = "px", type = "raster")
-      pushViewport(viewport(
-        width = gw_pix / dev_dpi,
-        height = gh_pix / dev_dpi,
-        default.units = "inch"
-      ))
-      pushViewport(viewport(
-        x = gw_pix / 2 / dev_dpi,
+  tmp_png <- readPNG(tmp_file)
+  file.remove(tmp_file)
+  img <- f_mask(tmp_png)
+
+  # Fallback to a rectangle
+  if (!any(img)) {
+    rot <- tg_inch$rot
+    tg_inch$rot <- 0
+    w_inch <- convertWidth(grobWidth(tg_inch), "inch", TRUE)
+    h_inch <- convertHeight(grobHeight(tg_inch), "inch", TRUE)
+    asc_inch <- convertHeight(grobAscent(tg_inch), "inch", TRUE)
+    desc_inch <- convertHeight(grobDescent(tg_inch), "inch", TRUE)
+    prev_dev_id <- dev.cur()
+    tmp_file <- tempfile(fileext = "png")
+    png(
+      filename = tmp_file,
+      width = gw_pix, height = gh_pix, res = dev_dpi,
+      units = "px"
+    )
+    pushViewport(viewport(
+      x = gw_pix / 2 / dev_dpi,
         y = gh_pix / 2 / dev_dpi,
         width = gw_pix / dev_dpi,
         height = gh_pix / dev_dpi,
@@ -575,19 +559,19 @@ compute_mask <- function(tg_inch, gw_pix, gh_pix, dev_dpi, f_mask, Cairo_fix = T
         angle = rot
       ))
       grid.rect(
-        x = gw_pix / 2 / dev_dpi, gh_pix / 2 / dev_dpi - desc_inch / 2,
-        width = w_inch, height = h_inch + desc_inch,
+        x = gw_pix / 2 / dev_dpi,
+        y = gh_pix / 2 / dev_dpi  + (asc_inch -h_inch) / 2 - desc_inch / 2,
+        width = w_inch, height = asc_inch + desc_inch,
         default.units = "inch",
         gp = gpar(fill = "black")
       )
       popViewport()
-      popViewport()
-      img <- grid.cap()
       dev.off()
       dev.set(prev_dev_id)
-    }
+      tmp_png <- readPNG(tmp_file)
+      file.remove(tmp_file)
   }
-  f_mask(img)
+  f_mask(tmp_png)
 }
 
 compute_newsize <- function(i, data, dev_dpi, area_corr_power) {
@@ -607,6 +591,7 @@ compute_newsize <- function(i, data, dev_dpi, area_corr_power) {
 
   gw_inch <- convertWidth(grobWidth(tg_inch), "inch", TRUE) * 1.2
   gh_inch <- convertHeight(grobAscent(tg_inch), "inch", TRUE) * 1.2 +
+    convertHeight(grobHeight(tg_inch), "inch", TRUE) * 1.2 +
     convertHeight(grobDescent(tg_inch), "inch", TRUE) * 1.2
 
   gw_pix <- max(1, ceiling(gw_inch * dev_dpi))
@@ -625,7 +610,8 @@ compute_newsize <- function(i, data, dev_dpi, area_corr_power) {
   )
 
   # Compute the text mask
-  mask <- compute_mask(tg_inch, gw_pix, gh_pix, dev_dpi, function(img) (img != "transparent"))
+  mask <- compute_mask(tg_inch, gw_pix, gh_pix, dev_dpi,
+                       function(img) { apply(img, c(1,2), sum) != 3 })
   area <- sum(mask)
   if (area > 0) {
     row$size^(area_corr_power) / sqrt(area)
@@ -653,10 +639,7 @@ compute_mask_boxes <- function(mask_matrix, dev_dpi, grid_size, max_grid_size, g
   # Compute the mask mask
   mask <- compute_mask(
     mask_raster, gw_pix, gh_pix, dev_dpi,
-    function(img) {
-      img != "black"
-    },
-    Cairo_fix = FALSE
+    function(img) { apply(img, c(1,2), sum) != 0 }
   )
 
   compute_boxes_from_mask(
@@ -687,9 +670,13 @@ compute_text_boxes <- function(i, x, dev_dpi, grid_size, max_grid_size, grid_mar
     )
   )
 
-  gw_inch <- convertWidth(grobWidth(tg_inch), "inch", TRUE) * 1.2
-  gh_inch <- convertHeight(grobAscent(tg_inch), "inch", TRUE) * 1.2 +
+  gw_inch_ <- convertWidth(grobWidth(tg_inch), "inch", TRUE) * 1.2
+  gh_inch_ <- convertHeight(grobAscent(tg_inch), "inch", TRUE) * 1.2 +
+    convertHeight(grobHeight(tg_inch), "inch", TRUE) * 1.2 +
     convertHeight(grobDescent(tg_inch), "inch", TRUE) * 1.2
+
+  gw_inch <- gw_inch_
+  gh_inch <- gh_inch_
 
   gw_pix <- max(1, ceiling(gw_inch * dev_dpi / grid_size)) * grid_size
   gh_pix <- max(1, ceiling(gh_inch * dev_dpi / grid_size)) * grid_size
@@ -711,9 +698,7 @@ compute_text_boxes <- function(i, x, dev_dpi, grid_size, max_grid_size, grid_mar
   # Compute the text mask
   mask <- compute_mask(
     tg_inch, gw_pix, gh_pix, dev_dpi,
-    function(img) {
-      img != "transparent"
-    }
+    function(img) { apply(img, c(1,2), sum) != 3 }
   )
 
   compute_boxes_from_mask(
@@ -791,7 +776,7 @@ compute_boxes_from_mask <- function(mask, gw_pix, gh_pix, gw_ratio, gh_ratio, gr
 make_textgrob <- function(i, x, valid_strings, wordcloud) {
   xi <- valid_strings[i]
   row <- x$data[xi, , drop = FALSE]
-  # browser()
+
   textGrob(
     x$lab[xi],
     # Position of text bounding boxes.

@@ -20,7 +20,6 @@ Depends:
     R (>= 2.10),
     ggplot2 (>= 3.0.0)
 Imports: 
-    Cairo (>= 1.5.9),
     grid,
     Rcpp,
     scales (>= 1.0.0),
