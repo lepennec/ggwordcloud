@@ -73,7 +73,7 @@ related to the size aesthetic." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ggwordcloud</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.0.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.4.0</span>
       </span>
     </div>
 
@@ -126,7 +126,7 @@ related to the size aesthetic." />
 wordcloud2.js algorithm. The texts are layered around a spiral centered on
 the original position. This geom is based on
 <code><a href='https://www.rdocumentation.org/packages/ggrepel/topics/geom_text_repel'>geom_text_repel</a></code> which in turn is based on
-<code><a href='https://ggplot2.tidyverse.org/reference/geom_text.html'>geom_text</a></code>. See the documentation for those functions
+<code><a href='https://www.rdocumentation.org/packages/ggplot2/topics/geom_text'>geom_text</a></code>. See the documentation for those functions
 for more details. By default, the font size is directly related to the size
 aesthetic. <code>geom_text_wordcloud_area</code> is an alias, with a different set
 of default, that chooses a font size so that the area of the text is now
@@ -142,7 +142,7 @@ related to the size aesthetic.</p>
   <span class='kw'>ylim</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>NA</span>, <span class='fl'>NA</span>), <span class='kw'>seed</span> <span class='kw'>=</span> <span class='fl'>NA</span>, <span class='kw'>rm_outside</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
   <span class='kw'>shape</span> <span class='kw'>=</span> <span class='st'>"circle"</span>, <span class='kw'>mask</span> <span class='kw'>=</span> <span class='fl'>NA</span>, <span class='kw'>area_corr</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
   <span class='kw'>area_corr_power</span> <span class='kw'>=</span> <span class='fl'>1</span>/<span class='fl'>0.7</span>, <span class='kw'>na.rm</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>show.legend</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>inherit.aes</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
+  <span class='kw'>inherit.aes</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>show_boxes</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)
 
 <span class='fu'>geom_text_wordcloud_area</span>(<span class='kw'>mapping</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>data</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>stat</span> <span class='kw'>=</span> <span class='st'>"identity"</span>, <span class='kw'>position</span> <span class='kw'>=</span> <span class='st'>"identity"</span>, <span class='no'>...</span>, <span class='kw'>parse</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
@@ -152,7 +152,7 @@ related to the size aesthetic.</p>
   <span class='kw'>ylim</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>NA</span>, <span class='fl'>NA</span>), <span class='kw'>seed</span> <span class='kw'>=</span> <span class='fl'>NA</span>, <span class='kw'>rm_outside</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
   <span class='kw'>shape</span> <span class='kw'>=</span> <span class='st'>"circle"</span>, <span class='kw'>mask</span> <span class='kw'>=</span> <span class='fl'>NA</span>, <span class='kw'>area_corr</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
   <span class='kw'>area_corr_power</span> <span class='kw'>=</span> <span class='fl'>1</span>/<span class='fl'>0.7</span>, <span class='kw'>na.rm</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>show.legend</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>inherit.aes</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
+  <span class='kw'>inherit.aes</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>show_boxes</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -160,7 +160,7 @@ related to the size aesthetic.</p>
     <tr>
       <th>mapping</th>
       <td><p>Set of aesthetic mappings created by
-<code><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></code> or <code><a href='https://ggplot2.tidyverse.org/reference/aes_.html'>aes_</a></code>. If specified and
+<code><a href='https://www.rdocumentation.org/packages/ggplot2/topics/aes'>aes</a></code> or <code><a href='https://www.rdocumentation.org/packages/ggplot2/topics/aes_'>aes_</a></code>. If specified and
 <code>inherit.aes = TRUE</code> (the default), is combined with the default
 mapping at the top level of the plot. You only need to supply
 <code>mapping</code> if there isn't a mapping defined for the plot. Note that if
@@ -186,7 +186,7 @@ call to a position adjustment function.</p></td>
     </tr>
     <tr>
       <th>...</th>
-      <td><p>other arguments passed on to <code><a href='https://ggplot2.tidyverse.org/reference/layer.html'>layer</a></code>. There
+      <td><p>other arguments passed on to <code><a href='https://www.rdocumentation.org/packages/ggplot2/topics/layer'>layer</a></code>. There
 are three types of arguments you can use here:</p><ul>
 <li><p>Aesthetics:
 to set an aesthetic to a fixed value, like <code>colour = "red"</code> or
@@ -299,6 +299,11 @@ to match human perception.</p></td>
       <th>inherit.aes</th>
       <td><p>Inherits aesthetics if TRUE</p></td>
     </tr>
+    <tr>
+      <th>show_boxes</th>
+      <td><p>display the bounding boxes used in the placement algorithm is set
+to <code>TRUE</code>. Default to <code>FALSE</code>.</p></td>
+    </tr>
     </table>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
@@ -338,7 +343,7 @@ to match human perception.</p></td>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.3.0.</p>
 </div>
       </footer>
    </div>

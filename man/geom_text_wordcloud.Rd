@@ -114,7 +114,7 @@ to match human perception.}
 
 \item{inherit.aes}{Inherits aesthetics if TRUE}
 
-\item{show_boxes}{display the boxes used in the placement algorithm is set
+\item{show_boxes}{display the bounding boxes used in the placement algorithm is set
 to \code{TRUE}. Default to \code{FALSE}.}
 }
 \value{
