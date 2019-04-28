@@ -1,4 +1,4 @@
-# ggwordcloud 0.3.0.9000
+# ggwordcloud 0.4.0
 * Novelties:
     * New thank you word list thanks to Enrico Spinielli
     * Use png instead of Cairo
