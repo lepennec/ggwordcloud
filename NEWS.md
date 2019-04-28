@@ -2,7 +2,7 @@
 * Novelties:
     * New thank you word list thanks to Enrico Spinielli
     * Use png instead of Cairo
-    * New show_boxes option to visualiez the bounding boxes used in the placement algorithm
+    * New show_boxes option to visualize the bounding boxes used in the placement algorithm
 * Bug fixes
     * add missing parse_safe function
     * fix a bug when using only one box size
