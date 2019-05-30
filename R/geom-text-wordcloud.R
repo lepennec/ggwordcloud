@@ -643,7 +643,7 @@ compute_mask_boxes <- function(mask_matrix, dev_dpi, grid_size, max_grid_size, g
   )
 
   compute_boxes_from_mask(
-    mask, gw_pix, gh_pix, gw_ratio, gh_ratio,
+    mask, gw_ratio, gh_ratio,
     grid_size, max_grid_size,
     0, 0, 0
   )
@@ -702,13 +702,17 @@ compute_text_boxes <- function(i, x, dev_dpi, grid_size, max_grid_size, grid_mar
   )
 
   compute_boxes_from_mask(
-    mask, gw_pix, gh_pix, gw_ratio, gh_ratio,
+    mask, gw_ratio, gh_ratio,
     grid_size, max_grid_size,
     grid_margin, gw_pix / 2, gh_pix / 2
   )
 }
 
-compute_boxes_from_mask <- function(mask, gw_pix, gh_pix, gw_ratio, gh_ratio, grid_size, max_grid_size, grid_margin, delta_w, delta_h) {
+compute_boxes_from_mask <- function(mask, gw_ratio, gh_ratio, grid_size, max_grid_size, grid_margin, delta_w, delta_h) {
+  dim_mask <- dim(mask)
+  gw_pix <- dim_mask[2]
+  gh_pix <- dim_mask[1]
+
   max_grid_w <- ceiling(gw_pix / grid_size) * grid_size
   max_grid_h <- ceiling(gh_pix / grid_size) * grid_size
   seq_grid_w <- seq.int(1, max_grid_w, grid_size)
@@ -716,7 +720,9 @@ compute_boxes_from_mask <- function(mask, gw_pix, gh_pix, gw_ratio, gh_ratio, gr
 
   mask_lists <- array(0, c(0, 4))
 
-  mask_s <- mask[seq_grid_h, seq_grid_w, drop = FALSE]
+  mask_s <- mask[pmin(pmax(1,seq_grid_h), gh_pix),
+                 pmin(pmax(1,seq_grid_w), gw_pix),
+                 drop = FALSE]
 
   for (j in (-grid_margin):(grid_size + grid_margin - 1)) {
     for (i in (-grid_margin):(grid_size + grid_margin - 1)) {
@@ -733,7 +739,8 @@ compute_boxes_from_mask <- function(mask, gw_pix, gh_pix, gw_ratio, gh_ratio, gr
 
   for (st in step) {
     if (st != max(step)) {
-      next_mask <- cur_mask[seq(1, nrow(cur_mask), 2), seq(1, ncol(cur_mask), 2), drop = FALSE]
+      next_mask <- cur_mask[seq(1, nrow(cur_mask), 2),
+                            seq(1, ncol(cur_mask), 2), drop = FALSE]
       for (j in 0:1) {
         for (i in 0:1) {
           next_mask <- next_mask &
