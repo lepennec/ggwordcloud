@@ -1,3 +1,9 @@
+# ggwordcloud 0.5.0
+* Novelties:
+   * x2 speedup
+* Bug fix:
+   * fix a out of bounds issue
+
 # ggwordcloud 0.4.0
 * Novelties:
     * New thank you word list thanks to Enrico Spinielli
