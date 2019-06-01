@@ -42,9 +42,9 @@
 #'   to these limits. By default, text labels are constrained to the entire plot
 #'   area.
 #' @param eccentricity eccentricity of the spiral. Default to .65
-#' @param rstep relative wordclould spiral radius increment after one full
+#' @param rstep relative wordcloud spiral radius increment after one full
 #'   rotation. Default to .01.
-#' @param tstep wordclould spiral angle increment at each step. Default to .02.
+#' @param tstep wordcloud spiral angle increment at each step. Default to .02.
 #' @param perc_step parameter used to define the minimal distance between two
 #'   successive candidate positions on the ellipse. Default to .01
 #' @param max_steps maximum number of steps avoided thanks to this minimal
