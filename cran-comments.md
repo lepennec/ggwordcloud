@@ -1,6 +1,6 @@
 ## Test environments
-* local Fedora 29, R 3.5.3, gcc
-* rhub: windows-x86_64-release, fedora-clang-devel
+* local Fedora 29, R 3.5.4, gcc
+* rhub: rhub::check_for_cran, rhub::check_with_rdevel
 
 ## R CMD check results
 
