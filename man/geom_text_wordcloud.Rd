@@ -60,10 +60,10 @@ starting position of each text label.}
 
 \item{eccentricity}{eccentricity of the spiral. Default to .65}
 
-\item{rstep}{relative wordclould spiral radius increment after one full
+\item{rstep}{relative wordcloud spiral radius increment after one full
 rotation. Default to .01.}
 
-\item{tstep}{wordclould spiral angle increment at each step. Default to .02.}
+\item{tstep}{wordcloud spiral angle increment at each step. Default to .02.}
 
 \item{perc_step}{parameter used to define the minimal distance between two
 successive candidate positions on the ellipse. Default to .01}
