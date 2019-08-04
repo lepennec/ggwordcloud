@@ -95,7 +95,7 @@ which means that \code{set.seed} will not be called.}
 
 \item{mask}{a mask (or a list of masks) used to define a zone in which the
 text should be placed. Each mask should be coercible to a raster in which
-the color "black" defined the text zone. When a list of masks is given, the
+non full transparency defined the text zone. When a list of masks is given, the
 mask_group aesthetic defines which mask is going to be used. Default to
 \code{NA}, i.e. no mask.}
 
