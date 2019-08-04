@@ -70,7 +70,7 @@
 #'   to match human perception.
 #' @param mask a mask (or a list of masks) used to define a zone in which the
 #'   text should be placed. Each mask should be coercible to a raster in which
-#'   the color "black" defined the text zone. When a list of masks is given, the
+#'   non full transparency defined the text zone. When a list of masks is given, the
 #'   mask_group aesthetic defines which mask is going to be used. Default to
 #'   \code{NA}, i.e. no mask.
 #' @param show_boxes display the bounding boxes used in the placement algorithm is set
@@ -520,7 +520,8 @@ compute_mask <- function(tg_inch, gw_pix, gh_pix, dev_dpi, f_mask) {
   png(
     filename = tmp_file,
     width = gw_pix, height = gh_pix, res = dev_dpi,
-    units = "px"
+    units = "px",
+    bg = "transparent"
   )
   pushViewport(viewport(
     width = gw_pix / dev_dpi,
@@ -548,7 +549,8 @@ compute_mask <- function(tg_inch, gw_pix, gh_pix, dev_dpi, f_mask) {
     png(
       filename = tmp_file,
       width = gw_pix, height = gh_pix, res = dev_dpi,
-      units = "px"
+      units = "px",
+      bg = "transparent"
     )
     pushViewport(viewport(
       x = gw_pix / 2 / dev_dpi,
@@ -611,7 +613,7 @@ compute_newsize <- function(i, data, dev_dpi, area_corr_power) {
 
   # Compute the text mask
   mask <- compute_mask(tg_inch, gw_pix, gh_pix, dev_dpi,
-                       function(img) { rowSums(img, dims = 2) != 3 })
+                       function(img) { img[,,4] != 0 })
   area <- sum(mask)
   if (area > 0) {
     row$size^(area_corr_power) / sqrt(area)
@@ -639,7 +641,7 @@ compute_mask_boxes <- function(mask_matrix, dev_dpi, grid_size, max_grid_size, g
   # Compute the mask mask
   mask <- compute_mask(
     mask_raster, gw_pix, gh_pix, dev_dpi,
-    function(img) { rowSums(img, dims = 2) != 0 }
+    function(img) { img[,,4] == 0 }
   )
 
   compute_boxes_from_mask(
@@ -698,7 +700,7 @@ compute_text_boxes <- function(i, x, dev_dpi, grid_size, max_grid_size, grid_mar
   # Compute the text mask
   mask <- compute_mask(
     tg_inch, gw_pix, gh_pix, dev_dpi,
-    function(img) { rowSums(img, dims = 2) != 3 }
+    function(img) { img[,,4] != 0 }
   )
 
   compute_boxes_from_mask(
