@@ -287,7 +287,7 @@ ggplot(
 
 # Word cloud and mask
 
-`ggwordcloud` allows to specify a mask within which the words should be placed. More precisely, the _black_ pixels in an image array will be used as a mask:
+`ggwordcloud` allows to specify a mask within which the words should be placed. More precisely, the non _transparent_ pixels in an image array (or the black pixel if there is no transparency) will be used as a mask:
 ```{r}
 set.seed(42)
 ggplot(love_words_small, aes(label = word, size = speakers)) +

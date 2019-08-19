@@ -641,7 +641,18 @@ compute_mask_boxes <- function(mask_matrix, dev_dpi, grid_size, max_grid_size, g
   # Compute the mask mask
   mask <- compute_mask(
     mask_raster, gw_pix, gh_pix, dev_dpi,
-    function(img) { img[,,4] == 0 }
+    function(img) {
+      d <- dim(img)
+      if (length(d)==3) {
+        if (d[3]==4) {
+          img[,,4] == 0
+        } else {
+          rowSums(img, dims = 2) == 0
+        }
+      } else {
+        img
+      }
+    }
   )
 
   compute_boxes_from_mask(
