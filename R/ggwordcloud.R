@@ -21,4 +21,5 @@
 #'   HLS
 #' @importFrom stats runif
 #' @importFrom png readPNG
+#' @importFrom scales trans_new
 NULL
