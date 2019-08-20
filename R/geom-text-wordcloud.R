@@ -62,12 +62,10 @@
 #'   \code{triangle-upright}, \code{pentagon}, \code{star}. Default to
 #'   \code{circle}
 #' @param area_corr Set the font size so that the area is proportional to size
-#'   aesthetic raised to a certain power when the scale_size_area is used. As
+#'   aesthetic  when the scale_size_area is used. As
 #'   this is not the classical choice, the default is \code{FALSE} so that, by
 #'   default, the length of the text is not taken into account.
 #'   \code{geom_text_wordcloud_area} set this to \code{TRUE} by default.
-#' @param area_corr_power the power used in the area correction. Default to 1/.7
-#'   to match human perception.
 #' @param mask a mask (or a list of masks) used to define a zone in which the
 #'   text should be placed. Each mask should be coercible to a raster in which
 #'   non full transparency defined the text zone. When a list of masks is given, the
@@ -113,7 +111,6 @@ geom_text_wordcloud <- function(mapping = NULL, data = NULL,
                                 shape = "circle",
                                 mask = NA,
                                 area_corr = FALSE,
-                                area_corr_power = 1 / .7,
                                 na.rm = FALSE,
                                 show.legend = FALSE,
                                 inherit.aes = TRUE,
@@ -168,7 +165,6 @@ geom_text_wordcloud <- function(mapping = NULL, data = NULL,
       shape = shape,
       mask = mask,
       area_corr = area_corr,
-      area_corr_power = area_corr_power,
       show_boxes = show_boxes,
       ...
     )
@@ -198,7 +194,6 @@ geom_text_wordcloud_area <- function(mapping = NULL, data = NULL,
                                      shape = "circle",
                                      mask = NA,
                                      area_corr = TRUE,
-                                     area_corr_power = 1 / .7,
                                      na.rm = FALSE,
                                      show.legend = FALSE,
                                      inherit.aes = TRUE,
@@ -253,7 +248,6 @@ geom_text_wordcloud_area <- function(mapping = NULL, data = NULL,
       shape = shape,
       mask = mask,
       area_corr = area_corr,
-      area_corr_power = area_corr_power,
       show_boxes = show_boxes,
       ...
     )
@@ -278,11 +272,14 @@ GeomTextWordcloud <- ggproto("GeomTextWordcloud", Geom,
       if (is.null(data$size)) {
         data$size <- 3.88
       }
-      newsize <- lapply(
+      area_a <- compute_area_a(dev_dpi)
+      corfactor <- lapply(
         seq_along(data$label),
-        compute_newsize, data, dev_dpi, params$area_corr_power
+        compute_corfactor, data, dev_dpi, area_a
       )
-      data$size <- unlist(newsize)
+      data$corfactor <- unlist(corfactor)
+    } else {
+      data$corfactor <- 1
     }
     if (is.null(data$angle_group)) {
       data$max_angle_group <- 1L
@@ -316,7 +313,6 @@ GeomTextWordcloud <- ggproto("GeomTextWordcloud", Geom,
                         shape = "circle",
                         mask = NA,
                         area_corr = FALSE,
-                        area_corr_power = 1 / .7,
                         show_boxes = FALSE) {
     lab <- data$label
     if (parse) {
@@ -356,7 +352,6 @@ GeomTextWordcloud <- ggproto("GeomTextWordcloud", Geom,
       shape = shape,
       mask = mask,
       area_corr = area_corr,
-      area_corr_power = area_corr_power,
       show_boxes = show_boxes,
       cl = "textwordcloudtree",
       name = "geom_text_wordcloud"
@@ -576,7 +571,7 @@ compute_mask <- function(tg_inch, gw_pix, gh_pix, dev_dpi, f_mask) {
   f_mask(tmp_png)
 }
 
-compute_newsize <- function(i, data, dev_dpi, area_corr_power) {
+compute_corfactor <- function(i, data, dev_dpi, area_a) {
   row <- data[i, , drop = FALSE]
 
   tg_inch <- textGrob(
@@ -616,10 +611,50 @@ compute_newsize <- function(i, data, dev_dpi, area_corr_power) {
                        function(img) { img[,,4] != 0 })
   area <- sum(mask)
   if (area > 0) {
-    row$size^(area_corr_power) / sqrt(area)
+    sqrt(area_a) / sqrt(area)
   } else {
-    NA_real_
+    1
   }
+}
+
+compute_area_a <- function(dev_dpi) {
+  tg_inch <- textGrob(
+    "a",
+    0, 0,
+    default.units = "inch",
+    gp = gpar(
+      fontsize = 20 * .pt,
+      fontfamily = "",
+      fontface = 1,
+      lineheight = 1.2
+    )
+  )
+
+  gw_inch <- convertWidth(grobWidth(tg_inch), "inch", TRUE) * 1.2
+  gh_inch <- convertHeight(grobAscent(tg_inch), "inch", TRUE) * 1.2 +
+    convertHeight(grobHeight(tg_inch), "inch", TRUE) * 1.2 +
+    convertHeight(grobDescent(tg_inch), "inch", TRUE) * 1.2
+
+  gw_pix <- max(1, ceiling(gw_inch * dev_dpi))
+  gh_pix <- max(1, ceiling(gh_inch * dev_dpi))
+
+  tg_inch <- textGrob(
+    "a",
+    gw_inch / 2, gh_inch / 2,
+    default.units = "inch",
+    gp = gpar(
+      fontsize = 20 * .pt,
+      fontfamily = "",
+      fontface = 1,
+      lineheight = 1.2
+    )
+  )
+
+  # Compute the text mask
+  mask <- compute_mask(tg_inch, gw_pix, gh_pix, dev_dpi,
+                       function(img) { img[,,4] != 0 })
+  area <- sum(mask)
+  area
 }
 
 compute_mask_boxes <- function(mask_matrix, dev_dpi, grid_size, max_grid_size, grid_margin,
@@ -676,7 +711,7 @@ compute_text_boxes <- function(i, x, dev_dpi, grid_size, max_grid_size, grid_mar
     rot = row$angle,
     just = c(hj, vj),
     gp = gpar(
-      fontsize = row$size * .pt,
+      fontsize = row$size * row$corfactor * .pt,
       fontfamily = row$family,
       fontface = row$fontface,
       lineheight = row$lineheight
@@ -701,7 +736,7 @@ compute_text_boxes <- function(i, x, dev_dpi, grid_size, max_grid_size, grid_mar
     rot = row$angle,
     just = c(hj, vj),
     gp = gpar(
-      fontsize = row$size * .pt,
+      fontsize = row$size * row$corfactor* .pt,
       fontfamily = row$family,
       fontface = row$fontface,
       lineheight = row$lineheight
@@ -809,7 +844,7 @@ make_textgrob <- function(i, x, valid_strings, wordcloud) {
     rot = row$angle,
     gp = gpar(
       col = alpha(row$colour, row$alpha),
-      fontsize = row$size * .pt,
+      fontsize = row$size * row$corfactor * .pt,
       fontfamily = row$family,
       fontface = row$fontface,
       lineheight = row$lineheight
