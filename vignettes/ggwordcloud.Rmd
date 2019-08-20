@@ -128,12 +128,13 @@ ggplot(love_words_small, aes(label = word, size = speakers)) +
 ```
 
 
-By default, the area is proportional to the raw size aesthetic raised to the power $1/.7$ in order to match the human area perception. To obtain an area proportional to the raw size aesthetic, it suffices to set the `area_corr_power` to $1$:
+By default, the area is proportional to the raw size aesthetic.
+To better match the human area perception, one can use the `power_trans` scale with a factor of $1/.7$:
 ```{r}
 set.seed(42)
 ggplot(love_words_small, aes(label = word, size = speakers)) +
-  geom_text_wordcloud_area(area_corr_power = 1) +
-  scale_size_area(max_size = 24) +
+  geom_text_wordcloud_area() +
+  scale_size_area(max_size = 24, trans = power_trans(1/.7)) +
   theme_minimal()
 ```
 
@@ -147,7 +148,7 @@ The non overlapping algorithm may fail to place some words due to a lack of spac
 set.seed(42)
 ggplot(love_words_small, aes(label = word, size = speakers)) +
   geom_text_wordcloud_area() +
-  scale_size_area(max_size = 40) +
+  scale_size_area(max_size = 60) +
   theme_minimal()
 ```
 
@@ -156,7 +157,7 @@ It is up to the user to avoid this issue by either removing some words or changi
 set.seed(42)
 ggplot(love_words_small, aes(label = word, size = speakers)) +
   geom_text_wordcloud_area(rm_outside = TRUE) +
-  scale_size_area(max_size = 40) +
+  scale_size_area(max_size = 60) +
   theme_minimal()
 ```
 
@@ -403,10 +404,12 @@ ggplot(
 `ggwordcloud` and `ggwordcloud2` are two approximate replacement for respectively `wordcloud` and `wordcloud2`. They provide a similar syntax than the original functions and yields similar word clouds, but not all the options of the original functions are implemented. Note that both use a font size proportional to the raw size aesthetic rather than its square root.
 
 ```{r}
+set.seed(42)
 ggwordcloud(love_words$word, love_words$speakers)
 ```
 
 ```{r}
+set.seed(42)
 ggwordcloud2(love_words[, c("word", "speakers")], size = 1.5)
 ```
 
