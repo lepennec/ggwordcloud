@@ -11,9 +11,8 @@ geom_text_wordcloud(mapping = NULL, data = NULL, stat = "identity",
   perc_step = 0.01, max_steps = 10, grid_size = 4,
   max_grid_size = 128, grid_margin = 1, xlim = c(NA, NA),
   ylim = c(NA, NA), seed = NA, rm_outside = FALSE,
-  shape = "circle", mask = NA, area_corr = FALSE,
-  area_corr_power = 1/0.7, na.rm = FALSE, show.legend = FALSE,
-  inherit.aes = TRUE, show_boxes = FALSE)
+  shape = "circle", mask = NA, area_corr = FALSE, na.rm = FALSE,
+  show.legend = FALSE, inherit.aes = TRUE, show_boxes = FALSE)
 
 geom_text_wordcloud_area(mapping = NULL, data = NULL,
   stat = "identity", position = "identity", ..., parse = FALSE,
@@ -21,9 +20,8 @@ geom_text_wordcloud_area(mapping = NULL, data = NULL,
   tstep = 0.02, perc_step = 0.01, max_steps = 10, grid_size = 4,
   max_grid_size = 128, grid_margin = 1, xlim = c(NA, NA),
   ylim = c(NA, NA), seed = NA, rm_outside = FALSE,
-  shape = "circle", mask = NA, area_corr = TRUE,
-  area_corr_power = 1/0.7, na.rm = FALSE, show.legend = FALSE,
-  inherit.aes = TRUE, show_boxes = FALSE)
+  shape = "circle", mask = NA, area_corr = TRUE, na.rm = FALSE,
+  show.legend = FALSE, inherit.aes = TRUE, show_boxes = FALSE)
 }
 \arguments{
 \item{mapping}{Set of aesthetic mappings created by
@@ -100,13 +98,10 @@ mask_group aesthetic defines which mask is going to be used. Default to
 \code{NA}, i.e. no mask.}
 
 \item{area_corr}{Set the font size so that the area is proportional to size
-aesthetic raised to a certain power when the scale_size_area is used. As
+aesthetic  when the scale_size_area is used. As
 this is not the classical choice, the default is \code{FALSE} so that, by
 default, the length of the text is not taken into account.
 \code{geom_text_wordcloud_area} set this to \code{TRUE} by default.}
-
-\item{area_corr_power}{the power used in the area correction. Default to 1/.7
-to match human perception.}
 
 \item{na.rm}{Remove missing values if TRUE}
 
