@@ -21,6 +21,7 @@ Depends:
     ggplot2 (>= 3.0.0)
 Imports: 
     grid,
+    gridtext,
     Rcpp,
     scales (>= 1.0.0),
     colorspace,
@@ -40,7 +41,7 @@ LinkingTo:
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 6.1.1
+RoxygenNote: 7.0.2
 VignetteBuilder: knitr
 URL: https://github.com/lepennec/ggwordcloud, https://lepennec.github.io/ggwordcloud/
 BugReports: https://github.com/lepennec/ggwordcloud/issues

@@ -574,7 +574,7 @@ compute_mask <- function(tg_inch, gw_pix, gh_pix, dev_dpi, f_mask) {
 compute_corfactor <- function(i, data, dev_dpi, area_a) {
   row <- data[i, , drop = FALSE]
 
-  tg_inch <- textGrob(
+  tg_inch <- richtext_grob(
     row$label,
     0, 0,
     default.units = "inch",
@@ -594,7 +594,7 @@ compute_corfactor <- function(i, data, dev_dpi, area_a) {
   gw_pix <- max(1, ceiling(gw_inch * dev_dpi))
   gh_pix <- max(1, ceiling(gh_inch * dev_dpi))
 
-  tg_inch <- textGrob(
+  tg_inch <- richtext_grob(
     row$label,
     gw_inch / 2, gh_inch / 2,
     default.units = "inch",
@@ -618,7 +618,7 @@ compute_corfactor <- function(i, data, dev_dpi, area_a) {
 }
 
 compute_area_a <- function(dev_dpi) {
-  tg_inch <- textGrob(
+  tg_inch <- richtext_grob(
     "a",
     0, 0,
     default.units = "inch",
@@ -695,12 +695,13 @@ compute_text_boxes <- function(i, x, dev_dpi, grid_size, max_grid_size, grid_mar
   hj <- x$data$hjust[i]
   vj <- x$data$vjust[i]
 
-  tg_inch <- textGrob(
+  tg_inch <- richtext_grob(
     x$lab[i],
     0, 0,
     default.units = "inch",
     rot = row$angle,
-    just = c(hj, vj),
+    hjust = hj,
+    vjust = vj,
     gp = gpar(
       fontsize = row$size * row$corfactor * .pt,
       fontfamily = row$family,
@@ -813,7 +814,7 @@ make_textgrob <- function(i, x, valid_strings, wordcloud) {
   xi <- valid_strings[i]
   row <- x$data[xi, , drop = FALSE]
 
-  textGrob(
+  richtext_grob(
     x$lab[xi],
     # Position of text bounding boxes.
     x = unit(wordcloud$x[i], "native"),
