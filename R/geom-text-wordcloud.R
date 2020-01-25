@@ -638,8 +638,17 @@ compute_area_a <- function(dev_dpi) {
   gw_pix <- max(1, ceiling(gw_inch * dev_dpi))
   gh_pix <- max(1, ceiling(gh_inch * dev_dpi))
 
-  tg_inch$x <- tg_inch$x + unit(gw_inch / 2, "inch")
-  tg_inch$y <- tg_inch$y + unit(gh_inch / 2, "inch")
+  tg_inch <- textGrob(
+    "a",
+    gw_inch / 2, gh_inch / 2,
+    default.units = "inch",
+    gp = gpar(
+      fontsize = 20 * .pt,
+      fontfamily = "",
+      fontface = 1,
+      lineheight = 1.2
+    )
+  )
 
   # Compute the text mask
   mask <- compute_mask(tg_inch, gw_pix, gh_pix, dev_dpi,
@@ -709,16 +718,30 @@ compute_text_boxes <- function(i, x, dev_dpi, grid_size, max_grid_size, grid_mar
     )
   )
 
-  gw_inch <- convertWidth(grobWidth(tg_inch), "inch", TRUE) * 1.2
-  gh_inch <- convertHeight(grobAscent(tg_inch), "inch", TRUE) * 1.2 +
+  gw_inch_ <- convertWidth(grobWidth(tg_inch), "inch", TRUE) * 1.2
+  gh_inch_ <- convertHeight(grobAscent(tg_inch), "inch", TRUE) * 1.2 +
     convertHeight(grobHeight(tg_inch), "inch", TRUE) * 1.2 +
     convertHeight(grobDescent(tg_inch), "inch", TRUE) * 1.2
+
+  gw_inch <- gw_inch_
+  gh_inch <- gh_inch_
 
   gw_pix <- max(1, ceiling(gw_inch * dev_dpi / grid_size)) * grid_size
   gh_pix <- max(1, ceiling(gh_inch * dev_dpi / grid_size)) * grid_size
 
-  tg_inch$x <- tg_inch$x + unit(gw_inch / 2, "inch")
-  tg_inch$y <- tg_inch$y + unit(gh_inch / 2, "inch")
+  tg_inch <- textGrob(
+    x$lab[i],
+    gw_inch / 2, gh_inch / 2,
+    default.units = "inch",
+    rot = row$angle,
+    just = c(hj, vj),
+    gp = gpar(
+      fontsize = row$size * row$corfactor* .pt,
+      fontfamily = row$family,
+      fontface = row$fontface,
+      lineheight = row$lineheight
+    )
+  )
 
   # Compute the text mask
   mask <- compute_mask(
