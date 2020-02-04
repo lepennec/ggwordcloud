@@ -4,10 +4,19 @@
 \alias{ggwordcloud2}
 \title{wordcloud2 approximate replacement}
 \usage{
-ggwordcloud2(data, size = 1, color = "random-dark",
-  minRotation = -pi/4, maxRotation = pi/4, shuffle = TRUE,
-  rotateRatio = 0.4, shape = "circle", ellipticity = 0.65,
-  figPath = NA, ...)
+ggwordcloud2(
+  data,
+  size = 1,
+  color = "random-dark",
+  minRotation = -pi/4,
+  maxRotation = pi/4,
+  shuffle = TRUE,
+  rotateRatio = 0.4,
+  shape = "circle",
+  ellipticity = 0.65,
+  figPath = NA,
+  ...
+)
 }
 \arguments{
 \item{data}{a dataframe whose two first columns are the names and the freqs
