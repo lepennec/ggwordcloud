@@ -32,7 +32,8 @@ geom_text_wordcloud(
   na.rm = FALSE,
   show.legend = FALSE,
   inherit.aes = TRUE,
-  show_boxes = FALSE
+  show_boxes = FALSE,
+  use_richtext = TRUE
 )
 
 geom_text_wordcloud_area(
@@ -62,7 +63,8 @@ geom_text_wordcloud_area(
   na.rm = FALSE,
   show.legend = FALSE,
   inherit.aes = TRUE,
-  show_boxes = FALSE
+  show_boxes = FALSE,
+  use_richtext = TRUE
 )
 }
 \arguments{
@@ -153,6 +155,9 @@ default, the length of the text is not taken into account.
 
 \item{show_boxes}{display the bounding boxes used in the placement algorithm is set
 to \code{TRUE}. Default to \code{FALSE}.}
+
+\item{use_richtext}{use the enhanced gridtext text grob instead of the grid one. Allow to
+use markdown syntax. Default to \code{FALSE}}
 }
 \value{
 a ggplot

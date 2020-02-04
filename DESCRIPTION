@@ -21,6 +21,7 @@ Depends:
     ggplot2 (>= 3.0.0)
 Imports: 
     grid,
+    gridtext,
     Rcpp,
     scales (>= 1.0.0),
     colorspace,
