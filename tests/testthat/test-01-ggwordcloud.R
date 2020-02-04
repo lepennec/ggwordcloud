@@ -130,6 +130,17 @@ test_that("geom_text_wordcloud works with a show_boxes = TRUE", {
   }, "ggplot")
 })
 
+test_that("geom_text_wordcloud_area does not crash when using label_content", {
+  expect_is({
+    set.seed(42)
+    print(ggplot(
+      data = love_words_small,
+      aes(label = word, size = speakers,
+          label_content = "A")
+    ) +
+      geom_text_wordcloud_area())
+  }, "ggplot")
+})
 
 
 file.remove(tmp_file)

@@ -1,14 +1,15 @@
 #' word cloud text geoms
 #'
 #' \code{geom_text_wordcloud} adds text to the plot using a variation of the
-#' wordcloud2.js algorithm. The texts are layered around a spiral centered on
+#' wordcloud2.js algorithm. The texts are layered around a spiral centred on
 #' the original position. This geom is based on
 #' \code{\link[ggrepel]{geom_text_repel}} which in turn is based on
 #' \code{\link[ggplot2]{geom_text}}. See the documentation for those functions
-#' for more details. By default, the font size is directly related to the size
+#' for more details. By default, the font size is directly linked to the size
 #' aesthetic. \code{geom_text_wordcloud_area} is an alias, with a different set
-#' of default, that chooses a font size so that the area of the text is now
-#' related to the size aesthetic.
+#' of default, that chooses a font size so that the area of the text given by the label
+#' aesthetic is linked to the size aesthetic. You can also specify a label_content aesthetic
+#' that overrides the label after its has been used to choose the font size.
 
 #' @param mapping Set of aesthetic mappings created by
 #'   \code{\link[ggplot2]{aes}} or \code{\link[ggplot2]{aes_}}. If specified and
@@ -261,7 +262,9 @@ GeomTextWordcloud <- ggproto("GeomTextWordcloud", Geom,
                              default_aes = aes(
                                x = 0.5, y = 0.5,
                                colour = "black", size = 3.88, angle = 0, hjust = 0.5,
-                               vjust = 0.5, alpha = NA, family = "", fontface = 1, lineheight = 1.2, mask_group = 1L, angle_group = 1L
+                               vjust = 0.5, alpha = NA, family = "", fontface = 1,
+                               lineheight = 1.2, mask_group = 1L, angle_group = 1L,
+                               label_content = NA
                              ),
 
                              setup_data = function(data, params) {
@@ -276,7 +279,7 @@ GeomTextWordcloud <- ggproto("GeomTextWordcloud", Geom,
       corfactor <- lapply(
         seq_along(data$label),
         compute_corfactor, data, dev_dpi, area_a
-      )
+        )
       data$corfactor <- unlist(corfactor)
     } else {
       data$corfactor <- 1
@@ -315,6 +318,7 @@ GeomTextWordcloud <- ggproto("GeomTextWordcloud", Geom,
                         area_corr = FALSE,
                         show_boxes = FALSE) {
     lab <- data$label
+    lab[!is.na(data$label_content)] <- data$label_content[!is.na(data$label_content)]
     if (parse) {
       lab <- parse_safe(as.character(lab))
     }
