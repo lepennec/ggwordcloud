@@ -45,3 +45,5 @@ RoxygenNote: 7.0.2
 VignetteBuilder: knitr
 URL: https://github.com/lepennec/ggwordcloud, https://lepennec.github.io/ggwordcloud/
 BugReports: https://github.com/lepennec/ggwordcloud/issues
+Remotes:
+    wilkelab/gridtext
