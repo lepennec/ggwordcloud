@@ -73,6 +73,8 @@
 #'   \code{NA}, i.e. no mask.
 #' @param show_boxes display the bounding boxes used in the placement algorithm is set
 #' to \code{TRUE}. Default to \code{FALSE}.
+#' @param use_richtext use the enhanced gridtext text grob instead of the grid one. Allow to
+#'  use markdown syntax. Default to \code{FALSE}
 #'
 #' @return a ggplot
 #'
@@ -114,7 +116,8 @@ geom_text_wordcloud <- function(mapping = NULL, data = NULL,
                                 na.rm = FALSE,
                                 show.legend = FALSE,
                                 inherit.aes = TRUE,
-                                show_boxes = FALSE) {
+                                show_boxes = FALSE,
+                                use_richtext = TRUE) {
   if (!missing(nudge_x) || !missing(nudge_y)) {
     if (!missing(position)) {
       stop("You must specify either `position` or `nudge_x`/`nudge_y`.", call. = FALSE)
@@ -166,6 +169,7 @@ geom_text_wordcloud <- function(mapping = NULL, data = NULL,
       mask = mask,
       area_corr = area_corr,
       show_boxes = show_boxes,
+      use_richtext = use_richtext,
       ...
     )
   )
@@ -197,7 +201,8 @@ geom_text_wordcloud_area <- function(mapping = NULL, data = NULL,
                                      na.rm = FALSE,
                                      show.legend = FALSE,
                                      inherit.aes = TRUE,
-                                     show_boxes = FALSE) {
+                                     show_boxes = FALSE,
+                                     use_richtext = TRUE) {
   if (!missing(nudge_x) || !missing(nudge_y)) {
     if (!missing(position)) {
       stop("You must specify either `position` or `nudge_x`/`nudge_y`.", call. = FALSE)
@@ -249,6 +254,7 @@ geom_text_wordcloud_area <- function(mapping = NULL, data = NULL,
       mask = mask,
       area_corr = area_corr,
       show_boxes = show_boxes,
+      use_richtext = use_richtext,
       ...
     )
   )
@@ -272,10 +278,11 @@ GeomTextWordcloud <- ggproto("GeomTextWordcloud", Geom,
       if (is.null(data$size)) {
         data$size <- 3.88
       }
-      area_a <- compute_area_a(dev_dpi)
+      area_a <- compute_area_a(dev_dpi, params$use_richtext)
       corfactor <- lapply(
         seq_along(data$label),
-        compute_corfactor, data, dev_dpi, area_a
+        compute_corfactor, data, dev_dpi, area_a,
+        params$use_richtext
       )
       data$corfactor <- unlist(corfactor)
     } else {
@@ -313,10 +320,12 @@ GeomTextWordcloud <- ggproto("GeomTextWordcloud", Geom,
                         shape = "circle",
                         mask = NA,
                         area_corr = FALSE,
-                        show_boxes = FALSE) {
+                        show_boxes = FALSE,
+                        use_richtext = TRUE) {
     lab <- data$label
     if (parse) {
       lab <- parse_safe(as.character(lab))
+      use_richtext <- FALSE
     }
 
     data <- coord$transform(data, panel_params)
@@ -353,6 +362,7 @@ GeomTextWordcloud <- ggproto("GeomTextWordcloud", Geom,
       mask = mask,
       area_corr = area_corr,
       show_boxes = show_boxes,
+      use_richtext = use_richtext,
       cl = "textwordcloudtree",
       name = "geom_text_wordcloud"
     )
@@ -417,7 +427,8 @@ makeContent.textwordcloudtree <- function(x) {
 
   boxes <- lapply(
     valid_strings, compute_text_boxes, x, dev_dpi,
-    grid_size, max_grid_size, grid_margin, gw_ratio, gh_ratio
+    grid_size, max_grid_size, grid_margin, gw_ratio, gh_ratio,
+    x$use_richtext
   )
   if (length(boxes) > 0) {
     boxes_nb <- sapply(boxes, nrow)
@@ -482,7 +493,7 @@ makeContent.textwordcloudtree <- function(x) {
            boxes_text, boxes, wordcloud)
   }
 
-  grobs <- lapply(seq_along(valid_strings), make_textgrob, x, valid_strings, wordcloud)
+  grobs <- lapply(seq_along(valid_strings), make_textgrob, x, valid_strings, wordcloud, x$use_richtext)
   class(grobs) <- "gList"
 
   setChildren(x, grobs)
@@ -574,7 +585,7 @@ compute_mask <- function(tg_inch, gw_pix, gh_pix, dev_dpi, f_mask) {
   f_mask(tmp_png)
 }
 
-compute_corfactor <- function(i, data, dev_dpi, area_a) {
+compute_corfactor <- function(i, data, dev_dpi, area_a, use_richtext) {
   row <- data[i, , drop = FALSE]
 
   tg_inch <- text_grob(
@@ -586,7 +597,8 @@ compute_corfactor <- function(i, data, dev_dpi, area_a) {
       fontfamily = ifelse(is.null(row$family), "", row$family),
       fontface = ifelse(is.null(row$fontface), 1, row$fontface),
       lineheight = ifelse(is.null(row$lineheight), 1.2, row$lineheight)
-    )
+    ),
+    use_richtext = use_richtext
   )
 
   gw_inch <- convertWidth(grobWidth(tg_inch), "inch", TRUE) * 1.2
@@ -606,7 +618,8 @@ compute_corfactor <- function(i, data, dev_dpi, area_a) {
       fontfamily = ifelse(is.null(row$family), "", row$family),
       fontface = ifelse(is.null(row$fontface), 1, row$fontface),
       lineheight = ifelse(is.null(row$lineheight), 1.2, row$lineheight)
-    )
+    ),
+    use_richtext = use_richtext
   )
 
   # Compute the text mask
@@ -620,7 +633,7 @@ compute_corfactor <- function(i, data, dev_dpi, area_a) {
   }
 }
 
-compute_area_a <- function(dev_dpi) {
+compute_area_a <- function(dev_dpi, use_richtext) {
   tg_inch <- text_grob(
     "a",
     0, 0,
@@ -630,7 +643,8 @@ compute_area_a <- function(dev_dpi) {
       fontfamily = "",
       fontface = 1,
       lineheight = 1.2
-    )
+    ),
+    use_richtext = use_richtext
   )
 
   gw_inch <- convertWidth(grobWidth(tg_inch), "inch", TRUE) * 1.2
@@ -650,7 +664,8 @@ compute_area_a <- function(dev_dpi) {
       fontfamily = "",
       fontface = 1,
       lineheight = 1.2
-    )
+    ),
+    use_richtext = use_richtext
   )
 
   # Compute the text mask
@@ -702,7 +717,8 @@ compute_mask_boxes <- function(mask_matrix, dev_dpi, grid_size, max_grid_size, g
 
 
 compute_text_boxes <- function(i, x, dev_dpi, grid_size, max_grid_size, grid_margin,
-                               gw_ratio, gh_ratio) {
+                               gw_ratio, gh_ratio,
+                               use_richtext) {
   row <- x$data[i, , drop = FALSE]
   hj <- x$data$hjust[i]
   vj <- x$data$vjust[i]
@@ -719,7 +735,8 @@ compute_text_boxes <- function(i, x, dev_dpi, grid_size, max_grid_size, grid_mar
       fontfamily = row$family,
       fontface = row$fontface,
       lineheight = row$lineheight
-    )
+    ),
+    use_richtext = use_richtext
   )
 
   gw_inch_ <- convertWidth(grobWidth(tg_inch), "inch", TRUE) * 1.2
@@ -745,7 +762,8 @@ compute_text_boxes <- function(i, x, dev_dpi, grid_size, max_grid_size, grid_mar
       fontfamily = row$family,
       fontface = row$fontface,
       lineheight = row$lineheight
-    )
+    ),
+    use_richtext = use_richtext
   )
 
   # Compute the text mask
@@ -837,7 +855,7 @@ compute_boxes_from_mask <- function(mask, gw_ratio, gh_ratio, grid_size, max_gri
   mask_lists
 }
 
-make_textgrob <- function(i, x, valid_strings, wordcloud) {
+make_textgrob <- function(i, x, valid_strings, wordcloud, use_richtext) {
   xi <- valid_strings[i]
   row <- x$data[xi, , drop = FALSE]
 
@@ -855,7 +873,8 @@ make_textgrob <- function(i, x, valid_strings, wordcloud) {
         lineheight = row$lineheight
       ),
       hjust = x$data$hjust[i],
-      vjust = x$data$vjust[i]
+      vjust = x$data$vjust[i],
+      use_richtext = use_richtext
   )
 }
 
@@ -880,12 +899,13 @@ text_grob <- function(
   rot = 0,
   hjust = 0.5,
   vjust = 0.5,
-  gp = gpar()) {
+  gp = gpar(),
+  use_richtext = TRUE) {
 
   if (is.na(x)|is.na(y)) {
    nullGrob()
   } else {
-    if (is.expression(text)) {
+    if (!use_richtext) {
       textGrob(
         text,
         x, y,

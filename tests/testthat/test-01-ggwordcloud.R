@@ -93,7 +93,7 @@ test_that("geom_text_wordcloud complains silently when the words do not fit and 
   })
 })
 
-test_that("geom_text_wordcloud complains when one word do not fit", {
+test_that("geom_text_wordcloud complains when one word does not fit", {
   expect_warning({
     set.seed(42)
     print(ggplot(
@@ -130,6 +130,28 @@ test_that("geom_text_wordcloud works with a show_boxes = TRUE", {
   }, "ggplot")
 })
 
+test_that("geom_text_wordcloud_area works with use_richtext = FALSE", {
+  expect_is({
+    set.seed(42)
+    print(ggplot(
+      data = love_words_small,
+      aes(label = word, size = speakers)
+    ) +
+      geom_text_wordcloud_area(use_richtext = FALSE))
+  }, "ggplot")
+})
 
+test_that("geom_text_wordcloud_area works with parse = TRUE", {
+  expect_is({
+    set.seed(42)
+    love_words_small2 <- love_words_small
+    love_words_small2[["word"]] <- "sin(x)"
+    print(ggplot(
+      data = love_words_small2,
+      aes(label = word, size = speakers)
+    ) +
+      geom_text_wordcloud_area(parse = TRUE))
+  }, "ggplot")
+})
 
 file.remove(tmp_file)
