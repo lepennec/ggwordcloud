@@ -1,3 +1,10 @@
+# ggwordcloud (development version)
+* Novelties:
+   * use of gridtext extended richtext_grob by default so that one can use markdown syntax in label
+   * remove the area_corr_power factor
+   * add a label_content aesthetic that overrides label_content after scaling factor correction
+   * use transparencies instead of white/black for masks
+
 # ggwordcloud 0.5.0
 * Novelties:
    * x2 speedup
