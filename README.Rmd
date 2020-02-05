@@ -9,7 +9,15 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
   fig.path = "man/figures/README-",
-  out.width = "100%"
+  fig.dev = "grDevices::png",
+  dpi = 96L,
+  dev.args = list(),
+  fig.ext = "png",
+  fig.width = 700 / 96,
+  fig.height = NULL,
+  fig.retina = 2L,
+  fig.asp = 1 / 1.618,
+  fig.align = "center"
 )
 ```
 
@@ -19,7 +27,7 @@ knitr::opts_chunk$set(
 [![Coverage status](https://codecov.io/gh/lepennec/ggwordcloud/branch/master/graph/badge.svg)](https://codecov.io/github/lepennec/ggwordcloud?branch=master)
 [![CRAN status](https://www.r-pkg.org/badges/version/ggwordcloud)](https://cran.r-project.org/package=ggwordcloud)
 
-`ggwordcloud` provides a word cloud text geom for `ggplot2`.  The placement algorithm implemented in C++ is an hybrid between the one of `wordcloud` and the one of `wordcloud2.js`. The cloud can grow according to a shape and stay within a mask. The size aesthetic is used either to control the font size or the printed area of the words. `ggwordcloud` also supports arbitrary text rotation. The faceting scheme of `ggplot2` can also be used. Two functions meant to be the equivalent of `wordcloud` and `wordcloud2` are proposed.
+`ggwordcloud` provides a word cloud text geom for `ggplot2`.  The placement algorithm implemented in C++ is an hybrid between the one of `wordcloud` and the one of `wordcloud2.js`. The cloud can grow according to a shape and stay within a mask. The size aesthetic is used either to control the font size or the printed area of the words. `ggwordcloud` also supports arbitrary text rotation. The faceting scheme of `ggplot2` can also be used. Two functions meant to be the equivalent of `wordcloud` and `wordcloud2` are proposed. Last but not least you can use `gridtext` markdown/css syntax in the labels.
 
 
 ## Installation
@@ -45,7 +53,7 @@ data("love_words_small")
 set.seed(42)
 ggplot(love_words_small, aes(label = word, size = speakers)) +
   geom_text_wordcloud() +
-  scale_size_area(max_size = 24) +
+  scale_size_area(max_size = 40) +
   theme_minimal()
 ```
 
@@ -64,13 +72,12 @@ ggplot(
     replace = TRUE,
     prob = c(1, 1, 4, 1, 1)
   )),
-  area_corr_power = 1,
   mask = png::readPNG(system.file("extdata/hearth.png",
     package = "ggwordcloud", mustWork = TRUE
   )),
   rm_outside = TRUE
   ) +
-  scale_size_area(max_size = 25) +
+  scale_size_area(max_size = 40) +
   theme_minimal() +
   scale_color_gradient(low = "darkred", high = "red")
 ```
@@ -87,11 +94,19 @@ ggplot(
   aes(label = word, size = speakers)
 ) +
   geom_text_wordcloud_area() +
-  scale_size_area(max_size = 20) +
+  scale_size_area(max_size = 40) +
   theme_minimal() +
   facet_wrap(~type)
 ```
 
+```{r}
+set.seed(42)
+ggplot(love_words_small, aes(label = word, size = speakers,
+                             label_content = sprintf("%s<span style='font-size:7.5pt'>(%g)</span>", word, speakers))) +
+  geom_text_wordcloud_area() +
+  scale_size_area(max_size = 40) +
+  theme_minimal()
+```
 
 More examples are available in the vignette.
 

@@ -17,7 +17,8 @@ to a shape and stay within a mask. The size aesthetic is used either to
 control the font size or the printed area of the words. `ggwordcloud`
 also supports arbitrary text rotation. The faceting scheme of `ggplot2`
 can also be used. Two functions meant to be the equivalent of
-`wordcloud` and `wordcloud2` are proposed.
+`wordcloud` and `wordcloud2` are proposed. Last but not least you can
+use `gridtext` markdown/css syntax in the labels.
 
 ## Installation
 
@@ -47,11 +48,11 @@ data("love_words_small")
 set.seed(42)
 ggplot(love_words_small, aes(label = word, size = speakers)) +
   geom_text_wordcloud() +
-  scale_size_area(max_size = 24) +
+  scale_size_area(max_size = 40) +
   theme_minimal()
 ```
 
-<img src="man/figures/README-unnamed-chunk-3-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-3-1.png" width="700" style="display: block; margin: auto;" />
 
 ``` r
 data("love_words")
@@ -67,19 +68,18 @@ ggplot(
     replace = TRUE,
     prob = c(1, 1, 4, 1, 1)
   )),
-  area_corr_power = 1,
   mask = png::readPNG(system.file("extdata/hearth.png",
     package = "ggwordcloud", mustWork = TRUE
   )),
   rm_outside = TRUE
   ) +
-  scale_size_area(max_size = 25) +
+  scale_size_area(max_size = 40) +
   theme_minimal() +
   scale_color_gradient(low = "darkred", high = "red")
 #> Some words could not fit on page. They have been removed.
 ```
 
-<img src="man/figures/README-unnamed-chunk-4-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-4-1.png" width="700" style="display: block; margin: auto;" />
 
 ``` r
 library(dplyr, quietly = TRUE, warn.conflicts = FALSE)
@@ -92,11 +92,22 @@ ggplot(
   aes(label = word, size = speakers)
 ) +
   geom_text_wordcloud_area() +
-  scale_size_area(max_size = 20) +
+  scale_size_area(max_size = 40) +
   theme_minimal() +
   facet_wrap(~type)
 ```
 
-<img src="man/figures/README-unnamed-chunk-5-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-5-1.png" width="700" style="display: block; margin: auto;" />
+
+``` r
+set.seed(42)
+ggplot(love_words_small, aes(label = word, size = speakers,
+                             label_content = sprintf("%s<span style='font-size:7.5pt'>(%g)</span>", word, speakers))) +
+  geom_text_wordcloud_area() +
+  scale_size_area(max_size = 40) +
+  theme_minimal()
+```
+
+<img src="man/figures/README-unnamed-chunk-6-1.png" width="700" style="display: block; margin: auto;" />
 
 More examples are available in the vignette.

@@ -5,14 +5,21 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>A Word Cloud Geom for 'ggplot2' • ggwordcloud</title>
+<title>A Word Cloud Geom for ggplot2 • ggwordcloud</title>
+<!-- favicons --><link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+<link rel="apple-touch-icon" type="image/png" sizes="180x180" href="apple-touch-icon.png">
+<link rel="apple-touch-icon" type="image/png" sizes="120x120" href="apple-touch-icon-120x120.png">
+<link rel="apple-touch-icon" type="image/png" sizes="76x76" href="apple-touch-icon-76x76.png">
+<link rel="apple-touch-icon" type="image/png" sizes="60x60" href="apple-touch-icon-60x60.png">
 <!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha256-916EbMg70RQy9LHiGkXzG8hSg9EdNy97GazNG/aiY1w=" crossorigin="anonymous">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous">
-<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script><!-- sticky kit --><script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-kit/1.1.3/sticky-kit.min.js" integrity="sha256-c4Rlo1ZozqTPE2RLuvbusY3+SU1pQaJC0TjuhygMipw=" crossorigin="anonymous"></script><!-- pkgdown --><link href="pkgdown.css" rel="stylesheet">
-<script src="pkgdown.js"></script><meta property="og:title" content="A Word Cloud Geom for 'ggplot2'">
-<meta property="og:description" content="Provides a word cloud text geom for 'ggplot2'. Texts
-    are placed so that they do not overlap as in 'ggrepel'.  The algorithm
-    used is a variation around the one of 'wordcloud2.js'.">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/all.min.css" integrity="sha256-nAmazAk6vS34Xqo0BSrTb+abbtFlgsFK7NKSi6o7Y78=" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/v4-shims.min.css" integrity="sha256-6qHlizsOWFskGlwVOKuns+D1nB6ssZrHQrNj1wGplHc=" crossorigin="anonymous">
+<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/headroom.min.js" integrity="sha256-DJFC1kqIhelURkuza0AvYal5RxMtpzLjFhsnVIeuk+U=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="pkgdown.css" rel="stylesheet">
+<script src="pkgdown.js"></script><meta property="og:title" content="A Word Cloud Geom for ggplot2">
+<meta property="og:description" content="Provides a word cloud text geom for ggplot2. Texts
+    are placed so that they do not overlap as in ggrepel.  The algorithm
+    used is a variation around the one of wordcloud2.js.">
 <meta property="og:image" content="/logo.png">
 <meta name="twitter:card" content="summary">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
@@ -21,7 +28,7 @@
 <![endif]-->
 </head>
 <body>
-    <div class="container template-article">
+    <div class="container template-home">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
     <div class="navbar-header">
@@ -33,7 +40,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">ggwordcloud</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.0.9000</span>
       </span>
     </div>
 
@@ -41,7 +48,7 @@
       <ul class="nav navbar-nav">
 <li>
   <a href="index.html">
-    <span class="fa fa-home fa-lg"></span>
+    <span class="fas fa fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -58,7 +65,7 @@
 <ul class="nav navbar-nav navbar-right">
 <li>
   <a href="https://github.com/lepennec/ggwordcloud">
-    <span class="fa fa-github fa-lg"></span>
+    <span class="fab fa fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -71,26 +78,23 @@
 <!--/.navbar -->
 
       
-      </header><div class="row">
-  <div class="col-md-9 contents">
-    
 
-    
-    
-<!-- README.md is generated from README.Rmd. Please edit that file -->
-<div id="ggwordcloud" class="section level1">
+      </header><div class="row">
+  <div class="contents col-md-9">
+
+<div id="ggwordcloud-" class="section level1">
 <div class="page-header"><h1 class="hasAnchor">
-<a href="#ggwordcloud" class="anchor"></a>ggwordcloud <img src="reference/figures/logo.png" align="right" height="140/">
+<a href="#ggwordcloud-" class="anchor"></a>ggwordcloud <img src="reference/figures/logo.png" align="right" height="140/">
 </h1></div>
 
-<p><code>ggwordcloud</code> provides a word cloud text geom for <code>ggplot2</code>. The placement algorithm implemented in C++ is an hybrid between the one of <code>wordcloud</code> and the one of <code>wordcloud2.js</code>. The cloud can grow according to a shape and stay within a mask. The size aesthetic is used either to control the font size or the printed area of the words. <code>ggwordcloud</code> also supports arbitrary text rotation. The faceting scheme of <code>ggplot2</code> can also be used. Two functions meant to be the equivalent of <code>wordcloud</code> and <code>wordcloud2</code> are proposed.</p>
+<p><code>ggwordcloud</code> provides a word cloud text geom for <code>ggplot2</code>. The placement algorithm implemented in C++ is an hybrid between the one of <code>wordcloud</code> and the one of <code>wordcloud2.js</code>. The cloud can grow according to a shape and stay within a mask. The size aesthetic is used either to control the font size or the printed area of the words. <code>ggwordcloud</code> also supports arbitrary text rotation. The faceting scheme of <code>ggplot2</code> can also be used. Two functions meant to be the equivalent of <code>wordcloud</code> and <code>wordcloud2</code> are proposed. Last but not least you can use <code>gridtext</code> markdown/css syntax in the labels.</p>
 <div id="installation" class="section level2">
 <h2 class="hasAnchor">
 <a href="#installation" class="anchor"></a>Installation</h2>
 <p>You can install the released version of ggwordcloud from <a href="https://CRAN.R-project.org">CRAN</a> with:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/install.packages">install.packages</a></span>(<span class="st">"ggwordcloud"</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span>(<span class="st">"ggwordcloud"</span>)</span></code></pre></div>
 <p>or the development version from the github repository</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1">devtools<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/devtools/topics/reexports">install_github</a></span>(<span class="st">"lepennec/ggwordcloud"</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a>devtools<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/devtools/man/remote-reexports.html">install_github</a></span>(<span class="st">"lepennec/ggwordcloud"</span>)</span></code></pre></div>
 <p>Please check the latest development version before submitting an issue.</p>
 </div>
 </div>
@@ -98,55 +102,62 @@
 <h1 class="hasAnchor">
 <a href="#some-word-clouds" class="anchor"></a>Some word clouds</h1>
 <p>Because sometimes, pictures are better than a thousand words…</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(ggwordcloud)</a>
-<a class="sourceLine" id="cb3-2" data-line-number="2"><span class="co">#&gt; Loading required package: ggplot2</span></a>
-<a class="sourceLine" id="cb3-3" data-line-number="3"><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/data">data</a></span>(<span class="st">"love_words_small"</span>)</a>
-<a class="sourceLine" id="cb3-4" data-line-number="4"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Random">set.seed</a></span>(<span class="dv">42</span>)</a>
-<a class="sourceLine" id="cb3-5" data-line-number="5"><span class="kw">ggplot</span>(love_words_small, <span class="kw">aes</span>(<span class="dt">label =</span> word, <span class="dt">size =</span> speakers)) <span class="op">+</span></a>
-<a class="sourceLine" id="cb3-6" data-line-number="6"><span class="st">  </span><span class="kw"><a href="reference/geom_text_wordcloud.html">geom_text_wordcloud</a></span>() <span class="op">+</span></a>
-<a class="sourceLine" id="cb3-7" data-line-number="7"><span class="st">  </span><span class="kw">scale_size_area</span>(<span class="dt">max_size =</span> <span class="dv">24</span>) <span class="op">+</span></a>
-<a class="sourceLine" id="cb3-8" data-line-number="8"><span class="st">  </span><span class="kw">theme_minimal</span>()</a></code></pre></div>
-<p><img src="reference/figures/README-unnamed-chunk-3-1.png" width="100%"></p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/data">data</a></span>(<span class="st">"love_words"</span>)</a>
-<a class="sourceLine" id="cb4-2" data-line-number="2"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Random">set.seed</a></span>(<span class="dv">42</span>)</a>
-<a class="sourceLine" id="cb4-3" data-line-number="3"><span class="kw">ggplot</span>(</a>
-<a class="sourceLine" id="cb4-4" data-line-number="4">  love_words,</a>
-<a class="sourceLine" id="cb4-5" data-line-number="5">  <span class="kw">aes</span>(</a>
-<a class="sourceLine" id="cb4-6" data-line-number="6">    <span class="dt">label =</span> word, <span class="dt">size =</span> speakers,</a>
-<a class="sourceLine" id="cb4-7" data-line-number="7">    <span class="dt">color =</span> speakers</a>
-<a class="sourceLine" id="cb4-8" data-line-number="8">  )</a>
-<a class="sourceLine" id="cb4-9" data-line-number="9">) <span class="op">+</span></a>
-<a class="sourceLine" id="cb4-10" data-line-number="10"><span class="st">  </span><span class="kw"><a href="reference/geom_text_wordcloud.html">geom_text_wordcloud_area</a></span>(<span class="kw">aes</span>(<span class="dt">angle =</span> <span class="dv">45</span> <span class="op">*</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/sample">sample</a></span>(<span class="op">-</span><span class="dv">2</span><span class="op">:</span><span class="dv">2</span>, <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/nrow">nrow</a></span>(love_words),</a>
-<a class="sourceLine" id="cb4-11" data-line-number="11">    <span class="dt">replace =</span> <span class="ot">TRUE</span>,</a>
-<a class="sourceLine" id="cb4-12" data-line-number="12">    <span class="dt">prob =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">4</span>, <span class="dv">1</span>, <span class="dv">1</span>)</a>
-<a class="sourceLine" id="cb4-13" data-line-number="13">  )),</a>
-<a class="sourceLine" id="cb4-14" data-line-number="14">  <span class="dt">area_corr_power =</span> <span class="dv">1</span>,</a>
-<a class="sourceLine" id="cb4-15" data-line-number="15">  <span class="dt">mask =</span> png<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/png/topics/readPNG">readPNG</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/system.file">system.file</a></span>(<span class="st">"extdata/hearth.png"</span>,</a>
-<a class="sourceLine" id="cb4-16" data-line-number="16">    <span class="dt">package =</span> <span class="st">"ggwordcloud"</span>, <span class="dt">mustWork =</span> <span class="ot">TRUE</span></a>
-<a class="sourceLine" id="cb4-17" data-line-number="17">  )),</a>
-<a class="sourceLine" id="cb4-18" data-line-number="18">  <span class="dt">rm_outside =</span> <span class="ot">TRUE</span></a>
-<a class="sourceLine" id="cb4-19" data-line-number="19">  ) <span class="op">+</span></a>
-<a class="sourceLine" id="cb4-20" data-line-number="20"><span class="st">  </span><span class="kw">scale_size_area</span>(<span class="dt">max_size =</span> <span class="dv">25</span>) <span class="op">+</span></a>
-<a class="sourceLine" id="cb4-21" data-line-number="21"><span class="st">  </span><span class="kw">theme_minimal</span>() <span class="op">+</span></a>
-<a class="sourceLine" id="cb4-22" data-line-number="22"><span class="st">  </span><span class="kw">scale_color_gradient</span>(<span class="dt">low =</span> <span class="st">"darkred"</span>, <span class="dt">high =</span> <span class="st">"red"</span>)</a>
-<a class="sourceLine" id="cb4-23" data-line-number="23"><span class="co">#&gt; Some words could not fit on page. They have been removed.</span></a></code></pre></div>
-<p><img src="reference/figures/README-unnamed-chunk-4-1.png" width="100%"></p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(dplyr, <span class="dt">quietly =</span> <span class="ot">TRUE</span>, <span class="dt">warn.conflicts =</span> <span class="ot">FALSE</span>)</a>
-<a class="sourceLine" id="cb5-2" data-line-number="2"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(tidyr, <span class="dt">quietly =</span> <span class="ot">TRUE</span>)</a>
-<a class="sourceLine" id="cb5-3" data-line-number="3"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Random">set.seed</a></span>(<span class="dv">42</span>)</a>
-<a class="sourceLine" id="cb5-4" data-line-number="4"><span class="kw">ggplot</span>(</a>
-<a class="sourceLine" id="cb5-5" data-line-number="5">  love_words_small <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb5-6" data-line-number="6"><span class="st">    </span><span class="kw"><a href="https://tidyr.tidyverse.org/reference/gather.html">gather</a></span>(<span class="dt">key =</span> <span class="st">"type"</span>, <span class="dt">value =</span> <span class="st">"speakers"</span>, <span class="op">-</span>lang, <span class="op">-</span>word) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb5-7" data-line-number="7"><span class="st">    </span><span class="kw"><a href="https://dplyr.tidyverse.org/reference/arrange.html">arrange</a></span>(<span class="kw"><a href="https://dplyr.tidyverse.org/reference/desc.html">desc</a></span>(speakers)),</a>
-<a class="sourceLine" id="cb5-8" data-line-number="8">  <span class="kw">aes</span>(<span class="dt">label =</span> word, <span class="dt">size =</span> speakers)</a>
-<a class="sourceLine" id="cb5-9" data-line-number="9">) <span class="op">+</span></a>
-<a class="sourceLine" id="cb5-10" data-line-number="10"><span class="st">  </span><span class="kw"><a href="reference/geom_text_wordcloud.html">geom_text_wordcloud_area</a></span>() <span class="op">+</span></a>
-<a class="sourceLine" id="cb5-11" data-line-number="11"><span class="st">  </span><span class="kw">scale_size_area</span>(<span class="dt">max_size =</span> <span class="dv">20</span>) <span class="op">+</span></a>
-<a class="sourceLine" id="cb5-12" data-line-number="12"><span class="st">  </span><span class="kw">theme_minimal</span>() <span class="op">+</span></a>
-<a class="sourceLine" id="cb5-13" data-line-number="13"><span class="st">  </span><span class="kw">facet_wrap</span>(<span class="op">~</span>type)</a></code></pre></div>
-<p><img src="reference/figures/README-unnamed-chunk-5-1.png" width="100%"></p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(ggwordcloud)</span>
+<span id="cb3-2"><a href="#cb3-2"></a><span class="co">#&gt; Loading required package: ggplot2</span></span>
+<span id="cb3-3"><a href="#cb3-3"></a><span class="kw"><a href="https://rdrr.io/r/utils/data.html">data</a></span>(<span class="st">"love_words_small"</span>)</span>
+<span id="cb3-4"><a href="#cb3-4"></a><span class="kw"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span>(<span class="dv">42</span>)</span>
+<span id="cb3-5"><a href="#cb3-5"></a><span class="kw">ggplot</span>(love_words_small, <span class="kw">aes</span>(<span class="dt">label =</span> word, <span class="dt">size =</span> speakers)) <span class="op">+</span></span>
+<span id="cb3-6"><a href="#cb3-6"></a><span class="st">  </span><span class="kw"><a href="reference/geom_text_wordcloud.html">geom_text_wordcloud</a></span>() <span class="op">+</span></span>
+<span id="cb3-7"><a href="#cb3-7"></a><span class="st">  </span><span class="kw">scale_size_area</span>(<span class="dt">max_size =</span> <span class="dv">40</span>) <span class="op">+</span></span>
+<span id="cb3-8"><a href="#cb3-8"></a><span class="st">  </span><span class="kw">theme_minimal</span>()</span></code></pre></div>
+<p><img src="reference/figures/README-unnamed-chunk-3-1.png" width="700" style="display: block; margin: auto;"></p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a><span class="kw"><a href="https://rdrr.io/r/utils/data.html">data</a></span>(<span class="st">"love_words"</span>)</span>
+<span id="cb4-2"><a href="#cb4-2"></a><span class="kw"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span>(<span class="dv">42</span>)</span>
+<span id="cb4-3"><a href="#cb4-3"></a><span class="kw">ggplot</span>(</span>
+<span id="cb4-4"><a href="#cb4-4"></a>  love_words,</span>
+<span id="cb4-5"><a href="#cb4-5"></a>  <span class="kw">aes</span>(</span>
+<span id="cb4-6"><a href="#cb4-6"></a>    <span class="dt">label =</span> word, <span class="dt">size =</span> speakers,</span>
+<span id="cb4-7"><a href="#cb4-7"></a>    <span class="dt">color =</span> speakers</span>
+<span id="cb4-8"><a href="#cb4-8"></a>  )</span>
+<span id="cb4-9"><a href="#cb4-9"></a>) <span class="op">+</span></span>
+<span id="cb4-10"><a href="#cb4-10"></a><span class="st">  </span><span class="kw"><a href="reference/geom_text_wordcloud.html">geom_text_wordcloud_area</a></span>(<span class="kw">aes</span>(<span class="dt">angle =</span> <span class="dv">45</span> <span class="op">*</span><span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/sample.html">sample</a></span>(<span class="op">-</span><span class="dv">2</span><span class="op">:</span><span class="dv">2</span>, <span class="kw"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span>(love_words),</span>
+<span id="cb4-11"><a href="#cb4-11"></a>    <span class="dt">replace =</span> <span class="ot">TRUE</span>,</span>
+<span id="cb4-12"><a href="#cb4-12"></a>    <span class="dt">prob =</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">4</span>, <span class="dv">1</span>, <span class="dv">1</span>)</span>
+<span id="cb4-13"><a href="#cb4-13"></a>  )),</span>
+<span id="cb4-14"><a href="#cb4-14"></a>  <span class="dt">mask =</span> png<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/png/man/readPNG.html">readPNG</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/system.file.html">system.file</a></span>(<span class="st">"extdata/hearth.png"</span>,</span>
+<span id="cb4-15"><a href="#cb4-15"></a>    <span class="dt">package =</span> <span class="st">"ggwordcloud"</span>, <span class="dt">mustWork =</span> <span class="ot">TRUE</span></span>
+<span id="cb4-16"><a href="#cb4-16"></a>  )),</span>
+<span id="cb4-17"><a href="#cb4-17"></a>  <span class="dt">rm_outside =</span> <span class="ot">TRUE</span></span>
+<span id="cb4-18"><a href="#cb4-18"></a>  ) <span class="op">+</span></span>
+<span id="cb4-19"><a href="#cb4-19"></a><span class="st">  </span><span class="kw">scale_size_area</span>(<span class="dt">max_size =</span> <span class="dv">40</span>) <span class="op">+</span></span>
+<span id="cb4-20"><a href="#cb4-20"></a><span class="st">  </span><span class="kw">theme_minimal</span>() <span class="op">+</span></span>
+<span id="cb4-21"><a href="#cb4-21"></a><span class="st">  </span><span class="kw">scale_color_gradient</span>(<span class="dt">low =</span> <span class="st">"darkred"</span>, <span class="dt">high =</span> <span class="st">"red"</span>)</span>
+<span id="cb4-22"><a href="#cb4-22"></a><span class="co">#&gt; Some words could not fit on page. They have been removed.</span></span></code></pre></div>
+<p><img src="reference/figures/README-unnamed-chunk-4-1.png" width="700" style="display: block; margin: auto;"></p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(dplyr, <span class="dt">quietly =</span> <span class="ot">TRUE</span>, <span class="dt">warn.conflicts =</span> <span class="ot">FALSE</span>)</span>
+<span id="cb5-2"><a href="#cb5-2"></a><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(tidyr, <span class="dt">quietly =</span> <span class="ot">TRUE</span>)</span>
+<span id="cb5-3"><a href="#cb5-3"></a><span class="kw"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span>(<span class="dv">42</span>)</span>
+<span id="cb5-4"><a href="#cb5-4"></a><span class="kw">ggplot</span>(</span>
+<span id="cb5-5"><a href="#cb5-5"></a>  love_words_small <span class="op">%&gt;%</span></span>
+<span id="cb5-6"><a href="#cb5-6"></a><span class="st">    </span><span class="kw"><a href="https://tidyr.tidyverse.org/reference/gather.html">gather</a></span>(<span class="dt">key =</span> <span class="st">"type"</span>, <span class="dt">value =</span> <span class="st">"speakers"</span>, <span class="op">-</span>lang, <span class="op">-</span>word) <span class="op">%&gt;%</span></span>
+<span id="cb5-7"><a href="#cb5-7"></a><span class="st">    </span><span class="kw"><a href="https://dplyr.tidyverse.org/reference/arrange.html">arrange</a></span>(<span class="kw"><a href="https://dplyr.tidyverse.org/reference/desc.html">desc</a></span>(speakers)),</span>
+<span id="cb5-8"><a href="#cb5-8"></a>  <span class="kw">aes</span>(<span class="dt">label =</span> word, <span class="dt">size =</span> speakers)</span>
+<span id="cb5-9"><a href="#cb5-9"></a>) <span class="op">+</span></span>
+<span id="cb5-10"><a href="#cb5-10"></a><span class="st">  </span><span class="kw"><a href="reference/geom_text_wordcloud.html">geom_text_wordcloud_area</a></span>() <span class="op">+</span></span>
+<span id="cb5-11"><a href="#cb5-11"></a><span class="st">  </span><span class="kw">scale_size_area</span>(<span class="dt">max_size =</span> <span class="dv">40</span>) <span class="op">+</span></span>
+<span id="cb5-12"><a href="#cb5-12"></a><span class="st">  </span><span class="kw">theme_minimal</span>() <span class="op">+</span></span>
+<span id="cb5-13"><a href="#cb5-13"></a><span class="st">  </span><span class="kw">facet_wrap</span>(<span class="op">~</span>type)</span></code></pre></div>
+<p><img src="reference/figures/README-unnamed-chunk-5-1.png" width="700" style="display: block; margin: auto;"></p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a><span class="kw"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span>(<span class="dv">42</span>)</span>
+<span id="cb6-2"><a href="#cb6-2"></a><span class="kw">ggplot</span>(love_words_small, <span class="kw">aes</span>(<span class="dt">label =</span> word, <span class="dt">size =</span> speakers,</span>
+<span id="cb6-3"><a href="#cb6-3"></a>                             <span class="dt">label_content =</span> <span class="kw"><a href="https://rdrr.io/r/base/sprintf.html">sprintf</a></span>(<span class="st">"%s&lt;span style='font-size:7.5pt'&gt;(%g)&lt;/span&gt;"</span>, word, speakers))) <span class="op">+</span></span>
+<span id="cb6-4"><a href="#cb6-4"></a><span class="st">  </span><span class="kw"><a href="reference/geom_text_wordcloud.html">geom_text_wordcloud_area</a></span>() <span class="op">+</span></span>
+<span id="cb6-5"><a href="#cb6-5"></a><span class="st">  </span><span class="kw">scale_size_area</span>(<span class="dt">max_size =</span> <span class="dv">40</span>) <span class="op">+</span></span>
+<span id="cb6-6"><a href="#cb6-6"></a><span class="st">  </span><span class="kw">theme_minimal</span>()</span></code></pre></div>
+<p><img src="reference/figures/README-unnamed-chunk-6-1.png" width="700" style="display: block; margin: auto;"></p>
 <p>More examples are available in the vignette.</p>
 </div>
+
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
@@ -176,7 +187,7 @@
 </ul>
 </div>
 
-      <div class="dev-status">
+  <div class="dev-status">
 <h2>Dev status</h2>
 <ul class="list-unstyled">
 <li><a href="https://travis-ci.org/lepennec/ggwordcloud"><img src="https://travis-ci.org/lepennec/ggwordcloud.svg?branch=master" alt="Travis build status"></a></li>
@@ -185,7 +196,6 @@
 </ul>
 </div>
 </div>
-
 </div>
 
 
@@ -194,12 +204,14 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.3.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.4.1.</p>
 </div>
+
       </footer>
 </div>
 
   
+
 
   </body>
 </html>

@@ -13,14 +13,21 @@ vignette: >
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
-  fig.width = 5,
-  fig.height = 2.5,
+  fig.dev = "grDevices::png",
+  dpi = 96L,
+  dev.args = list(),
+  fig.ext = "png",
+  fig.width = 700 / 96,
+  fig.height = NULL,
+  fig.retina = 2L,
+  fig.asp = 1 / 1.618,
   fig.align = "center"
 )
 ```
 
 
-`ggwordcloud` provides a word cloud text geom for `ggplot2`.  The placement algorithm implemented in C++ is an hybrid between the one of `wordcloud` and the one of `wordcloud2.js`. The cloud can grow according to a shape and stay within a mask. The size aesthetic is used either to control the font size or the printed area of the words. `ggwordcloud` also supports arbitrary text rotation. The faceting scheme of `ggplot2` can also be used. Two functions meant to be the equivalent of `wordcloud` and `wordcloud2` are proposed.
+`ggwordcloud` provides a word cloud text geom for `ggplot2`.  The placement algorithm implemented in C++ is an hybrid between the one of `wordcloud` and the one of `wordcloud2.js`. The cloud can grow according to a shape and stay within a mask. The size aesthetic is used either to control the font size or the printed area of the words. `ggwordcloud` also supports arbitrary text rotation. The faceting scheme of `ggplot2` can also be used. Two functions meant to be the equivalent of `wordcloud` and `wordcloud2` are proposed. Last but not least you can use `gridtext` markdown/css syntax in the labels.
+
 
 This vignette is meant as a quick tour of its possibility.
 
@@ -40,11 +47,12 @@ Please check the latest development version before submitting an issue.
 
 # The love / thank you words dataset
 
-Along this vignette, we will use a _lovely_ (and _thank you_) dataset: a collection of the word love (thank you) in several language combined with the number of native speakers of those language as well as the total number of speakers. The data have been extracted from _wikipedia_ and is exposed in two data frame of 4 columns: 
+Along this vignette, we will use a _lovely_ dataset: a collection of the word love in several language combined with the number of native speakers of those language as well as the total number of speakers. The data have been extracted from _wikipedia_ and is exposed in two data frame of 4 columns: 
 - `lang`: the ISO 649 language code
 - `words`: the word love in those languages
 - `native_speakers`: the number of native speakers (in millions) of those languages
 - `speaker`: the corresponding total number of speakers (in millions)
+Another dataset with _thank you_ in several languages is also available.
 The first one `love_words` (`thankyou_words`) contains 147 (133) different languages while the second `love_words_small` (`thankyou_words_small`) contains the 34 (34) languages having more than 50 millions speakers.
 
 ```{r}
@@ -65,6 +73,7 @@ ggplot(love_words_small, aes(label = word)) +
   geom_text_wordcloud() +
   theme_minimal()
 ```
+
 Note that we have used `theme_minimal()` to display the words and nothing else. The word cloud is, by default, centered and the words are placed along a spiral in a way they do not overlap. 
 
 Because there is some randomness in the placement algorithm, the same command can yield a different result when using a different random seed:
@@ -84,6 +93,7 @@ ggplot(love_words_small, aes(label = word, size = speakers)) +
   geom_text_wordcloud() +
   theme_minimal()
 ```
+
 The words are scaled according to the value of the size aesthetic, the number of speakers here. There are several classical choices for the scaling: the font size could be chosen proportional to the value or to the square root of the value so that the area of a given character is respectively proportional to the square of the value or the value itself. By default, `ggplot2` uses  the square root scaling but does not map a value of $0$ to $0$.
 
 
@@ -92,7 +102,7 @@ In order to obtain a true proportionality (and a better font size control), one 
 set.seed(42)
 ggplot(love_words_small, aes(label = word, size = speakers)) +
   geom_text_wordcloud() +
-  scale_size_area(max_size = 20) +
+  scale_size_area(max_size = 30) +
   theme_minimal()
 ```
 
@@ -101,7 +111,7 @@ It turns out that both `wordcloud` and `wordcloud2` default to a linear scaling 
 set.seed(42)
 ggplot(love_words_small, aes(label = word, size = speakers)) +
   geom_text_wordcloud() +
-  scale_radius(range = c(0, 20), limits = c(0, NA)) +
+  scale_radius(range = c(0, 30), limits = c(0, NA)) +
   theme_minimal()
 ```
 
@@ -113,7 +123,7 @@ As explained before, by default, this is the size of the font which is proportio
 set.seed(42)
 ggplot(love_words_small, aes(label = word, size = speakers)) +
   geom_text_wordcloud(area_corr = TRUE) +
-  scale_size_area(max_size = 24) +
+  scale_size_area(max_size = 50) +
   theme_minimal()
 ```
 
@@ -123,7 +133,7 @@ One can equivalently use the `geom_text_wordcloud_area` geom:
 set.seed(42)
 ggplot(love_words_small, aes(label = word, size = speakers)) +
   geom_text_wordcloud_area() +
-  scale_size_area(max_size = 24) +
+  scale_size_area(max_size = 50) +
   theme_minimal()
 ```
 
@@ -134,7 +144,7 @@ To better match the human area perception, one can use the `power_trans` scale w
 set.seed(42)
 ggplot(love_words_small, aes(label = word, size = speakers)) +
   geom_text_wordcloud_area() +
-  scale_size_area(max_size = 24, trans = power_trans(1/.7)) +
+  scale_size_area(max_size = 50, trans = power_trans(1/.7)) +
   theme_minimal()
 ```
 
@@ -148,7 +158,7 @@ The non overlapping algorithm may fail to place some words due to a lack of spac
 set.seed(42)
 ggplot(love_words_small, aes(label = word, size = speakers)) +
   geom_text_wordcloud_area() +
-  scale_size_area(max_size = 60) +
+  scale_size_area(max_size = 80) +
   theme_minimal()
 ```
 
@@ -157,7 +167,7 @@ It is up to the user to avoid this issue by either removing some words or changi
 set.seed(42)
 ggplot(love_words_small, aes(label = word, size = speakers)) +
   geom_text_wordcloud_area(rm_outside = TRUE) +
-  scale_size_area(max_size = 60) +
+  scale_size_area(max_size = 80) +
   theme_minimal()
 ```
 
@@ -180,7 +190,7 @@ ggplot(love_words_small, aes(
   angle = angle
 )) +
   geom_text_wordcloud_area() +
-  scale_size_area(max_size = 24) +
+  scale_size_area(max_size = 40) +
   theme_minimal()
 ```
 
@@ -197,7 +207,7 @@ ggplot(love_words_small, aes(
   angle = angle
 )) +
   geom_text_wordcloud_area() +
-  scale_size_area(max_size = 24) +
+  scale_size_area(max_size = 40) +
   theme_minimal()
 ```
 
@@ -210,7 +220,7 @@ so that the spiral is 1/.65 wider than taller.
 set.seed(42)
 ggplot(love_words_small, aes(label = word, size = speakers)) +
   geom_text_wordcloud_area() +
-  scale_size_area(max_size = 24) +
+  scale_size_area(max_size = 40) +
   theme_minimal()
 ```
 
@@ -219,7 +229,7 @@ This can be changed using the `eccentricity` parameter:
 set.seed(42)
 ggplot(love_words_small, aes(label = word, size = speakers)) +
   geom_text_wordcloud_area(eccentricity = 1) +
-  scale_size_area(max_size = 24) +
+  scale_size_area(max_size = 40) +
   theme_minimal()
 ```
 
@@ -227,7 +237,7 @@ ggplot(love_words_small, aes(label = word, size = speakers)) +
 set.seed(42)
 ggplot(love_words_small, aes(label = word, size = speakers)) +
   geom_text_wordcloud_area(eccentricity = .35) +
-  scale_size_area(max_size = 24) +
+  scale_size_area(max_size = 40) +
   theme_minimal()
 ```
 
@@ -245,7 +255,7 @@ for (shape in c(
   set.seed(42)
   print(ggplot(love_words_small, aes(label = word, size = speakers)) +
     geom_text_wordcloud_area(shape = shape) +
-    scale_size_area(max_size = 24) +
+    scale_size_area(max_size = 40) +
     theme_minimal() + ggtitle(shape))
 }
 ```
@@ -265,7 +275,7 @@ ggplot(
   )
 ) +
   geom_text_wordcloud_area() +
-  scale_size_area(max_size = 24) +
+  scale_size_area(max_size = 40) +
   theme_minimal()
 ```
 
@@ -280,7 +290,7 @@ ggplot(
   )
 ) +
   geom_text_wordcloud_area() +
-  scale_size_area(max_size = 24) +
+  scale_size_area(max_size = 40) +
   theme_minimal() +
   scale_color_gradient(low = "darkred", high = "red")
 ```
@@ -298,7 +308,7 @@ ggplot(love_words_small, aes(label = word, size = speakers)) +
     )),
     rm_outside = TRUE
   ) +
-  scale_size_area(max_size = 18) +
+  scale_size_area(max_size = 40) +
   theme_minimal()
 ```
 
@@ -326,13 +336,38 @@ ggplot(
     )),
     rm_outside = TRUE
   ) +
-  scale_size_area(max_size = 16) +
+  scale_size_area(max_size = 40) +
   theme_minimal() +
   scale_color_gradient(low = "darkred", high = "red")
 ```
 
 
-# Advanced feature
+# Modified label content and markdown/css syntax
+
+With the `label_content` aesthetic, cne can specify a different label content than the one used 
+to compute the size. Note that this is equivalent to replace `label` when not using the text area option.
+
+```{r}
+set.seed(42)
+ggplot(love_words_small, aes(label = word, size = speakers,
+                             label_content = sprintf("%s (%g)", word, speakers))) +
+  geom_text_wordcloud_area() +
+  scale_size_area(max_size = 30) +
+  theme_minimal()
+```
+We can combined this with the markdown/css syntax of `gridtext` to obtain the nicer
+
+```{r}
+set.seed(42)
+ggplot(love_words_small, aes(label = word, size = speakers,
+                             label_content = sprintf("%s<span style='font-size:7.5pt'>(%g)</span>", word, speakers))) +
+  geom_text_wordcloud_area() +
+  scale_size_area(max_size = 40) +
+  theme_minimal()
+```
+
+
+# Advanced features
 
 `geom_text_wordcloud` is compatible with the facet system of `ggplot2`. For instance, one can easily display two word clouds for the speakers and the native speakers with the same scales:
 ```{r}
@@ -350,7 +385,7 @@ ggplot(
   aes(label = word, size = speakers)
 ) +
   geom_text_wordcloud_area() +
-  scale_size_area(max_size = 20) +
+  scale_size_area(max_size = 30) +
   theme_minimal() +
   facet_wrap(~type)
 ```
@@ -367,7 +402,7 @@ ggplot(
   )
 ) +
   geom_text_wordcloud_area() +
-  scale_size_area(max_size = 20) +
+  scale_size_area(max_size = 30) +
   scale_x_discrete(breaks = NULL) +
   theme_minimal()
 ```
@@ -393,7 +428,7 @@ ggplot(
   )
 ) +
   geom_text_wordcloud_area() +
-  scale_size_area(max_size = 8) +
+  scale_size_area(max_size = 30) +
   theme_minimal() +
   facet_wrap(~type)
 ```
@@ -410,7 +445,7 @@ ggwordcloud(love_words$word, love_words$speakers)
 
 ```{r}
 set.seed(42)
-ggwordcloud2(love_words[, c("word", "speakers")], size = 1.5)
+ggwordcloud2(love_words[, c("word", "speakers")], size = 2.5)
 ```
 
 
