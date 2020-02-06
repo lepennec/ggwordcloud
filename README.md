@@ -18,7 +18,7 @@ control the font size or the printed area of the words. `ggwordcloud`
 also supports arbitrary text rotation. The faceting scheme of `ggplot2`
 can also be used. Two functions meant to be the equivalent of
 `wordcloud` and `wordcloud2` are proposed. Last but not least you can
-use `gridtext` markdown/css syntax in the labels.
+use `gridtext` markdown/html syntax in the labels.
 
 ## Installation
 

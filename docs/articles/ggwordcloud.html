@@ -83,7 +83,7 @@
       <h1>ggwordcloud: a word cloud geom for ggplot2</h1>
                         <h4 class="author">E. Le Pennec</h4>
             
-            <h4 class="date">2020-02-05</h4>
+            <h4 class="date">2020-02-06</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/lepennec/ggwordcloud/blob/master/vignettes/ggwordcloud.Rmd"><code>vignettes/ggwordcloud.Rmd</code></a></small>
       <div class="hidden name"><code>ggwordcloud.Rmd</code></div>
@@ -92,7 +92,7 @@
 
     
     
-<p><code>ggwordcloud</code> provides a word cloud text geom for <code>ggplot2</code>. The placement algorithm implemented in C++ is an hybrid between the one of <code>wordcloud</code> and the one of <code>wordcloud2.js</code>. The cloud can grow according to a shape and stay within a mask. The size aesthetic is used either to control the font size or the printed area of the words. <code>ggwordcloud</code> also supports arbitrary text rotation. The faceting scheme of <code>ggplot2</code> can also be used. Two functions meant to be the equivalent of <code>wordcloud</code> and <code>wordcloud2</code> are proposed. Last but not least you can use <code>gridtext</code> markdown/css syntax in the labels.</p>
+<p><code>ggwordcloud</code> provides a word cloud text geom for <code>ggplot2</code>. The placement algorithm implemented in C++ is an hybrid between the one of <code>wordcloud</code> and the one of <code>wordcloud2.js</code>. The cloud can grow according to a shape and stay within a mask. The size aesthetic is used either to control the font size or the printed area of the words. <code>ggwordcloud</code> also supports arbitrary text rotation. The faceting scheme of <code>ggplot2</code> can also be used. Two functions meant to be the equivalent of <code>wordcloud</code> and <code>wordcloud2</code> are proposed. Last but not least you can use <code>gridtext</code> markdown/html syntax in the labels.</p>
 <p>This vignette is meant as a quick tour of its possibility.</p>
 <div id="package-installation" class="section level1">
 <h1 class="hasAnchor">
@@ -352,9 +352,9 @@
 <span id="cb26-18"><a href="#cb26-18"></a><span class="co">#&gt; Some words could not fit on page. They have been removed.</span></span></code></pre></div>
 <p><img src="ggwordcloud_files/figure-html/unnamed-chunk-26-1.png" width="700" style="display: block; margin: auto;"></p>
 </div>
-<div id="modified-label-content-and-markdowncss-syntax" class="section level1">
+<div id="modified-label-content-and-markdownhtml-syntax" class="section level1">
 <h1 class="hasAnchor">
-<a href="#modified-label-content-and-markdowncss-syntax" class="anchor"></a>Modified label content and markdown/css syntax</h1>
+<a href="#modified-label-content-and-markdownhtml-syntax" class="anchor"></a>Modified label content and markdown/html syntax</h1>
 <p>With the <code>label_content</code> aesthetic, cne can specify a different label content than the one used to compute the size. Note that this is equivalent to replace <code>label</code> when not using the text area option.</p>
 <div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1"></a><span class="kw"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span>(<span class="dv">42</span>)</span>
 <span id="cb27-2"><a href="#cb27-2"></a><span class="kw">ggplot</span>(love_words_small, <span class="kw">aes</span>(<span class="dt">label =</span> word, <span class="dt">size =</span> speakers,</span>
@@ -362,7 +362,7 @@
 <span id="cb27-4"><a href="#cb27-4"></a><span class="st">  </span><span class="kw"><a href="../reference/geom_text_wordcloud.html">geom_text_wordcloud_area</a></span>() <span class="op">+</span></span>
 <span id="cb27-5"><a href="#cb27-5"></a><span class="st">  </span><span class="kw">scale_size_area</span>(<span class="dt">max_size =</span> <span class="dv">30</span>) <span class="op">+</span></span>
 <span id="cb27-6"><a href="#cb27-6"></a><span class="st">  </span><span class="kw">theme_minimal</span>()</span></code></pre></div>
-<p><img src="ggwordcloud_files/figure-html/unnamed-chunk-27-1.png" width="700" style="display: block; margin: auto;"> We can combined this with the markdown/css syntax of <code>gridtext</code> to obtain the nicer</p>
+<p><img src="ggwordcloud_files/figure-html/unnamed-chunk-27-1.png" width="700" style="display: block; margin: auto;"> We can combined this with the markdown/html syntax of <code>gridtext</code> to obtain the nicer</p>
 <div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1"></a><span class="kw"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span>(<span class="dv">42</span>)</span>
 <span id="cb28-2"><a href="#cb28-2"></a><span class="kw">ggplot</span>(love_words_small, <span class="kw">aes</span>(<span class="dt">label =</span> word, <span class="dt">size =</span> speakers,</span>
 <span id="cb28-3"><a href="#cb28-3"></a>                             <span class="dt">label_content =</span> <span class="kw"><a href="https://rdrr.io/r/base/sprintf.html">sprintf</a></span>(<span class="st">"%s&lt;span style='font-size:7.5pt'&gt;(%g)&lt;/span&gt;"</span>, word, speakers))) <span class="op">+</span></span>
@@ -456,7 +456,7 @@
       <li><a href="#word-cloud-and-color">Word cloud and color</a></li>
       <li><a href="#word-cloud-and-mask">Word cloud and mask</a></li>
       <li><a href="#word-cloud-with-almost-everything">Word cloud with almost everything</a></li>
-      <li><a href="#modified-label-content-and-markdowncss-syntax">Modified label content and markdown/css syntax</a></li>
+      <li><a href="#modified-label-content-and-markdownhtml-syntax">Modified label content and markdown/html syntax</a></li>
       <li><a href="#advanced-features">Advanced features</a></li>
       <li><a href="#ggwordcloud-as-an-approximate-replacement-for-wordcloud-and-wordcloud2"><code>ggwordcloud</code> as an approximate replacement for <code>wordcloud</code> and <code>wordcloud2</code></a></li>
       </ul>

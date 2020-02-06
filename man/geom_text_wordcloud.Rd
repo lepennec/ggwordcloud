@@ -157,7 +157,7 @@ default, the length of the text is not taken into account.
 to \code{TRUE}. Default to \code{FALSE}.}
 
 \item{use_richtext}{use the enhanced gridtext text grob instead of the grid one. Allow to
-use markdown syntax. Default to \code{FALSE}}
+use markdown/html syntax in label. Default to \code{TRUE}.}
 }
 \value{
 a ggplot

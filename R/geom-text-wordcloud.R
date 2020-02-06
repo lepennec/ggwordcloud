@@ -75,7 +75,7 @@
 #' @param show_boxes display the bounding boxes used in the placement algorithm is set
 #' to \code{TRUE}. Default to \code{FALSE}.
 #' @param use_richtext use the enhanced gridtext text grob instead of the grid one. Allow to
-#'  use markdown syntax. Default to \code{FALSE}
+#'  use markdown/html syntax in label. Default to \code{TRUE}.
 #'
 #' @return a ggplot
 #'
