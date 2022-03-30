@@ -325,13 +325,13 @@ DataFrame wordcloud_boxes(
   if (nb_bad > 0) {
     if (nb_bad == 1) {
       if (rm_outside) {
-        msg("One word could not fit on page. It has been removed.");
+        Rcpp::warning("One word could not fit on page. It has been removed.");
       } else {
         Rcpp::warning("One word could not fit on page. It has been placed at its original position.");
       }
     } else {
       if (rm_outside) {
-        msg("Some words could not fit on page. They have been removed.");
+        Rcpp::warning("Some words could not fit on page. They have been removed.");
       } else {
         Rcpp::warning("Some words could not fit on page. They have been placed at their original positions.");
       }
