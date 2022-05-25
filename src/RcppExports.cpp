@@ -5,6 +5,11 @@
 
 using namespace Rcpp;
 
+#ifdef RCPP_USE_GLOBAL_ROSTREAM
+Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
+Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
+#endif
+
 // wordcloud_boxes
 DataFrame wordcloud_boxes(NumericMatrix data_points, NumericMatrix boxes, IntegerVector boxes_text, IntegerMatrix text_boxes, NumericMatrix bigboxes, NumericMatrix boxes_masks, IntegerVector boxes_mask, IntegerMatrix mask_boxes, IntegerVector mask_group, IntegerVector angle_group, int max_angle_group, NumericVector xlim, NumericVector ylim, const double eccentricity, const double rstep, const double tstep, const double perc_step, const int max_steps, const bool rm_outside, const int shape);
 RcppExport SEXP _ggwordcloud_wordcloud_boxes(SEXP data_pointsSEXP, SEXP boxesSEXP, SEXP boxes_textSEXP, SEXP text_boxesSEXP, SEXP bigboxesSEXP, SEXP boxes_masksSEXP, SEXP boxes_maskSEXP, SEXP mask_boxesSEXP, SEXP mask_groupSEXP, SEXP angle_groupSEXP, SEXP max_angle_groupSEXP, SEXP xlimSEXP, SEXP ylimSEXP, SEXP eccentricitySEXP, SEXP rstepSEXP, SEXP tstepSEXP, SEXP perc_stepSEXP, SEXP max_stepsSEXP, SEXP rm_outsideSEXP, SEXP shapeSEXP) {

@@ -4,9 +4,12 @@ author: "E. Le Pennec"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
+  %\VignetteEncoding{UTF-8}
   %\VignetteIndexEntry{ggwordcloud: a word cloud geom for ggplot2}
   %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
+editor_options: 
+  markdown: 
+    wrap: 72
 ---
 
 ```{r setup, include = FALSE}
@@ -25,35 +28,48 @@ knitr::opts_chunk$set(
 )
 ```
 
+`ggwordcloud` provides a word cloud text geom for `ggplot2`. The
+placement algorithm implemented in C++ is an hybrid between the one of
+`wordcloud` and the one of `wordcloud2.js`. The cloud can grow according
+to a shape and stay within a mask. The size aesthetic is used either to
+control the font size or the printed area of the words. `ggwordcloud`
+also supports arbitrary text rotation. The faceting scheme of `ggplot2`
+can also be used. Two functions meant to be the equivalent of
+`wordcloud` and `wordcloud2` are proposed. Last but not least you can
+use `gridtext` markdown/html syntax in the labels.
 
-`ggwordcloud` provides a word cloud text geom for `ggplot2`.  The placement algorithm implemented in C++ is an hybrid between the one of `wordcloud` and the one of `wordcloud2.js`. The cloud can grow according to a shape and stay within a mask. The size aesthetic is used either to control the font size or the printed area of the words. `ggwordcloud` also supports arbitrary text rotation. The faceting scheme of `ggplot2` can also be used. Two functions meant to be the equivalent of `wordcloud` and `wordcloud2` are proposed. Last but not least you can use `gridtext` markdown/html syntax in the labels.
-
-
-This vignette is meant as a quick tour of its possibility.
+This vignette is meant as a quick tour of its features.
 
 # Package installation
 
 The package can be installed from CRAN by
+
 ```{r, eval=FALSE}
 install.packages("ggwordcloud")
 ```
+
 or the development version from the github repository
+
 ```{r, eval=FALSE}
 devtools::install_github("lepennec/ggwordcloud")
 ```
 
 Please check the latest development version before submitting an issue.
 
-
 # The love / thank you words dataset
 
-Along this vignette, we will use a _lovely_ dataset: a collection of the word love in several language combined with the number of native speakers of those language as well as the total number of speakers. The data have been extracted from _wikipedia_ and is exposed in two data frame of 4 columns: 
-- `lang`: the ISO 649 language code
-- `words`: the word love in those languages
-- `native_speakers`: the number of native speakers (in millions) of those languages
-- `speaker`: the corresponding total number of speakers (in millions)
-Another dataset with _thank you_ in several languages is also available.
-The first one `love_words` (`thankyou_words`) contains 147 (133) different languages while the second `love_words_small` (`thankyou_words_small`) contains the 34 (34) languages having more than 50 millions speakers.
+Along this vignette, we will use a *lovely* dataset: a collection of the
+word love in several language combined with the number of native
+speakers of those language as well as the total number of speakers. The
+data have been extracted from *wikipedia* and is exposed in two data
+frame of 4 columns: - `lang`: the ISO 649 language code - `words`: the
+word love in those languages - `native_speakers`: the number of native
+speakers (in millions) of those languages - `speaker`: the corresponding
+total number of speakers (in millions) Another dataset with *thank you*
+in several languages is also available. The first one `love_words`
+(`thankyou_words`) contains 147 (133) different languages while the
+second `love_words_small` (`thankyou_words_small`) contains the 34 (34)
+languages having more than 50 millions speakers.
 
 ```{r}
 library(ggwordcloud)
@@ -61,12 +77,11 @@ data("love_words_small")
 data("love_words")
 ```
 
-
-
 # Word cloud
 
+The `geom_text_wordcloud` geom constructs a word cloud from a list of
+words given by the `label` aesthetic:
 
-The `geom_text_wordcloud` geom constructs a word cloud from a list of words given by the `label` aesthetic:
 ```{r}
 set.seed(42)
 ggplot(love_words_small, aes(label = word)) +
@@ -74,9 +89,13 @@ ggplot(love_words_small, aes(label = word)) +
   theme_minimal()
 ```
 
-Note that we have used `theme_minimal()` to display the words and nothing else. The word cloud is, by default, centered and the words are placed along a spiral in a way they do not overlap. 
+Note that we have used `theme_minimal()` to display the words and
+nothing else. The word cloud is, by default, centered and the words are
+placed along a spiral in a way they do not overlap.
 
-Because there is some randomness in the placement algorithm, the same command can yield a different result when using a different random seed:
+Because there is some randomness in the placement algorithm, the same
+command can yield a different result when using a different random seed:
+
 ```{r}
 set.seed(43)
 ggplot(love_words_small, aes(label = word)) +
@@ -86,7 +105,9 @@ ggplot(love_words_small, aes(label = word)) +
 
 # Word cloud and text size
 
-So far all the words had the same size because we do not specify a size aesthetic. If we use the total number of speakers, we obtain:
+So far all the words had the same size because we do not specify a size
+aesthetic. If we use the total number of speakers, we obtain:
+
 ```{r}
 set.seed(42)
 ggplot(love_words_small, aes(label = word, size = speakers)) +
@@ -94,10 +115,17 @@ ggplot(love_words_small, aes(label = word, size = speakers)) +
   theme_minimal()
 ```
 
-The words are scaled according to the value of the size aesthetic, the number of speakers here. There are several classical choices for the scaling: the font size could be chosen proportional to the value or to the square root of the value so that the area of a given character is respectively proportional to the square of the value or the value itself. By default, `ggplot2` uses  the square root scaling but does not map a value of $0$ to $0$.
+The words are scaled according to the value of the size aesthetic, the
+number of speakers here. There are several classical choices for the
+scaling: the font size could be chosen proportional to the value or to
+the square root of the value so that the area of a given character is
+respectively proportional to the square of the value or the value
+itself. By default, `ggplot2` uses the square root scaling but does not
+map a value of $0$ to $0$.
 
+In order to obtain a true proportionality (and a better font size
+control), one can use the `scale_size_area()` scale:
 
-In order to obtain a true proportionality (and a better font size control), one can use the `scale_size_area()` scale:
 ```{r}
 set.seed(42)
 ggplot(love_words_small, aes(label = word, size = speakers)) +
@@ -106,7 +134,10 @@ ggplot(love_words_small, aes(label = word, size = speakers)) +
   theme_minimal()
 ```
 
-It turns out that both `wordcloud` and `wordcloud2` default to a linear scaling between the value and the font size. This can be obtained with the `scale_radius()` scale:
+It turns out that both `wordcloud` and `wordcloud2` default to a linear
+scaling between the value and the font size. This can be obtained with
+the `scale_radius()` scale:
+
 ```{r}
 set.seed(42)
 ggplot(love_words_small, aes(label = word, size = speakers)) +
@@ -115,10 +146,17 @@ ggplot(love_words_small, aes(label = word, size = speakers)) +
   theme_minimal()
 ```
 
-
 # Word cloud and text area
 
-As explained before, by default, this is the size of the font which is proportional to the square root of the value of the size aesthetic. This is a natural choice for a shape as the area of the shape will be proportional to the raw size aesthetic but not necessarily for texts with different lengths. In `ggwordcloud2`, there is an option, `area_corr` to scale the font of each label so that the text area is a function of the raw size aesthetic when used in combination with `scale_size_area`:
+As explained before, by default, this is the size of the font which is
+proportional to the square root of the value of the size aesthetic. This
+is a natural choice for a shape as the area of the shape will be
+proportional to the raw size aesthetic but not necessarily for texts
+with different lengths. In `ggwordcloud2`, there is an option,
+`area_corr` to scale the font of each label so that the text area is a
+function of the raw size aesthetic when used in combination with
+`scale_size_area`:
+
 ```{r}
 set.seed(42)
 ggplot(love_words_small, aes(label = word, size = speakers)) +
@@ -127,8 +165,8 @@ ggplot(love_words_small, aes(label = word, size = speakers)) +
   theme_minimal()
 ```
 
-
 One can equivalently use the `geom_text_wordcloud_area` geom:
+
 ```{r}
 set.seed(42)
 ggplot(love_words_small, aes(label = word, size = speakers)) +
@@ -137,9 +175,10 @@ ggplot(love_words_small, aes(label = word, size = speakers)) +
   theme_minimal()
 ```
 
+By default, the area is proportional to the raw size aesthetic. To
+better match the human area perception, one can use the `power_trans`
+scale with a factor of $1/.7$:
 
-By default, the area is proportional to the raw size aesthetic.
-To better match the human area perception, one can use the `power_trans` scale with a factor of $1/.7$:
 ```{r}
 set.seed(42)
 ggplot(love_words_small, aes(label = word, size = speakers)) +
@@ -148,11 +187,11 @@ ggplot(love_words_small, aes(label = word, size = speakers)) +
   theme_minimal()
 ```
 
-
-
 # Word cloud with too many words
 
-The non overlapping algorithm may fail to place some words due to a lack of space. By default, those words are displayed at the center of the word cloud and comes with a warning.
+The non overlapping algorithm may fail to place some words due to a lack
+of space. By default, those words are displayed at the center of the
+word cloud and comes with a warning.
 
 ```{r}
 set.seed(42)
@@ -162,7 +201,10 @@ ggplot(love_words_small, aes(label = word, size = speakers)) +
   theme_minimal()
 ```
 
-It is up to the user to avoid this issue by either removing some words or changing the size scale. One can also chose to remove those words using the `rm_outside` option:
+It is up to the user to avoid this issue by either removing some words
+or changing the size scale. One can also chose to remove those words
+using the `rm_outside` option:
+
 ```{r}
 set.seed(42)
 ggplot(love_words_small, aes(label = word, size = speakers)) +
@@ -171,11 +213,11 @@ ggplot(love_words_small, aes(label = word, size = speakers)) +
   theme_minimal()
 ```
 
-
-
 # Word cloud and rotation
 
-The words can be rotated by setting the `angle` aesthetic. For instance, one can use a rotation of 90 degrees for a random subset of 40 \% of the words:
+The words can be rotated by setting the `angle` aesthetic. For instance,
+one can use a rotation of 90 degrees for a random subset of 40 % of the
+words:
 
 ```{r}
 library(dplyr, quietly = TRUE)
@@ -195,6 +237,7 @@ ggplot(love_words_small, aes(
 ```
 
 `ggwordcloud` is not restricted to rotation of 90 degrees:
+
 ```{r}
 love_words_small <- love_words_small %>%
   mutate(angle = 45 * sample(-2:2, n(), replace = TRUE, prob = c(1, 1, 4, 1, 1)))
@@ -213,9 +256,10 @@ ggplot(love_words_small, aes(
 
 # Word cloud and eccentricity
 
-The `ggwordcloud` algorithm moves the text around a spiral until it finds a free space for it.
-This spiral has by default a vertical eccentricity of .65,
-so that the spiral is 1/.65 wider than taller.
+The `ggwordcloud` algorithm moves the text around a spiral until it
+finds a free space for it. This spiral has by default a vertical
+eccentricity of .65, so that the spiral is 1/.65 wider than taller.
+
 ```{r}
 set.seed(42)
 ggplot(love_words_small, aes(label = word, size = speakers)) +
@@ -225,6 +269,7 @@ ggplot(love_words_small, aes(label = word, size = speakers)) +
 ```
 
 This can be changed using the `eccentricity` parameter:
+
 ```{r}
 set.seed(42)
 ggplot(love_words_small, aes(label = word, size = speakers)) +
@@ -243,9 +288,11 @@ ggplot(love_words_small, aes(label = word, size = speakers)) +
 
 # Word cloud and shape
 
-The base shape of `ggwordcloud` is a circle: the words are place by following a _circle_ spiral. This base shape `circle` can be change to others (`cardioid`, `diamond`,
-      `square`, `triangle-forward`, `triangle-upright`,
-      `pentagon` or `star`) using the `shape` option.
+The base shape of `ggwordcloud` is a circle: the words are place by
+following a *circle* spiral. This base shape `circle` can be change to
+others (`cardioid`, `diamond`, `square`, `triangle-forward`,
+`triangle-upright`, `pentagon` or `star`) using the `shape` option.
+
 ```{r}
 for (shape in c(
   "circle", "cardioid", "diamond",
@@ -260,10 +307,11 @@ for (shape in c(
 }
 ```
 
-
 # Word cloud and color
 
-A color can be assign to each word using the color aesthetic. For instance, one can assign a random factor to each word:
+A color can be assign to each word using the color aesthetic. For
+instance, one can assign a random factor to each word:
+
 ```{r}
 set.seed(42)
 ggplot(
@@ -279,7 +327,9 @@ ggplot(
   theme_minimal()
 ```
 
-One can also map the color to a value, for instance the number of speakers, and chose the colormap with a `scale_color_*` scale:
+One can also map the color to a value, for instance the number of
+speakers, and chose the colormap with a `scale_color_*` scale:
+
 ```{r}
 set.seed(42)
 ggplot(
@@ -295,10 +345,12 @@ ggplot(
   scale_color_gradient(low = "darkred", high = "red")
 ```
 
-
 # Word cloud and mask
 
-`ggwordcloud` allows to specify a mask within which the words should be placed. More precisely, the non _transparent_ pixels in an image array (or the black pixel if there is no transparency) will be used as a mask:
+`ggwordcloud` allows to specify a mask within which the words should be
+placed. More precisely, the non *transparent* pixels in an image array
+(or the black pixel if there is no transparency) will be used as a mask:
+
 ```{r}
 set.seed(42)
 ggplot(love_words_small, aes(label = word, size = speakers)) +
@@ -308,13 +360,13 @@ ggplot(love_words_small, aes(label = word, size = speakers)) +
     )),
     rm_outside = TRUE
   ) +
-  scale_size_area(max_size = 40) +
+  scale_size_area(max_size = 42) +
   theme_minimal()
 ```
 
 # Word cloud with almost everything
 
-We are now ready to make a _lovely_ word cloud:
+We are now ready to make a *lovely* word cloud:
 
 ```{r}
 love_words <- love_words %>%
@@ -341,11 +393,11 @@ ggplot(
   scale_color_gradient(low = "darkred", high = "red")
 ```
 
-
 # Modified label content and markdown/html syntax
 
-With the `label_content` aesthetic, cne can specify a different label content than the one used 
-to compute the size. Note that this is equivalent to replace `label` when not using the text area option.
+With the `label_content` aesthetic, cne can specify a different label
+content than the one used to compute the size. Note that this is
+equivalent to replace `label` when not using the text area option.
 
 ```{r}
 set.seed(42)
@@ -355,7 +407,9 @@ ggplot(love_words_small, aes(label = word, size = speakers,
   scale_size_area(max_size = 30) +
   theme_minimal()
 ```
-We can combined this with the markdown/html syntax of `gridtext` to obtain the nicer
+
+We can combined this with the markdown/html syntax of `gridtext` to
+obtain the nicer
 
 ```{r}
 set.seed(42)
@@ -366,10 +420,12 @@ ggplot(love_words_small, aes(label = word, size = speakers,
   theme_minimal()
 ```
 
-
 # Advanced features
 
-`geom_text_wordcloud` is compatible with the facet system of `ggplot2`. For instance, one can easily display two word clouds for the speakers and the native speakers with the same scales:
+`geom_text_wordcloud` is compatible with the facet system of `ggplot2`.
+For instance, one can easily display two word clouds for the speakers
+and the native speakers with the same scales:
+
 ```{r}
 library(dplyr, quietly = TRUE, warn.conflicts = FALSE)
 library(tidyr, quietly = TRUE)
@@ -390,8 +446,9 @@ ggplot(
   facet_wrap(~type)
 ```
 
+One can also specify an original position for each label that what will
+be used as the starting point of the spiral algorithm for this label:
 
-One can also specify an original position for each label that what will be used as the starting point of the spiral algorithm for this label:
 ```{r}
 set.seed(42)
 ggplot(
@@ -407,8 +464,12 @@ ggplot(
   theme_minimal()
 ```
 
-Finally, there is a `angle_group` option that can be used to restrict the words to appear only in a angular sector depending on their `angle_group`. For instance, we will visualize the changes of proportions of each language between the speakers and the native speakers by displaying the words above the horizontal line if the proportion is greater than in the other category and below otherwise.
-
+Finally, there is a `angle_group` option that can be used to restrict
+the words to appear only in a angular sector depending on their
+`angle_group`. For instance, we will visualize the changes of
+proportions of each language between the speakers and the native
+speakers by displaying the words above the horizontal line if the
+proportion is greater than in the other category and below otherwise.
 
 ```{r}
 love_words_small_l <- love_words_small_l %>%
@@ -433,10 +494,14 @@ ggplot(
   facet_wrap(~type)
 ```
 
-
 # `ggwordcloud` as an approximate replacement for `wordcloud` and `wordcloud2`
 
-`ggwordcloud` and `ggwordcloud2` are two approximate replacement for respectively `wordcloud` and `wordcloud2`. They provide a similar syntax than the original functions and yields similar word clouds, but not all the options of the original functions are implemented. Note that both use a font size proportional to the raw size aesthetic rather than its square root.
+`ggwordcloud` and `ggwordcloud2` are two approximate replacements for
+respectively `wordcloud` and `wordcloud2`. They provide a similar syntax
+than the original functions and yields similar word clouds, but not all
+the options of the original functions are implemented. Note that both
+use a font size proportional to the raw size aesthetic rather than its
+square root.
 
 ```{r}
 set.seed(42)
@@ -447,6 +512,3 @@ ggwordcloud(love_words$word, love_words$speakers)
 set.seed(42)
 ggwordcloud2(love_words[, c("word", "speakers")], size = 2.5)
 ```
-
-
-

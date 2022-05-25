@@ -605,10 +605,12 @@ compute_corfactor <- function(i, data, dev_dpi, area_a, use_richtext) {
     use_richtext = use_richtext
   )
 
-  gw_inch <- convertWidth(grobWidth(tg_inch), "inch", TRUE) * 1.2
-  gh_inch <- convertHeight(grobAscent(tg_inch), "inch", TRUE) * 1.2 +
+  gw_inch <- max(convertWidth(grobWidth(tg_inch), "inch", TRUE) * 1.2,
+                 20 / dev_dpi)
+  gh_inch <- max(convertHeight(grobAscent(tg_inch), "inch", TRUE) * 1.2 +
     convertHeight(grobHeight(tg_inch), "inch", TRUE) * 1.2 +
-    convertHeight(grobDescent(tg_inch), "inch", TRUE) * 1.2
+    convertHeight(grobDescent(tg_inch), "inch", TRUE) * 1.2,
+    20 / dev_dpi)
 
   gw_pix <- max(1, ceiling(gw_inch * dev_dpi))
   gh_pix <- max(1, ceiling(gh_inch * dev_dpi))
@@ -651,10 +653,12 @@ compute_area_a <- function(dev_dpi, use_richtext) {
     use_richtext = use_richtext
   )
 
-  gw_inch <- convertWidth(grobWidth(tg_inch), "inch", TRUE) * 1.2
-  gh_inch <- convertHeight(grobAscent(tg_inch), "inch", TRUE) * 1.2 +
+  gw_inch <- max(convertWidth(grobWidth(tg_inch), "inch", TRUE) * 1.2,
+                 20 / dev_dpi)
+  gh_inch <- max(convertHeight(grobAscent(tg_inch), "inch", TRUE) * 1.2 +
     convertHeight(grobHeight(tg_inch), "inch", TRUE) * 1.2 +
-    convertHeight(grobDescent(tg_inch), "inch", TRUE) * 1.2
+    convertHeight(grobDescent(tg_inch), "inch", TRUE) * 1.2,
+    20 / dev_dpi)
 
   gw_pix <- max(1, ceiling(gw_inch * dev_dpi))
   gh_pix <- max(1, ceiling(gh_inch * dev_dpi))
@@ -744,10 +748,12 @@ compute_text_boxes <- function(i, x, dev_dpi, grid_size, max_grid_size, grid_mar
     use_richtext = use_richtext
   )
 
-  gw_inch_ <- convertWidth(grobWidth(tg_inch), "inch", TRUE) * 1.2
-  gh_inch_ <- convertHeight(grobAscent(tg_inch), "inch", TRUE) * 1.2 +
+  gw_inch_ <- max(convertWidth(grobWidth(tg_inch), "inch", TRUE) * 1.2,
+                  20 / dev_dpi)
+  gh_inch_ <- max(convertHeight(grobAscent(tg_inch), "inch", TRUE) * 1.2 +
     convertHeight(grobHeight(tg_inch), "inch", TRUE) * 1.2 +
-    convertHeight(grobDescent(tg_inch), "inch", TRUE) * 1.2
+    convertHeight(grobDescent(tg_inch), "inch", TRUE) * 1.2,
+    20 / dev_dpi)
 
   gw_inch <- gw_inch_
   gh_inch <- gh_inch_
