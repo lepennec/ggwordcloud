@@ -82,7 +82,7 @@ test_that("geom_text_wordcloud complains when the words does not fit", {
 })
 
 test_that("geom_text_wordcloud complains silently when the words do not fit and the option rm_outside is set to TRUE", {
-  expect_message({
+  expect_warning({
     set.seed(42)
     print(ggplot(
       data = love_words_small,
@@ -106,7 +106,7 @@ test_that("geom_text_wordcloud complains when one word does not fit", {
 })
 
 test_that("geom_text_wordcloud complains silently when one word does not fit and the option rm_outside is set to TRUE", {
-  expect_message({
+  expect_warning({
     set.seed(42)
     print(ggplot(
       data = love_words_small[2, ],
