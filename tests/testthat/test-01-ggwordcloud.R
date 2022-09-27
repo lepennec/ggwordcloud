@@ -29,16 +29,17 @@ test_that("geom_text_wordcloud_area does not crash", {
 })
 
 test_that("geom_text_wordcloud works for all shape", {
-  expect_silent({
+  expect_equal({
     set.seed(42)
     for (i in 1:8) {
-      print(print(ggplot(
+      print(ggplot(
         data = love_words_small,
         aes(label = word)
       ) +
-        geom_text_wordcloud(shape = i)))
+        geom_text_wordcloud(shape = i))
     }
-  })
+    42
+  }, 42)
 })
 
 test_that("geom_text_wordcloud works with a mask", {
