@@ -5,14 +5,18 @@
 \alias{love_words}
 \alias{love_words_small}
 \title{Love in several languages with number of speakers}
-\format{a data.frame with 147 observations (or 34 for the small one) of 4
+\format{
+a data.frame with 147 observations (or 34 for the small one) of 4
 variables
 \describe{
 \item{iso_639_3}{the ISO 639-3 language code}
 \item{word}{the word love in that language}
 \item{native_speakers}{number of native speakers in millions}
 \item{speakers}{number of speakers in millions}
-}}
+}
+
+An object of class \code{tbl_df} (inherits from \code{tbl}, \code{data.frame}) with 34 rows and 4 columns.
+}
 \source{
 wikipedia
 }

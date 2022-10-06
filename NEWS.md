@@ -1,4 +1,4 @@
-# ggwordcloud (development version)
+# ggwordcloud 0.6.0
 * Novelties:
    * Use of gridtext extended richtext_grob by default so that one can use markdown/html syntax in label
    * Remove the area_corr_power factor and provide a power_trans transform to obtain the same effect
@@ -7,6 +7,7 @@
 * Bug fixes:
   * remove a warning when a png dimension was smaller than 20 pixels
   * replace msg by proper warning in the C++ code
+  * fix a failed test in Windows R-older due to utf8 related warnings
 
 # ggwordcloud 0.5.0
 * Novelties:
