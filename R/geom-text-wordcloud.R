@@ -660,8 +660,8 @@ compute_area_a <- function(dev_dpi, use_richtext) {
     convertHeight(grobDescent(tg_inch), "inch", TRUE) * 1.2,
     20 / dev_dpi)
 
-  gw_pix <- max(1, ceiling(gw_inch * dev_dpi))
-  gh_pix <- max(1, ceiling(gh_inch * dev_dpi))
+  gw_pix <- max(2, ceiling(gw_inch * dev_dpi))
+  gh_pix <- max(2, ceiling(gh_inch * dev_dpi))
 
 
   tg_inch <- text_grob(

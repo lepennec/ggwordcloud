@@ -373,7 +373,7 @@ love_words <- love_words %>%
   mutate(angle = 45 * sample(-2:2, n(), replace = TRUE, prob = c(1, 1, 4, 1, 1)))
 ```
 
-```{r}
+```{r warning=FALSE}
 set.seed(42)
 ggplot(
   love_words,
