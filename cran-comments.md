@@ -9,6 +9,6 @@
 
 0 errors | 0 warnings | 0 notes
 
-* This is a new release.
+* This is a new release fixing in particular the non latin annotations in the examples
 * Note: Some UTF8 encoded strings are present but only in the examples. 
 

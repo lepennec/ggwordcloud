@@ -26,7 +26,7 @@
 #' set.seed(42)
 #' data("love_words_small")
 #'
-#' ggwordcloud(love_words_small$word, love_words_small$speakers)
+#' ggwordcloud(love_words_latin$word, love_words_latin$speakers)
 #' @export
 ggwordcloud <- function(words, freq, scale = c(4, 0.5), min.freq = 3, max.words = Inf,
                         random.order = TRUE, random.color = FALSE, rot.per = 0.1,
@@ -102,7 +102,7 @@ ggwordcloud <- function(words, freq, scale = c(4, 0.5), min.freq = 3, max.words 
 #' set.seed(42)
 #' data("love_words_small")
 #'
-#' ggwordcloud2(love_words_small[,c("word", "speakers")])
+#' ggwordcloud2(love_words_latin[,c("word", "speakers")])
 #' @export
 ggwordcloud2 <- function(data,
                          size = 1,

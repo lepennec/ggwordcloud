@@ -4,18 +4,25 @@
 \name{love_words}
 \alias{love_words}
 \alias{love_words_small}
+\alias{love_words_latin}
+\alias{love_words_latin_small}
 \title{Love in several languages with number of speakers}
 \format{
-a data.frame with 147 observations (or 34 for the small one) of 4
+a data.frame with 147 observations (or 34 for the small one) of 5
 variables
 \describe{
 \item{iso_639_3}{the ISO 639-3 language code}
 \item{word}{the word love in that language}
+\item{name}{english name of the language}
 \item{native_speakers}{number of native speakers in millions}
 \item{speakers}{number of speakers in millions}
 }
 
-An object of class \code{tbl_df} (inherits from \code{tbl}, \code{data.frame}) with 34 rows and 4 columns.
+An object of class \code{tbl_df} (inherits from \code{tbl}, \code{data.frame}) with 34 rows and 5 columns.
+
+An object of class \code{tbl_df} (inherits from \code{tbl}, \code{data.frame}) with 87 rows and 5 columns.
+
+An object of class \code{tbl_df} (inherits from \code{tbl}, \code{data.frame}) with 20 rows and 5 columns.
 }
 \source{
 wikipedia
@@ -24,10 +31,14 @@ wikipedia
 love_words
 
 love_words_small
+
+love_words_latin
+
+love_words_latin_small
 }
 \description{
 A dataset containing the word love in different languages (147 or 34 for the
 small one) as well as the number of native speakers and overall speakers of
-those languages.
+those languages. Latin only version are used in the help.
 }
 \keyword{datasets}

@@ -57,5 +57,5 @@ similar to the ones one can obtain with \code{\link[wordcloud2]{wordcloud2}}.
 set.seed(42)
 data("love_words_small")
 
-ggwordcloud2(love_words_small[,c("word", "speakers")])
+ggwordcloud2(love_words_latin[,c("word", "speakers")])
 }

@@ -17,7 +17,7 @@ Description: Provides a word cloud text geom for 'ggplot2'. Texts
     used is a variation around the one of 'wordcloud2.js'.
 License: GPL-3
 Depends:
-    R (>= 2.10),
+    R (>= 3.5.0),
     ggplot2 (>= 3.0.0)
 Imports: 
     grid,
@@ -41,7 +41,7 @@ LinkingTo:
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.2.1
+RoxygenNote: 7.2.3
 VignetteBuilder: knitr
 URL: https://github.com/lepennec/ggwordcloud, https://lepennec.github.io/ggwordcloud/
 BugReports: https://github.com/lepennec/ggwordcloud/issues

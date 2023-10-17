@@ -430,7 +430,7 @@ and the native speakers with the same scales:
 library(dplyr, quietly = TRUE, warn.conflicts = FALSE)
 library(tidyr, quietly = TRUE)
 love_words_small_l <- love_words_small %>%
-  gather(key = "type", value = "speakers", -lang, -word, -angle) %>%
+  gather(key = "type", value = "speakers", -name, -word, -angle, -iso_639_3) %>%
   arrange(desc(speakers))
 ```
 
@@ -475,7 +475,7 @@ proportion is greater than in the other category and below otherwise.
 love_words_small_l <- love_words_small_l %>%
   group_by(type) %>%
   mutate(prop = speakers / sum(speakers)) %>%
-  group_by(lang, word) %>%
+  group_by(name, word) %>%
   mutate(propdelta = (prop - mean(prop)) / sqrt(mean(prop)))
 ```
 
