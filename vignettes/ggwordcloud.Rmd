@@ -505,10 +505,10 @@ square root.
 
 ```{r}
 set.seed(42)
-ggwordcloud(love_words$word, love_words$speakers)
+ggwordcloud(love_words_small$word, love_words_small$speakers)
 ```
 
 ```{r}
 set.seed(42)
-ggwordcloud2(love_words[, c("word", "speakers")], size = 2.5)
+ggwordcloud2(love_words_small[, c("word", "speakers")], size = 2.5)
 ```
