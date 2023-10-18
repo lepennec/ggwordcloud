@@ -13,7 +13,7 @@ variables
 \describe{
 \item{iso_639_3}{the ISO 639-3 language code}
 \item{word}{the word love in that language}
-\item{name}{english name of the language}
+\item{name}{English name of the language}
 \item{native_speakers}{number of native speakers in millions}
 \item{speakers}{number of speakers in millions}
 }
