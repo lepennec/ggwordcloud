@@ -13,3 +13,4 @@
 ^CRAN-RELEASE$
 ^pkgdown$
 ^CRAN-SUBMISSION$
+^revdep$
