@@ -12,3 +12,4 @@
 ^\.Rproj\.user$
 ^CRAN-RELEASE$
 ^pkgdown$
+^CRAN-SUBMISSION$

@@ -8,7 +8,7 @@
   * remove a warning when a png dimension was smaller than 20 pixels
   * replace msg by proper warning in the C++ code
   * fix a failed test in Windows R-older due to utf8 related warnings
-  * remove non-latin characters from the examples to pass CRAN check.
+  * remove non-latin characters from the examples and simplify them to pass CRAN check.
 
 # ggwordcloud 0.5.0
 * Novelties:

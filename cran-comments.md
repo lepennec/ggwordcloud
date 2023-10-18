@@ -9,5 +9,6 @@
 
 0 errors | 0 warnings | 0 notes
 
-* This is a new release fixing in particular the non latin annotations in the examples
+* This is a new release fixing in particular the example issues in CRAN: non latin annotations and too long runtime.
 * Note: Some UTF8 encoded strings are present but only in some datasets used only in the vignette.
+* I have contacted the maintainers of the packages using mine, even if there should be no breaking change.

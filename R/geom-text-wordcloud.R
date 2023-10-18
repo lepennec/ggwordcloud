@@ -81,14 +81,14 @@
 #'
 #' @examples
 #' set.seed(42)
-#' data("love_words_latin")
+#' data("love_words_latin_small")
 #'
-#' ggplot(love_words_latin, aes(label = word, size = speakers)) +
+#' ggplot(love_words_latin_small, aes(label = word, size = speakers)) +
 #' geom_text_wordcloud() +
 #' scale_size_area(max_size = 20) +
 #' theme_minimal()
 #'
-#' ggplot(love_words_latin, aes(label = word, size = speakers)) +
+#' ggplot(love_words_latin_small, aes(label = word, size = speakers)) +
 #' geom_text_wordcloud_area() +
 #' scale_size_area(max_size = 20) +
 #' theme_minimal()

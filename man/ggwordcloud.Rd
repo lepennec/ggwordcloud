@@ -57,7 +57,7 @@ with \code{\link[wordcloud]{wordcloud}}.
 }
 \examples{
 set.seed(42)
-data("love_words_small")
+data("love_words_latin_small")
 
-ggwordcloud(love_words_latin$word, love_words_latin$speakers)
+ggwordcloud(love_words_latin_small$word, love_words_latin_small$speakers)
 }
