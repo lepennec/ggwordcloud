@@ -1,16 +1,12 @@
 context("test-basic-ggwordcloud")
 
-data("love_words_small")
-
-# Use png device as pdf is not working for strange utf8 characters
-tmp_file <- tempfile()
-png(filename = tmp_file)
+data("love_words_latin_small")
 
 test_that("geom_text_wordcloud does not crash", {
   expect_is({
     set.seed(42)
     print(ggplot(
-      data = love_words_small,
+      data = love_words_latin_small,
       aes(label = word)
     ) +
       geom_text_wordcloud())
@@ -21,7 +17,7 @@ test_that("geom_text_wordcloud_area does not crash", {
   expect_is({
     set.seed(42)
     print(ggplot(
-      data = love_words_small,
+      data = love_words_latin_small,
       aes(label = word, size = speakers)
     ) +
       geom_text_wordcloud_area())
@@ -33,7 +29,7 @@ test_that("geom_text_wordcloud works for all shape", {
     set.seed(42)
     for (i in 1:8) {
       print(ggplot(
-        data = love_words_small,
+        data = love_words_latin_small,
         aes(label = word)
       ) +
         geom_text_wordcloud(shape = i))
@@ -46,7 +42,7 @@ test_that("geom_text_wordcloud works with a mask", {
   expect_is({
     set.seed(42)
     print(ggplot(
-      data = love_words_small,
+      data = love_words_latin_small,
       aes(label = word)
     ) +
       geom_text_wordcloud(mask = png::readPNG(system.file("extdata/hearth.png",
@@ -60,7 +56,7 @@ test_that("geom_text_wordcloud_area works with a mask", {
   expect_is({
     set.seed(42)
     print(ggplot(
-      data = love_words_small,
+      data = love_words_latin_small,
       aes(label = word)
     ) +
       geom_text_wordcloud_area(mask = png::readPNG(system.file("extdata/hearth.png",
@@ -74,11 +70,11 @@ test_that("geom_text_wordcloud complains when the words does not fit", {
   expect_warning({
     set.seed(42)
     print(ggplot(
-      data = love_words_small,
+      data = love_words_latin_small,
       aes(label = word, size = 1)
     ) +
       geom_text_wordcloud() +
-      scale_size_area(max_size = 20))
+      scale_size_area(max_size = 40))
   })
 })
 
@@ -86,11 +82,11 @@ test_that("geom_text_wordcloud complains silently when the words do not fit and 
   expect_warning({
     set.seed(42)
     print(ggplot(
-      data = love_words_small,
+      data = love_words_latin_small,
       aes(label = word, size = 1)
     ) +
       geom_text_wordcloud(rm_outside = TRUE) +
-      scale_size_area(max_size = 20))
+      scale_size_area(max_size = 40))
   })
 })
 
@@ -98,7 +94,7 @@ test_that("geom_text_wordcloud complains when one word does not fit", {
   expect_warning({
     set.seed(42)
     print(ggplot(
-      data = love_words_small[2, ],
+      data = love_words_latin_small[2, ],
       aes(label = word, size = 1)
     ) +
       geom_text_wordcloud() +
@@ -110,7 +106,7 @@ test_that("geom_text_wordcloud complains silently when one word does not fit and
   expect_warning({
     set.seed(42)
     print(ggplot(
-      data = love_words_small[2, ],
+      data = love_words_latin_small[2, ],
       aes(label = word, size = 1)
     ) +
       geom_text_wordcloud(rm_outside = TRUE) +
@@ -123,7 +119,7 @@ test_that("geom_text_wordcloud works with a show_boxes = TRUE", {
   expect_is({
     set.seed(42)
     print(ggplot(
-      data = love_words_small,
+      data = love_words_latin_small,
       aes(label = word)
     ) +
       geom_text_wordcloud(show_boxes = TRUE) +
@@ -135,7 +131,7 @@ test_that("geom_text_wordcloud_area does not crash when using label_content", {
   expect_is({
     set.seed(42)
     print(ggplot(
-      data = love_words_small,
+      data = love_words_latin_small,
       aes(label = word, size = speakers,
           label_content = "A")
     ) +
@@ -148,7 +144,7 @@ test_that("geom_text_wordcloud_area works with use_richtext = FALSE", {
       expect_is({
         set.seed(42)
         print(ggplot(
-          data = love_words_small,
+          data = love_words_latin_small,
           aes(label = word, size = speakers)
       ) +
         geom_text_wordcloud_area(use_richtext = FALSE))
@@ -158,14 +154,13 @@ test_that("geom_text_wordcloud_area works with use_richtext = FALSE", {
 test_that("geom_text_wordcloud_area works with parse = TRUE", {
   expect_is({
     set.seed(42)
-    love_words_small2 <- love_words_small
-    love_words_small2[["word"]] <- "sin(x)"
+    love_words_latin_small2 <- love_words_latin_small
+    love_words_latin_small2[["word"]] <- "sin(x)"
     print(ggplot(
-      data = love_words_small2,
+      data = love_words_latin_small2,
       aes(label = word, size = speakers)
     ) +
       geom_text_wordcloud_area(parse = TRUE))
   }, "ggplot")
 })
 
-file.remove(tmp_file)

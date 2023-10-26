@@ -1,3 +1,7 @@
+# ggwordcloud 0.6.1
+* bug fix:
+  * remove non-latin characters from test to pass CRAN check
+
 # ggwordcloud 0.6.0
 * Novelties:
    * Use of gridtext extended richtext_grob by default so that one can use markdown/html syntax in label
