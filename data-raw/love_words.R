@@ -8,7 +8,9 @@ love_words <- love_words |>
   select(-L1, -L2) |>
   arrange(desc(speakers))
 love_words_small <- love_words |>  filter(speakers > 50)
-love_words_latin <- love_words |> filter(!is.na(iconv(word, from="utf-8", to="latin1") == word))
+love_words_latin <- love_words |>
+  filter(!is.na(iconv(word, from="utf-8", to="latin1") == word)) |>
+  mutate(word = iconv(word, from="utf-8", to="latin1"))
 love_words_latin_small <- love_words_latin |> filter(speakers > 50)
 save(love_words, file = "./data/love_words.rda")
 save(love_words_small, file = "./data/love_words_small.rda")
