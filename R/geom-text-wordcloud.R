@@ -270,7 +270,7 @@ GeomTextWordcloud <- ggproto("GeomTextWordcloud", Geom,
                                colour = "black", size = 3.88, angle = 0, hjust = 0.5,
                                vjust = 0.5, alpha = NA, family = "", fontface = 1,
                                lineheight = 1.2, mask_group = 1L, angle_group = 1L,
-                               label_content = NA
+                               label_content = NULL
                              ),
 
                              setup_data = function(data, params) {
