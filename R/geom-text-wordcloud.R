@@ -421,7 +421,7 @@ makeContent.textwordcloudtree <- function(x) {
     }
   } else {
     boxes_masks_nb <- vector("integer")
-    mask_boxes <- array(0, dim = c(0, 2))
+    mask_boxes <- array(0, dim = c(1, 2))
     boxes_mask <- vector("integer")
     boxes_masks <- array(0, dim = c(1, 4))
     mask_group <- rep(0L, length(valid_strings))
