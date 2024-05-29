@@ -270,11 +270,13 @@ DataFrame wordcloud_boxes(
           }
 
           // Within the mask?
-          for (int jj = mask_boxes(group,0); (!i_overlaps) && (jj < mask_boxes(group,1)); jj++) {
-            if (overlaps(MaskBoxes[jj], BigBoxes[i])) {
-              for (int ii = text_boxes(i,0); (!i_overlaps) && (ii < text_boxes(i,1)); ii++){
-                if (overlaps(TextBoxes[ii], MaskBoxes[jj])) {
-                  i_overlaps = true;
+          if (n_boxes_masks>0) {
+            for (int jj = mask_boxes(group,0); (!i_overlaps) && (jj < mask_boxes(group,1)); jj++) {
+              if (overlaps(MaskBoxes[jj], BigBoxes[i])) {
+                for (int ii = text_boxes(i,0); (!i_overlaps) && (ii < text_boxes(i,1)); ii++){
+                  if (overlaps(TextBoxes[ii], MaskBoxes[jj])) {
+                    i_overlaps = true;
+                  }
                 }
               }
             }
