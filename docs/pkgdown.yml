@@ -1,7 +1,7 @@
-pandoc: 3.1.1
-pkgdown: 2.0.7
+pandoc: 3.1.11
+pkgdown: 2.0.9
 pkgdown_sha: ~
 articles:
   ggwordcloud: ggwordcloud.html
-last_built: 2023-10-26T12:57Z
+last_built: 2024-05-30T07:23Z
 

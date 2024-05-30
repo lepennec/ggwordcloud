@@ -4,7 +4,7 @@
 #' @keywords internal
 #' @rdname ggwordcloud-package
 #' @name ggwordcloud-package
-#' @docType package
+#' @docType _PACKAGE
 #' @useDynLib ggwordcloud, .registration = TRUE
 #' @importFrom Rcpp sourceCpp
 #' @import ggplot2

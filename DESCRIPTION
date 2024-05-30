@@ -41,7 +41,7 @@ LinkingTo:
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.1
 VignetteBuilder: knitr
 URL: https://github.com/lepennec/ggwordcloud, https://lepennec.github.io/ggwordcloud/
 BugReports: https://github.com/lepennec/ggwordcloud/issues
