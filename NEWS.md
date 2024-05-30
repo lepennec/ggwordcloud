@@ -1,3 +1,8 @@
+# ggwordcloud 0.6.2
+* bug fixes:
+  * change the default label_content from NA to NULL to avoid an issue in legend.
+  * fix a memory issue in the C++ code
+
 # ggwordcloud 0.6.1
 * bug fix:
   * remove non-latin characters from test to pass CRAN check
