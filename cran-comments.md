@@ -8,4 +8,4 @@
 
 0 errors | 0 warnings | 0 notes
 
-* This is a fix only release to pass a memory issue spotted by Pr. Ripley.
+* This releases fixes a memory issue spotted by Pr. Ripley.
